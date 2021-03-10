@@ -1,0 +1,3 @@
+[submodule "ExaHyPE-Engine"]
+	path = ExaHyPE-Engine
+	url = https://gitlab.lrz.de/exahype/ExaHyPE-Engine
