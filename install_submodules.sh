@@ -34,6 +34,6 @@ if [ "$(uname)" == "Darwin" ]; then
     }{print}' ExaHyPE-Engine/ExaHyPE/Makefile > makefile_tmp && mv makefile_tmp ExaHyPE-Engine/ExaHyPE/Makefile
 fi
 
-
+# Works on Linux, not on my Macbook
 # jobs.h needs extra argument 'priority'?
 # Core.cpp uses header file not available on MacOS: set cores to 1?
