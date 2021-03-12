@@ -90,6 +90,27 @@ def write_flux(lines, n_dust, c):
                                            'F[1][{}] = '.format(4*n + 7),
                                            'F[1][{}] = Q[{}]*Q[{}]/Q[{}];\n'.format(4*n + 7, 4*n + 6, 4*n + 7, 4*n + 4))
 
+def write_source(lines, n_dust, q):
+    for i in range(0, len(lines)):
+        # Source x: eta + Coriolis
+        lines[i] = replace_with_indent(lines[i],
+                                      'S[1] = ',
+                                      'S[1] = 2*Q[0] + 2*Q[3];\n')
+        # Source y: Coriolis
+        lines[i] = replace_with_indent(lines[i],
+                                      'S[3] = ',
+                                      'S[3] = ({} - 2)*Q[1];\n'.format(q))
+
+        for n in range(0, n_dust):
+            # Source x: Coriolis
+            lines[i] = replace_with_indent(lines[i],
+                                           'S[{}] = '.format(4*n + 5),
+                                           'S[{}] = 2*Q[{}];\n'.format(4*n + 5, 4*n + 7))
+            # Source y: Coriolis
+            lines[i] = replace_with_indent(lines[i],
+                                          'S[{}] = '.format(4*n + 7),
+                                          'S[{}] = ({} - 2)*Q[2];\n'.format(4*n + 7, q, 4*n + 5))
+
 
 parser = argparse.ArgumentParser(description='Write flux and eigenvalue cpp')
 
@@ -123,6 +144,9 @@ if (n_vars % 4 != 0):
     print("Error: number of variables has to be divisible by 4!")
     exit(1)
 
+c = 1.0
+q = 1.5
+
 n_dust = int(n_vars/4 - 1)
 
 output_dir = os.path.dirname(os.path.abspath(args.infile)) \
@@ -134,8 +158,9 @@ f = open(source_file, "r")
 lines = f.readlines()
 f.close()
 
-write_eigenvalues(lines, n_dust, 1.0)
-write_flux(lines, n_dust, 1.0)
+write_eigenvalues(lines, n_dust, c)
+write_flux(lines, n_dust, c)
+write_source(lines, n_dust, q)
 
 f = open(source_file, "w")
 f.writelines(lines)
