@@ -1,4 +1,4 @@
-exahype-project EulerFV
+exahype-project DustyGas
   peano-kernel-path const = ./Peano
   exahype-path const = ./ExaHyPE
   output-directory const = ../data
@@ -8,8 +8,8 @@ exahype-project EulerFV
     offset = 0.0, 0.0
     end-time = 1.0
   end computational-domain
-  solver Finite-Volumes MyEulerSolver
-    variables const = rho:1,j:3,E:1
+  solver Finite-Volumes DustyGasSolver
+    variables const = 4
     patch-size const = 10
     maximum-mesh-size = 5e-2
     time-stepping = global
@@ -17,8 +17,8 @@ exahype-project EulerFV
     terms const = flux
     optimisation const = generic
     language const = C
-    plot vtu::Cartesian::cells::ascii EulerWriter
-     variables const = 5
+    plot vtu::Cartesian::cells::ascii DustyGasWriter
+     variables const = 4
      time = 0.0
      repeat = 0.5E-1
      output = ./variables
