@@ -106,13 +106,16 @@ output_dir = None
 project_name = None
 solver_name = None
 
+found_nvar = False
+
 for line in lines:
     if (line.find('exahype-project ') != -1):
         project_name = line.lstrip().split()[-1]
     if (line.find('solver ') != -1):
         solver_name = line.lstrip().split()[-1]
-    if (line.find('variables const') != -1):
+    if (line.find('variables const') != -1 and found_nvar == False):
         n_vars = int(line.lstrip().split()[-1])
+        found_nvar = True
     if (line.find('output-directory') != -1):
         output_dir = line.lstrip().split()[-1]
 
