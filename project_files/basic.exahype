@@ -9,7 +9,7 @@ exahype-project DustyGas
     end-time = 1.0
   end computational-domain
   solver Finite-Volumes DustyGasSolver
-    variables const = 8
+    variables const = 4
     patch-size const = 10
     maximum-mesh-size = 5e-2
     time-stepping = global
