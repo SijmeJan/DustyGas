@@ -90,7 +90,8 @@ def write_flux(lines, n_dust, c):
                                            'F[1][{}] = '.format(4*n + 7),
                                            'F[1][{}] = Q[{}]*Q[{}]/Q[{}];\n'.format(4*n + 7, 4*n + 6, 4*n + 7, 4*n + 4))
 
-def write_source(lines, n_dust, q):
+def write_source(lines, n_dust, q, Stokes):
+
     for i in range(0, len(lines)):
         # Source x: eta + Coriolis
         lines[i] = replace_with_indent(lines[i],
@@ -102,15 +103,38 @@ def write_source(lines, n_dust, q):
                                       'S[3] = ({} - 2)*Q[1];\n'.format(q))
 
         for n in range(0, n_dust):
-            # Source x: Coriolis
+            # Source x: Coriolis + drag
             lines[i] = replace_with_indent(lines[i],
                                            'S[{}] = '.format(4*n + 5),
-                                           'S[{}] = 2*Q[{}];\n'.format(4*n + 5, 4*n + 7))
-            # Source y: Coriolis
+                                           'S[{}] = 2*Q[{}] - (Q[{}] - Q[{}]*Q[1]/Q[0])/{};\n'.format(4*n + 5, 4*n + 7, 4*n + 5, 4*n + 4, Stokes[n]))
+
+            # Source z: drag
+            lines[i] = replace_with_indent(lines[i],
+                                           'S[{}] = '.format(4*n + 6),
+                                           'S[{}] = - (Q[{}] - Q[{}]*Q[1]/Q[0])/{};\n'.format(4*n + 6, 4*n + 6, 4*n + 4, Stokes[n]))
+
+            # Source y: Coriolis + drag
             lines[i] = replace_with_indent(lines[i],
                                           'S[{}] = '.format(4*n + 7),
-                                          'S[{}] = ({} - 2)*Q[2];\n'.format(4*n + 7, q, 4*n + 5))
+                                          'S[{}] = ({} - 2)*Q[{}] - (Q[{}] - Q[{}]*Q[1]/Q[0])/{};\n'.format(4*n + 7, q, 4*n + 5, 4*n + 7, 4*n + 4, Stokes[n]))
 
+    gas_x_drag = []
+    gas_y_drag = []
+    gas_z_drag = []
+    for n in range(0, n_dust):
+        gas_x_drag.append('  S[1] += (Q[{}] -Q[{}]*Q[1]/Q[0])/{};\n'.format(4*n + 5, 4*n + 4, Stokes[n]))
+        gas_z_drag.append('  S[2] += (Q[{}] -Q[{}]*Q[1]/Q[0])/{};\n'.format(4*n + 6, 4*n + 4, Stokes[n]))
+        gas_y_drag.append('  S[3] += (Q[{}] -Q[{}]*Q[1]/Q[0])/{};\n'.format(4*n + 7, 4*n + 4, Stokes[n]))
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('S[1] = ') != -1):
+            lines[i+1:i+1] = gas_x_drag
+    for i in range(0, len(lines)):
+        if (lines[i].find('S[2] = ') != -1):
+            lines[i+1:i+1] = gas_z_drag
+    for i in range(0, len(lines)):
+        if (lines[i].find('S[3] = ') != -1):
+            lines[i+1:i+1] = gas_y_drag
 
 parser = argparse.ArgumentParser(description='Write flux and eigenvalue cpp')
 
@@ -146,6 +170,7 @@ if (n_vars % 4 != 0):
 
 c = 1.0
 q = 1.5
+Stokes = [0.1]
 
 n_dust = int(n_vars/4 - 1)
 
@@ -160,7 +185,7 @@ f.close()
 
 write_eigenvalues(lines, n_dust, c)
 write_flux(lines, n_dust, c)
-write_source(lines, n_dust, q)
+write_source(lines, n_dust, q, Stokes)
 
 f = open(source_file, "w")
 f.writelines(lines)
