@@ -136,6 +136,26 @@ def write_source(lines, n_dust, q, Stokes):
         if (lines[i].find('S[3] = ') != -1):
             lines[i+1:i+1] = gas_y_drag
 
+def write_initial(lines, n_dust, q, Stokes):
+    for i in range(0, len(lines)):
+        for n in range(0, 4*n_dust + 4):
+            lines[i] = replace_with_indent(lines[i],
+                                           'Q[{}] = 0.0'.format(n),
+                                           '//Q[{}] = 0.0;\n'.format(n))
+
+    initial = ['  if (t == 0.0) {\n',
+               '    Q[0] = 1.0;\n',
+               '    Q[1] = 0.0;\n',
+               '    Q[2] = 0.0;\n',
+               '    Q[3] = 0.0;\n',
+               '    if (sqrt((x[0] - 0.5)*(x[0] - 0.5) + (x[1] - 0.5)*(x[1] - 0.5)) < 0.2) Q[0] = 2.0;\n',
+               '  }\n']
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('//Q[0] = ') != -1):
+            lines[i:i] = initial
+            break;
+
 parser = argparse.ArgumentParser(description='Write flux and eigenvalue cpp')
 
 parser.add_argument('infile',
@@ -186,6 +206,7 @@ f.close()
 write_eigenvalues(lines, n_dust, c)
 write_flux(lines, n_dust, c)
 write_source(lines, n_dust, q, Stokes)
+write_initial(lines, n_dust, q, Stokes)
 
 f = open(source_file, "w")
 f.writelines(lines)
