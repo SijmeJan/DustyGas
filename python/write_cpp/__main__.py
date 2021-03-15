@@ -201,7 +201,7 @@ def write_boundary(lines, n_vars, patch_size, offset, size):
                 '    indx = (2*n_patch_x + n_patch_y + patch_y)*{} + pos[1];\n'.format(patch_size),
                 '  }\n',
                 '\n',
-                '  if (indx > -1) {{\n',
+                '  if (indx > -1) {\n',
                 '    int arr_index = {}*indx;\n'.format(n_vars),
                 '    // Resize if necessary\n',
                 '    if (arr_index >= boundaryValues.size())\n',
