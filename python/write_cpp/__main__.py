@@ -174,7 +174,13 @@ def write_boundary(lines, n_vars, patch_size, offset, size):
 
 
 
-    boundary = ['  // Hack: number of patches in x and y\n',
+    boundary = ['  // Fill a boundary array for setting periodic boundaries in 2D, non-AMR runs.\n',
+                '  // If FV mesh = nx times ny, the first nx entries correspond to the bottom boundary.\n',
+                '  // The second nx entries correspond to the top boundary.\n',
+                '  // The next ny entries correspond to the left boundary.\n',
+                '  // The next ny entries correspont to the right boundary.\n',
+                '\n',
+                '  // Hack: number of patches in x and y\n',
                 '  int n_patch_x = (int) round({}/sizeOfPatch[0]);\n'.format(size[0]),
                 '  int n_patch_y = (int) round({}/sizeOfPatch[1]);\n'.format(size[1]),
                 '\n',
@@ -204,18 +210,11 @@ def write_boundary(lines, n_vars, patch_size, offset, size):
                 '  if (indx > -1) {\n',
                 '    int arr_index = {}*indx;\n'.format(n_vars),
                 '    // Resize if necessary\n',
-                '    if (arr_index >= boundaryValues.size())\n',
-                '      boundaryValues.resize(arr_index + {});\n'.format(n_vars),
+                '    if (arr_index >= solver.boundaryValues.size())\n',
+                '      solver.boundaryValues.resize(arr_index + {});\n'.format(n_vars),
                 '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
-                '      boundaryValues[arr_index + n] = Q[n];\n',
-                '  }\n',
-                '  std::cout << "Patch offset: " << offsetOfPatch[0]\n',
-                '            << " " << offsetOfPatch[1] << ", x = "\n',
-                '            << x[0] << " " << x[1]\n',
-                '            << ", pos = " << pos[0] << " " << pos[1]\n',
-                '            << ", size = " << boundaryValues.size()\n',
-                '            << " " << indx << " " << (offsetOfPatch[1] + 0.5*sizeOfPatch[1])/sizeOfPatch[1]\n',
-                '            << std::endl;\n']
+                '      solver.boundaryValues[arr_index + n] = Q[n];\n',
+                '  }\n']
 
     for i in range(0, len(lines)):
         if (lines[i].find('assertion') != -1):
@@ -236,6 +235,21 @@ def write_boundary_h(lines):
     for i in range(0, len(lines)):
         if (lines[i].find('#include') != -1):
             lines[i:i] = boundary
+            break;
+
+def write_solver_h(lines):
+    solver = ['  std::vector<double> boundaryValues;\n']
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('};') != -1):
+            lines[i:i] = solver
+            break;
+
+    solver = ['#include <vector>\n']
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('#include') != -1):
+            lines[i:i] = solver
             break;
 
 parser = argparse.ArgumentParser(description='Write flux and eigenvalue cpp')
@@ -331,6 +345,19 @@ f.close()
 # Advantage: minimal communication
 # Disadvantage: hack into Peano, no AMR, no loadbalancing (?)
 
+source_file = output_dir + solver_name + '.h'
+
+f = open(source_file, "r")
+lines = f.readlines()
+f.close()
+
+write_solver_h(lines)
+
+f = open(source_file, "w")
+f.writelines(lines)
+f.close()
+
+
 source_file = output_dir + boundary_name + '.cpp'
 
 f = open(source_file, "r")
@@ -344,14 +371,14 @@ f = open(source_file, "w")
 f.writelines(lines)
 f.close()
 
-source_file = output_dir + boundary_name + '.h'
+#source_file = output_dir + boundary_name + '.h'
 
-f = open(source_file, "r")
-lines = f.readlines()
-f.close()
+#f = open(source_file, "r")
+#lines = f.readlines()
+#f.close()
 
-write_boundary_h(lines)
+#write_boundary_h(lines)
 
-f = open(source_file, "w")
-f.writelines(lines)
-f.close()
+#f = open(source_file, "w")
+#f.writelines(lines)
+#f.close()
