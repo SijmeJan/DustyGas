@@ -156,7 +156,7 @@ def write_initial(lines, n_dust, q, Stokes):
             lines[i:i] = initial
             break;
 
-def write_boundary(lines, n_dust):
+def write_boundary(lines, n_vars, patch_size, offset, size):
     for i in range(0, len(lines)):
         lines[i] = replace_with_indent(lines[i],
                                       'const int writtenUnknowns = 0;',
@@ -169,16 +169,14 @@ def write_boundary(lines, n_dust):
             lines.pop(i+1)
             break;
 
-    #boundary = ['  std::cout << "Patch offset: " << offsetOfPatch[0]\n',
-    #            '            << " " << offsetOfPatch[1] << ", patch size: "\n',
-    #            '            << sizeOfPatch[0] << " " << sizeOfPatch[1]\n',
-    #            '            << ", x = " << x[0] << " " << x[1]\n',
-    #            '            << ", pos = " << pos[0] << " " << pos[1]\n',
-    #            '            << ", timeStamp = " << timeStamp << std::endl;\n']
+    x_bound = [offset[0], offset[0] + size[0]]
+    y_bound = [offset[1], offset[1] + size[1]]
+
+
 
     boundary = ['  // Hack: number of patches in x and y\n',
-                '  int n_patch_x = (int) round((1.0 - 0.0)/sizeOfPatch[0]);\n',
-                '  int n_patch_y = (int) round((1.0 - 0.0)/sizeOfPatch[1]);\n',
+                '  int n_patch_x = (int) round({}/sizeOfPatch[0]);\n'.format(size[0]),
+                '  int n_patch_y = (int) round({}/sizeOfPatch[1]);\n'.format(size[1]),
                 '\n',
                 '  // Number of patches to left and bottom\n',
                 '  int patch_x = (int) ((offsetOfPatch[0] + 0.5*sizeOfPatch[0])/sizeOfPatch[0]);\n',
@@ -186,28 +184,31 @@ def write_boundary(lines, n_dust):
                 '\n',
                 '  int indx = -1;\n',
                 '\n',
-                '  if (x[1] - 0.5*sizeOfPatch[1] < 0.0 && pos[1] == 0) {\n',
+                '  if (x[1] - 0.5*sizeOfPatch[1] < {} && pos[1] == 0) {{\n'.format(y_bound[0]),
                 '    // Bottom boundary\n',
-                '    indx = patch_x*10 + pos[0];\n',
-                '  }\n',
-                '  if (x[1] + 0.5*sizeOfPatch[1] > 1.0 && pos[1] == 9) {\n',
+                '    indx = patch_x*{} + pos[0];\n'.format(patch_size),
+                '  }}\n',
+                '  if (x[1] + 0.5*sizeOfPatch[1] > {} && pos[1] == {}) {{\n'.format(y_bound[1], patch_size-1),
                 '    // Top boundary\n',
-                '    indx = n_patch_x*10 + patch_x*10 + pos[0];\n',
-                '  }\n',
-                '  if (x[0] - 0.5*sizeOfPatch[0] < 0.0 && pos[0] == 0) {\n',
+                '    indx = (n_patch_x + patch_x)*{} + pos[0];\n'.format(patch_size),
+                '  }}\n',
+                '  if (x[0] - 0.5*sizeOfPatch[0] < {} && pos[0] == 0) {{\n'.format(x_bound[0]),
                 '    // Left boundary\n',
-                '    indx = 2*n_patch_x*10 + patch_y*10 + pos[1];\n',
-                '  }\n',
-                '  if (x[0] + 0.5*sizeOfPatch[0] > 1.0 && pos[0] == 9) {\n',
+                '    indx = (2*n_patch_x + patch_y)*{} + pos[1];\n'.format(patch_size),
+                '  }}\n',
+                '  if (x[0] + 0.5*sizeOfPatch[0] > {} && pos[0] == {}) {{\n'.format(x_bound[1], patch_size-1),
                 '    // Right boundary\n',
-                '    indx = 2*n_patch_x*10 + n_patch_y*10 + patch_y*10 + pos[1];\n',
-                '  }\n',
+                '    indx = (2*n_patch_x + n_patch_y + patch_y)*{} + pos[1];\n'.format(patch_size),
+                '  }}\n',
                 '\n',
-                '  if (indx > -1) {\n',
+                '  if (indx > -1) {{\n',
+                '    int arr_index = {}*indx;\n'.format(n_vars),
                 '    // Resize if necessary\n',
-                '    if (indx >= boundaryValues.size())\n',
-                '      boundaryValues.resize(indx + 1);\n',
-                '  }\n',
+                '    if (arr_index >= boundaryValues.size())\n',
+                '      boundaryValues.resize(arr_index + {});\n'.format(n_vars),
+                '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
+                '      boundaryValues[arr_index + n] = Q[n];\n',
+                '  }}\n',
                 '  std::cout << "Patch offset: " << offsetOfPatch[0]\n',
                 '            << " " << offsetOfPatch[1] << ", x = "\n',
                 '            << x[0] << " " << x[1]\n',
@@ -248,11 +249,17 @@ lines = f.readlines()
 f.close()
 
 n_vars = 0
+patch_size = 0
 output_dir = None
 project_name = None
 solver_name = None
 boundary_name = None
 found_nvar = False
+offset_x = None
+offset_y = None
+size_x = None
+size_y = None
+
 
 for line in lines:
     if (line.find('exahype-project ') != -1):
@@ -264,6 +271,14 @@ for line in lines:
         found_nvar = True
     if (line.find('output-directory') != -1):
         output_dir = line.lstrip().split()[-1]
+    if (line.find('width') != -1):
+        size_x = float(line.lstrip().split()[-2][:-1])
+        size_y = float(line.lstrip().split()[-1])
+    if (line.find('offset') != -1):
+        offset_x = float(line.lstrip().split()[-2][:-1])
+        offset_y = float(line.lstrip().split()[-1])
+    if (line.find('patch-size const') != -1):
+        patch_size = int(line.lstrip().split()[-1])
 
 for i in range(0, len(lines)):
     if (lines[i].find('variables const = 0') != -1):
@@ -322,14 +337,12 @@ f = open(source_file, "r")
 lines = f.readlines()
 f.close()
 
-write_boundary(lines, n_dust)
+write_boundary(lines, n_vars, patch_size,
+               [offset_x, offset_y], [size_x, size_y])
 
 f = open(source_file, "w")
 f.writelines(lines)
 f.close()
-
-
-
 
 source_file = output_dir + boundary_name + '.h'
 
