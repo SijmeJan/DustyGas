@@ -169,7 +169,17 @@ def write_boundary(lines, n_dust):
             lines.pop(i+1)
             break;
 
+    boundary = ['  std::cout << "Patch offset: " << offsetOfPatch[0]\n',
+                '            << offsetOfPatch[1] << ", patch size: "\n',
+                '            << sizeOfPatch[0] << " " << sizeOfPatch[1]\n',
+                '            << ", x = " << x[0] << " " << x[1]\n',
+                '            << ", pos = " << pos[0] << " " << pos[1]\n',
+                '            << ", timeStamp = " << timeStamp << std::endl;\n']
 
+    for i in range(0, len(lines)):
+        if (lines[i].find('assertion') != -1):
+            lines[i+1:i+1] = boundary
+            break;
 
 parser = argparse.ArgumentParser(description='Write flux and eigenvalue cpp')
 
