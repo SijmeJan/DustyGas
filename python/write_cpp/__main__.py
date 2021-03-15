@@ -169,12 +169,51 @@ def write_boundary(lines, n_dust):
             lines.pop(i+1)
             break;
 
-    boundary = ['  std::cout << "Patch offset: " << offsetOfPatch[0]\n',
-                '            << " " << offsetOfPatch[1] << ", patch size: "\n',
-                '            << sizeOfPatch[0] << " " << sizeOfPatch[1]\n',
-                '            << ", x = " << x[0] << " " << x[1]\n',
+    #boundary = ['  std::cout << "Patch offset: " << offsetOfPatch[0]\n',
+    #            '            << " " << offsetOfPatch[1] << ", patch size: "\n',
+    #            '            << sizeOfPatch[0] << " " << sizeOfPatch[1]\n',
+    #            '            << ", x = " << x[0] << " " << x[1]\n',
+    #            '            << ", pos = " << pos[0] << " " << pos[1]\n',
+    #            '            << ", timeStamp = " << timeStamp << std::endl;\n']
+
+    boundary = ['  // Hack: number of patches in x and y\n',
+                '  int n_patch_x = (int) round((1.0 - 0.0)/sizeOfPatch);\n',
+                '  int n_patch_y = (int) round((1.0 - 0.0)/sizeOfPatch);\n',
+                '\n',
+                '  // Number of patches to left and bottom\n',
+                '  int patch_x = (int) (offsetOfPatch[0] + 0.5*sizeOfPatch[0])/sizeOfPatch[0];\n',
+                '  int patch_y = (int) (offsetOfPatch[1] + 0.5*sizeOfPatch[1])/sizeOfPatch[1];\n',
+                '\n',
+                '  int indx = -1;\n',
+                '\n',
+                '  if (x[1] - 0.5*sizeOfPatch[1] < 0.0 && pos[1] == 0) {\n',
+                '    // Bottom boundary\n',
+                '    indx = patch_x*10 + pos[0];\n',
+                '  }\n',
+                '  if (x[1] + 0.5*sizeOfPatch[1] < 1.0 && pos[1] == 9) {\n',
+                '    // Top boundary\n',
+                '    indx = n_patch_x*10 + patch_x*10 + pos[0];\n',
+                '  }\n',
+                '  if (x[0] - 0.5*sizeOfPatch[0] < 0.0 && pos[0] == 0) {\n',
+                '    // Left boundary\n',
+                '    indx = 2*n_patch_x*10 + patch_y*10 + pos[1];\n',
+                '  }\n',
+                '  if (x[0] + 0.5*sizeOfPatch[0] < 1.0 && pos[0] == 9) {\n',
+                '    // Right boundary\n',
+                '    indx = 2*n_patch_x*10 + n_patch_y*10 + patch_y*10 + pos[1];\n',
+                '  }\n',
+                '\n',
+                '  if (indx > -1) {\n',
+                '    // Resize if necessary\n',
+                '    if (indx >= boundaryValues.size())\n',
+                '      boundaryValues.resize(indx + 1);\n',
+                '  }\n',
+                '  std::cout << "Patch offset: " << offsetOfPatch[0]\n',
+                '            << " " << offsetOfPatch[1] << ", x = "\n',
+                '            << x[0] << " " << x[1]\n',
                 '            << ", pos = " << pos[0] << " " << pos[1]\n',
-                '            << ", timeStamp = " << timeStamp << std::endl;\n']
+                '            << ", size = " << boundaryValues.size()\n',
+                '            << std::endl;\n']
 
     for i in range(0, len(lines)):
         if (lines[i].find('assertion') != -1):
