@@ -210,10 +210,10 @@ def write_boundary(lines, n_vars, patch_size, offset, size):
                 '  if (indx > -1) {\n',
                 '    int arr_index = {}*indx;\n'.format(n_vars),
                 '    // Resize if necessary\n',
-                '    if (arr_index >= solver.boundaryValues.size())\n',
-                '      solver.boundaryValues.resize(arr_index + {});\n'.format(n_vars),
+                '    if (arr_index >= solver.periodicBoundaryValues.size())\n',
+                '      solver.periodicBoundaryValues.resize(arr_index + {});\n'.format(n_vars),
                 '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
-                '      solver.boundaryValues[arr_index + n] = Q[n];\n',
+                '      solver.periodicBoundaryValues[arr_index + n] = Q[n];\n',
                 '  }\n']
 
     for i in range(0, len(lines)):
@@ -238,7 +238,7 @@ def write_boundary_h(lines):
             break;
 
 def write_solver_h(lines):
-    solver = ['  std::vector<double> boundaryValues;\n']
+    solver = ['  std::vector<double> periodicBoundaryValues;\n']
 
     for i in range(0, len(lines)):
         if (lines[i].find('};') != -1):
