@@ -177,8 +177,8 @@ def write_boundary(lines, n_dust):
     #            '            << ", timeStamp = " << timeStamp << std::endl;\n']
 
     boundary = ['  // Hack: number of patches in x and y\n',
-                '  int n_patch_x = (int) round((1.0 - 0.0)/sizeOfPatch);\n',
-                '  int n_patch_y = (int) round((1.0 - 0.0)/sizeOfPatch);\n',
+                '  int n_patch_x = (int) round((1.0 - 0.0)/sizeOfPatch[0]);\n',
+                '  int n_patch_y = (int) round((1.0 - 0.0)/sizeOfPatch[1]);\n',
                 '\n',
                 '  // Number of patches to left and bottom\n',
                 '  int patch_x = (int) (offsetOfPatch[0] + 0.5*sizeOfPatch[0])/sizeOfPatch[0];\n',
