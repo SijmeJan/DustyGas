@@ -170,7 +170,7 @@ def write_boundary(lines, n_dust):
             break;
 
     boundary = ['  std::cout << "Patch offset: " << offsetOfPatch[0]\n',
-                '            << offsetOfPatch[1] << ", patch size: "\n',
+                '            << " " << offsetOfPatch[1] << ", patch size: "\n',
                 '            << sizeOfPatch[0] << " " << sizeOfPatch[1]\n',
                 '            << ", x = " << x[0] << " " << x[1]\n',
                 '            << ", pos = " << pos[0] << " " << pos[1]\n',
@@ -179,6 +179,15 @@ def write_boundary(lines, n_dust):
     for i in range(0, len(lines)):
         if (lines[i].find('assertion') != -1):
             lines[i+1:i+1] = boundary
+            break;
+
+def write_boundary_h(lines):
+    boundary = [' private:\n',
+                '  vector<double> boundaryValues;\n']
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('public:') != -1):
+            lines[i:i] = boundary
             break;
 
 parser = argparse.ArgumentParser(description='Write flux and eigenvalue cpp')
@@ -261,13 +270,27 @@ f.close()
 # Disadvantage: hack into Peano, no AMR, no loadbalancing (?)
 
 source_file = output_dir + boundary_name + '.cpp'
-print(source_file)
 
 f = open(source_file, "r")
 lines = f.readlines()
 f.close()
 
 write_boundary(lines, n_dust)
+
+f = open(source_file, "w")
+f.writelines(lines)
+f.close()
+
+
+
+
+source_file = output_dir + boundary_name + '.h'
+
+f = open(source_file, "r")
+lines = f.readlines()
+f.close()
+
+write_boundary_h(lines)
 
 f = open(source_file, "w")
 f.writelines(lines)
