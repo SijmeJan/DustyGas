@@ -156,6 +156,21 @@ def write_initial(lines, n_dust, q, Stokes):
             lines[i:i] = initial
             break;
 
+def write_boundary(lines, n_dust):
+    for i in range(0, len(lines)):
+        lines[i] = replace_with_indent(lines[i],
+                                      'const int writtenUnknowns = 0;',
+                                      'assertion(outputQuantities==nullptr);\n')
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('assertion') != -1):
+            lines.pop(i+1)
+            lines.pop(i+1)
+            lines.pop(i+1)
+            break;
+
+
+
 parser = argparse.ArgumentParser(description='Write flux and eigenvalue cpp')
 
 parser.add_argument('infile',
@@ -170,7 +185,7 @@ n_vars = 0
 output_dir = None
 project_name = None
 solver_name = None
-
+boundary_name = None
 found_nvar = False
 
 for line in lines:
@@ -183,6 +198,10 @@ for line in lines:
         found_nvar = True
     if (line.find('output-directory') != -1):
         output_dir = line.lstrip().split()[-1]
+
+for i in range(0, len(lines)):
+    if (lines[i].find('variables const = 0') != -1):
+        boundary_name = lines[i-1].lstrip().split()[-1]
 
 if (n_vars % 4 != 0):
     print("Error: number of variables has to be divisible by 4!")
@@ -230,3 +249,16 @@ f.close()
 # - set rank of boundary vertices and let Peano handle the rest...
 # Advantage: minimal communication
 # Disadvantage: hack into Peano, no AMR, no loadbalancing (?)
+
+source_file = output_dir + boundary_name + '.cpp'
+print(source_file)
+
+f = open(source_file, "r")
+lines = f.readlines()
+f.close()
+
+write_boundary(lines, n_dust)
+
+f = open(source_file, "w")
+f.writelines(lines)
+f.close()
