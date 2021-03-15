@@ -27,6 +27,7 @@ exahype-project DustyGas
      variables const = 0
      time = 0.0
      repeat = 1.0e-10
+     output = ./boundary
     end plot
   end solver
 end exahype-project
