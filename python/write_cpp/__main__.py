@@ -211,3 +211,22 @@ write_initial(lines, n_dust, q, Stokes)
 f = open(source_file, "w")
 f.writelines(lines)
 f.close()
+
+
+# PERIODIC BOUNDARIES HACK
+#
+# Naive (but robust?) implementation:
+# - global array of boundary values for *whole* grid
+# - all workers send boundary data to array (MPI_Allgather "plotting")
+# - adjust solution from array
+# Advantage:
+# - probably works with loadbalancing
+# - no need to touch ExaHyPE core
+# Disadvantage:
+# - lot of communication
+# - no AMR (this would in any case require a serious hack)
+#
+# Optimal implementation:
+# - set rank of boundary vertices and let Peano handle the rest...
+# Advantage: minimal communication
+# Disadvantage: hack into Peano, no AMR, no loadbalancing (?)
