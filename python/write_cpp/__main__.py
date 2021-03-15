@@ -210,10 +210,10 @@ def write_boundary(lines, n_vars, patch_size, offset, size):
                 '  if (indx > -1) {\n',
                 '    int arr_index = {}*indx;\n'.format(n_vars),
                 '    // Resize if necessary\n',
-                '    if (arr_index >= boundaryValues.size())\n',
-                '      boundaryValues.resize(arr_index + {});\n'.format(n_vars),
+                '    if (arr_index >= (*boundaryValues).size())\n',
+                '      (*boundaryValues).resize(arr_index + {});\n'.format(n_vars),
                 '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
-                '      boundaryValues[arr_index + n] = Q[n];\n',
+                '      (*boundaryValues)[arr_index + n] = Q[n];\n',
                 '  }\n']
 
     for i in range(0, len(lines)):
@@ -221,9 +221,24 @@ def write_boundary(lines, n_vars, patch_size, offset, size):
             lines[i+1:i+1] = boundary
             break;
 
+    # TODO: use solver name
+    solver = ['#include "DustyGasSolver.h"\n']
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('#include') != -1):
+            lines[i+1:i+1] = solver
+            break;
+
+    solver = ['  boundaryValues = &(solver.periodicBoundaryValues);\n']
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('::') != -1):
+            lines[i+1:i+1] = solver
+            break;
+
 def write_boundary_h(lines):
     boundary = [' private:\n',
-                '  std::vector<double> boundaryValues;\n']
+                '  std::vector<double> *boundaryValues;\n']
 
     for i in range(0, len(lines)):
         if (lines[i].find('public:') != -1):
@@ -238,7 +253,7 @@ def write_boundary_h(lines):
             break;
 
 def write_solver_h(lines):
-    solver = ['  std::vector<double> periodicBoundaryValues;\n']
+    solver = ['    std::vector<double> periodicBoundaryValues;\n']
 
     for i in range(0, len(lines)):
         if (lines[i].find('};') != -1):
@@ -371,14 +386,14 @@ f = open(source_file, "w")
 f.writelines(lines)
 f.close()
 
-#source_file = output_dir + boundary_name + '.h'
+source_file = output_dir + boundary_name + '.h'
 
-#f = open(source_file, "r")
-#lines = f.readlines()
-#f.close()
+f = open(source_file, "r")
+lines = f.readlines()
+f.close()
 
-#write_boundary_h(lines)
+write_boundary_h(lines)
 
-#f = open(source_file, "w")
-#f.writelines(lines)
-#f.close()
+f = open(source_file, "w")
+f.writelines(lines)
+f.close()
