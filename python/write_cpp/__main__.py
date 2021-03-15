@@ -183,10 +183,17 @@ def write_boundary(lines, n_dust):
 
 def write_boundary_h(lines):
     boundary = [' private:\n',
-                '  vector<double> boundaryValues;\n']
+                '  std::vector<double> boundaryValues;\n']
 
     for i in range(0, len(lines)):
         if (lines[i].find('public:') != -1):
+            lines[i:i] = boundary
+            break;
+
+    boundary = ['#include <vector>\n']
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('#include') != -1):
             lines[i:i] = boundary
             break;
 
