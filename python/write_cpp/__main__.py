@@ -213,7 +213,7 @@ def write_boundary(lines, n_dust):
                 '            << x[0] << " " << x[1]\n',
                 '            << ", pos = " << pos[0] << " " << pos[1]\n',
                 '            << ", size = " << boundaryValues.size()\n',
-                '            << " " << indx << " " << patch_y\n',
+                '            << " " << indx << " " << (offsetOfPatch[1] + 0.5*sizeOfPatch[1])/sizeOfPatch[1]\n',
                 '            << std::endl;\n']
 
     for i in range(0, len(lines)):
