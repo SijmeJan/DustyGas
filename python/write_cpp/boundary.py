@@ -125,8 +125,7 @@ def write_solver_set_periodic(lines, n_vars):
     # Save current function body
     body = remove_function_body(lines, 'boundaryValues')
 
-    periodic = ['  std::cout << " x = " << x[0] << ", y = " << x[1] << ", faceIndex = " << faceIndex << ", direction = " << direction << " " << x[0]/global_dx[0] - 0.5 << " " << x[1]/global_dx[1] - 0.5 << " " << global_n[0] << " " << global_n[1] << std::endl;\n',
-                '  // Global cell number in x and y direction\n',
+    periodic = ['  // Global cell number in x and y direction\n',
                 '  int i = (int) round(x[0]/global_dx[0] - 0.5);\n',
                 '  int j = (int) round(x[1]/global_dx[1] - 0.5);\n',
                 '\n',
@@ -142,7 +141,8 @@ def write_solver_set_periodic(lines, n_vars):
                 '\n']
     for i in range(0, n_vars):
         periodic.append('  stateOutside[{}] = periodicBoundaryValues[4*indx + {}];\n'.format(i,i))
+    periodic.append('  std::cout << " x = " << x[0] << ", y = " << x[1] << ", faceIndex = " << faceIndex << ", direction = " << direction << ", i = " << i << ", j = " << j << " " << stateOutside[0] << " " << stateOutside[1] << std::endl;\n')
 
-    body.extend(periodic)
+    #body.extend(periodic)
 
-    add_function_body(lines, 'boundaryValues', body)
+    add_function_body(lines, 'boundaryValues', periodic)
