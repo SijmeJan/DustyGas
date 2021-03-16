@@ -109,12 +109,10 @@ def write_solver_h(lines):
 
 def write_solver_set_periodic(lines):
     # Save current function body
-    body = remove_function_body(lines, 'adjustSolution')
+    body = remove_function_body(lines, 'boundaryValues')
 
-    periodic = ['  if (t > 0.0) {\n',
-                '    std::cout << x[0] << " " << x[1] << std::endl;\n',
-                '  }\n']
+    periodic = ['  std::cout << " x = " << x[0] << ", y = " << x[1] << ", faceIndex = " << faceIndex << ", direction = " << direction << std::endl;\n']
 
     body.extend(periodic)
 
-    add_function_body(lines, 'adjustSolution', body)
+    add_function_body(lines, 'boundaryValues', body)
