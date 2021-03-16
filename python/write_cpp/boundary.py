@@ -118,7 +118,7 @@ def write_solver_set_periodic(lines):
     # Save current function body
     body = remove_function_body(lines, 'boundaryValues')
 
-    periodic = ['  std::cout << " x = " << x[0] << ", y = " << x[1] << ", faceIndex = " << faceIndex << ", direction = " << direction << " " << global_dx[0] << " " << global_dx[1] << std::endl;\n']
+    periodic = ['  std::cout << " x = " << x[0] << ", y = " << x[1] << ", faceIndex = " << faceIndex << ", direction = " << direction << " " << x[0]/global_dx[0] << " " << x[1]/global_dx[1] << std::endl;\n']
 
     body.extend(periodic)
 
