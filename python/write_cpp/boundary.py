@@ -55,6 +55,7 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name):
                 '      (*boundaryValues).resize(arr_index + {});\n'.format(n_vars),
                 '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
                 '      (*boundaryValues)[arr_index + n] = Q[n];\n',
+                '    std::cout << "indx = " << indx << " " << Q[0] << std::endl;\n',
                 '  }\n']
 
     add_function_body(lines, 'mapQuantities', boundary)
