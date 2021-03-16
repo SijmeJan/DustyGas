@@ -40,7 +40,6 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name):
                 '      (*boundaryValues).resize(arr_index + {});\n'.format(n_vars),
                 '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
                 '      (*boundaryValues)[arr_index + n] = Q[n];\n',
-                '    std::cout << "pos = " << pos[0] << " " << pos[1] << ", indx = " << indx << " " << Q[0] << std::endl;\n',
                 '  }\n',
                 '  if (x[1] + 0.5*sizeOfPatch[1] > {} && pos[1] == {}) {{\n'.format(y_bound[1], patch_size-1),
                 '    // Top boundary\n',
@@ -51,7 +50,6 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name):
                 '      (*boundaryValues).resize(arr_index + {});\n'.format(n_vars),
                 '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
                 '      (*boundaryValues)[arr_index + n] = Q[n];\n',
-                '    std::cout << "pos = " << pos[0] << " " << pos[1] << ", indx = " << indx << " " << Q[0] << std::endl;\n',
                 '  }\n',
                 '  if (x[0] - 0.5*sizeOfPatch[0] < {} && pos[0] == 0) {{\n'.format(x_bound[0]),
                 '    // Left boundary\n',
@@ -62,7 +60,6 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name):
                 '      (*boundaryValues).resize(arr_index + {});\n'.format(n_vars),
                 '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
                 '      (*boundaryValues)[arr_index + n] = Q[n];\n',
-                '    std::cout << "pos = " << pos[0] << " " << pos[1] << ", indx = " << indx << " " << Q[0] << std::endl;\n',
                 '  }\n',
                 '  if (x[0] + 0.5*sizeOfPatch[0] > {} && pos[0] == {}) {{\n'.format(x_bound[1], patch_size-1),
                 '    // Right boundary\n',
@@ -73,7 +70,6 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name):
                 '      (*boundaryValues).resize(arr_index + {});\n'.format(n_vars),
                 '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
                 '      (*boundaryValues)[arr_index + n] = Q[n];\n',
-                '    std::cout << "pos = " << pos[0] << " " << pos[1] << ", indx = " << indx << " " << Q[0] << std::endl;\n',
                 '  }\n']
 
     add_function_body(lines, 'mapQuantities', boundary)
@@ -150,13 +146,13 @@ def write_solver_set_periodic(lines, n_vars):
                 '\n',
                 '  int indx = -1;\n',
                 '  // Bottom boundary\n',
-                '  if (faceIndex == 2) indx = i;\n',
+                '  if (faceIndex == 2) indx = global_n[0] + i;\n',
                 '  // Top boundary\n',
-                '  if (faceIndex == 3) indx = global_n[0] + i;\n',
+                '  if (faceIndex == 3) indx = i;\n',
                 '  // Left boundary\n',
-                '  if (faceIndex == 0) indx = 2*global_n[0] + j;\n',
+                '  if (faceIndex == 0) indx = 2*global_n[0] + global_n[1] + j;\n',
                 '  // Right boundary\n',
-                '  if (faceIndex == 1) indx = 2*global_n[0] + global_n[1] + j;\n',
+                '  if (faceIndex == 1) indx = 2*global_n[0] + j;\n',
                 '\n']
     for i in range(0, n_vars):
         periodic.append('  stateOutside[{}] = periodicBoundaryValues[4*indx + {}];\n'.format(i,i))
