@@ -141,7 +141,7 @@ def write_solver_set_periodic(lines, n_vars):
                 '\n']
     for i in range(0, n_vars):
         periodic.append('  stateOutside[{}] = periodicBoundaryValues[4*indx + {}];\n'.format(i,i))
-    periodic.append('  std::cout << " x = " << x[0] << ", y = " << x[1] << ", faceIndex = " << faceIndex << ", direction = " << direction << ", i = " << i << ", j = " << j << ", indx = " << indx << " " << stateOutside[0] << " " << stateOutside[1] << std::endl;\n')
+    periodic.append('  std::cout << " x = " << x[0] << ", y = " << x[1] << ", faceIndex = " << faceIndex << ", direction = " << direction << ", i = " << i << ", j = " << j << ", indx = " << indx << " " << stateOutside[0] << " " << stateInside[0] << std::endl;\n')
 
     #body.extend(periodic)
 
