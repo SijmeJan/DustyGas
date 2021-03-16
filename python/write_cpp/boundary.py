@@ -64,7 +64,8 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name):
             break;
 
     solver = ['  boundaryValues = &(solver.periodicBoundaryValues);\n',
-              '  global_dx = &(solver.global_dx[0]);\n']
+              '  global_dx = &(solver.global_dx[0]);\n',
+              '  global_n = &(solver.global_n[0]);\n']
 
     for i in range(0, len(lines)):
         if (lines[i].find('::') != -1):
@@ -74,7 +75,8 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name):
 def write_boundary_h(lines):
     boundary = [' private:\n',
                 '  std::vector<double> *boundaryValues;\n',
-                '  double *global_dx;\n']
+                '  double *global_dx;\n',
+                '  int *global_n;\n']
 
     # Do nothing if line already present
     for i in range(0, len(lines)):
@@ -95,7 +97,8 @@ def write_boundary_h(lines):
 
 def write_solver_h(lines):
     solver = ['    std::vector<double> periodicBoundaryValues;\n',
-              '    double global_dx[2];\n']
+              '    double global_dx[2];\n',
+              '    int global_n[2];\n']
 
     # Do nothing if line already present
     for i in range(0, len(lines)):
@@ -114,11 +117,27 @@ def write_solver_h(lines):
             lines[i:i] = solver
             break;
 
-def write_solver_set_periodic(lines):
+def write_solver_set_periodic(lines, n_vars):
     # Save current function body
     body = remove_function_body(lines, 'boundaryValues')
 
-    periodic = ['  std::cout << " x = " << x[0] << ", y = " << x[1] << ", faceIndex = " << faceIndex << ", direction = " << direction << " " << x[0]/global_dx[0] << " " << x[1]/global_dx[1] << std::endl;\n']
+    periodic = ['  std::cout << " x = " << x[0] << ", y = " << x[1] << ", faceIndex = " << faceIndex << ", direction = " << direction << " " << x[0]/global_dx[0] - 0.5 << " " << x[1]/global_dx[1] - 0.5 << " " << global_n[0] << " " << global_n[1] << std::endl;\n',
+                '  // Global cell number in x and y direction\n',
+                '  int i = (int) round(x[0]/global_dx[0] - 0.5);\n',
+                '  int j = (int) round(x[1]/global_dx[1] - 0.5);\n',
+                '\n',
+                '  int indx = -1;\n',
+                '  // Bottom boundary\n',
+                '  if (faceIndex == 2) indx = i;\n',
+                '  // Top boundary\n',
+                '  if (faceIndex == 3) indx = global_n[0] + i;\n',
+                '  // Left boundary\n',
+                '  if (faceIndex == 0) indx = 2*global_n[0] + j;\n',
+                '  // Right boundary\n',
+                '  if (faceIndex == 1) indx = 2*global_n[0] + global_n[1] + j;\n',
+                '\n']
+    for i in range(0, n_vars):
+        periodic.append('  stateOutside[{}] = periodicBoundaryValues[4*indx + {}];\n'.format(i,i))
 
     body.extend(periodic)
 
