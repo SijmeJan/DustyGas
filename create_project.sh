@@ -7,8 +7,7 @@ ExaHyPE-Engine/Toolkit/toolkit.sh $@
 echo Modifying fluxes and eigenvalues...
 python python/write_cpp $@
 
-# Export BOUNDARYCONDITIONS, COMPILER, DISTRIBUTEDMEM
-export BOUNDARYCONDITIONS=Periodic
+# Export COMPILER, DISTRIBUTEDMEM
 export COMPILER=GNU
 export DISTRIBUTEDMEM=None
 
