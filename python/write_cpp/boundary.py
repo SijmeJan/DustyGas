@@ -17,6 +17,10 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name):
                 '  int n_patch_x = (int) round({}/sizeOfPatch[0]);\n'.format(size[0]),
                 '  int n_patch_y = (int) round({}/sizeOfPatch[1]);\n'.format(size[1]),
                 '\n',
+                '  // Global (uniform) resolution\n',
+                '  global_dx[0] = sizeOfPatch[0]/{};\n'.format(patch_size),
+                '  global_dx[1] = sizeOfPatch[1]/{};\n'.format(patch_size),
+                '\n',
                 '  // Number of patches to left and bottom\n',
                 '  int patch_x = (int) ((offsetOfPatch[0] + 0.5*sizeOfPatch[0])/sizeOfPatch[0]);\n',
                 '  int patch_y = (int) ((offsetOfPatch[1] + 0.5*sizeOfPatch[1])/sizeOfPatch[1]);\n',
@@ -59,7 +63,8 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name):
             lines[i+1:i+1] = solver
             break;
 
-    solver = ['  boundaryValues = &(solver.periodicBoundaryValues);\n']
+    solver = ['  boundaryValues = &(solver.periodicBoundaryValues);\n',
+              '  global_dx = &(solver.global_dx[0]);\n']
 
     for i in range(0, len(lines)):
         if (lines[i].find('::') != -1):
@@ -68,7 +73,8 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name):
 
 def write_boundary_h(lines):
     boundary = [' private:\n',
-                '  std::vector<double> *boundaryValues;\n']
+                '  std::vector<double> *boundaryValues;\n',
+                '  double *global_dx;\n']
 
     # Do nothing if line already present
     for i in range(0, len(lines)):
@@ -88,7 +94,8 @@ def write_boundary_h(lines):
             break;
 
 def write_solver_h(lines):
-    solver = ['    std::vector<double> periodicBoundaryValues;\n']
+    solver = ['    std::vector<double> periodicBoundaryValues;\n',
+              '    double global_dx[2];\n']
 
     # Do nothing if line already present
     for i in range(0, len(lines)):
@@ -111,7 +118,7 @@ def write_solver_set_periodic(lines):
     # Save current function body
     body = remove_function_body(lines, 'boundaryValues')
 
-    periodic = ['  std::cout << " x = " << x[0] << ", y = " << x[1] << ", faceIndex = " << faceIndex << ", direction = " << direction << std::endl;\n']
+    periodic = ['  std::cout << " x = " << x[0] << ", y = " << x[1] << ", faceIndex = " << faceIndex << ", direction = " << direction << " " << global_dx[0] << " " << global_dx[1] << std::endl;\n']
 
     body.extend(periodic)
 
