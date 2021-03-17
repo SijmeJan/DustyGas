@@ -11,7 +11,7 @@ exahype-project DustyGas
   solver Finite-Volumes DustyGasSolver
     variables const = 8
     patch-size const = 10
-    maximum-mesh-size = 5e-1
+    maximum-mesh-size = 5e-2
     time-stepping = global
     type const = godunov
     terms const = flux, source
