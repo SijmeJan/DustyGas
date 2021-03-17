@@ -10,7 +10,7 @@ def write_initial(lines, n_dust, mu, Stokes):
                '    Q[0] = 1.0;\n',
                '    Q[1] = 2*{}*{}/{};\n'.format(mu, tau, denom),
                '    Q[2] = 0.0;\n',
-               '    Q[3] = -(1 + {}*{}*{}/{}/(1 + {});\n'.format(mu, tau, tau, denom, mu)]
+               '    Q[3] = -(1 + {}*{}*{}/{})/(1 + {});\n'.format(mu, tau, tau, denom, mu)]
     for n in range(0, n_dust):
         initial.extend(['    Q[{}] = {};\n'.format(4*n + 4, mu),
                         '    Q[{}] = -2*{}*{}/{};\n'.format(4*n + 5, mu, tau, denom),
