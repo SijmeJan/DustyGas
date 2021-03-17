@@ -9,6 +9,8 @@ from initial import write_initial
 from boundary import write_boundary, write_boundary_h, write_solver_h
 from boundary import write_solver_set_periodic
 from plot import write_plotter_gas_velocity
+from plot import write_plotter_dust_velocity
+from plot import write_plotter_dust_density
 
 # Needs single argument; exahype file
 parser = argparse.ArgumentParser(description='Write flux and eigenvalue cpp')
@@ -171,6 +173,30 @@ lines = f.readlines()
 f.close()
 
 write_plotter_gas_velocity(lines)
+
+f = open(source_file, "w")
+f.writelines(lines)
+f.close()
+
+source_file = output_dir + 'DustVelocityWriter.cpp'
+
+f = open(source_file, "r")
+lines = f.readlines()
+f.close()
+
+write_plotter_dust_velocity(lines, 0)
+
+f = open(source_file, "w")
+f.writelines(lines)
+f.close()
+
+source_file = output_dir + 'DustDensityWriter.cpp'
+
+f = open(source_file, "r")
+lines = f.readlines()
+f.close()
+
+write_plotter_dust_density(lines, 0)
 
 f = open(source_file, "w")
 f.writelines(lines)
