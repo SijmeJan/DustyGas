@@ -13,7 +13,7 @@ exahype-project DustyGas
     patch-size const = 10
     maximum-mesh-size = 5e-2
     time-stepping = global
-    type const = robustmusclhancock
+    type const = musclhancock
     terms const = flux, source
     optimisation const = generic
     language const = C
