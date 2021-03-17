@@ -4,8 +4,8 @@ def write_plotter_gas_velocity(lines):
     remove_function_body(lines, 'mapQuantities')
 
     body = ['  const int writtenUnknowns = 3;\n',
-            '  for (int i=1; i<writtenUnknowns+1; i++){\n',
-            '    outputQuantities[i] = Q[i];\n',
+            '  for (int i=0; i<writtenUnknowns; i++){\n',
+            '    outputQuantities[i] = Q[i+1];\n',
             '  }\n']
 
     add_function_body(lines, 'mapQuantities', body)
