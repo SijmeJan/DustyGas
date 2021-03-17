@@ -4,7 +4,7 @@ exahype-project DustyGas
   output-directory const = ../data
   computational-domain
     dimension const = 2
-    width = 1.0, 1.0
+    width = 0.20943951023932, 0.20943951023932
     offset = 0.0, 0.0
     end-time = 1.0
   end computational-domain
