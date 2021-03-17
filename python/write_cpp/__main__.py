@@ -8,6 +8,7 @@ from source import write_source
 from initial import write_initial
 from boundary import write_boundary, write_boundary_h, write_solver_h
 from boundary import write_solver_set_periodic
+from plot import write_plotter_gas_velocity
 
 # Needs single argument; exahype file
 parser = argparse.ArgumentParser(description='Write flux and eigenvalue cpp')
@@ -161,3 +162,16 @@ if (use_periodic_boundaries == True):
     f = open(source_file, "w")
     f.writelines(lines)
     f.close()
+
+
+source_file = output_dir + 'GasVelocityWriter.cpp'
+
+f = open(source_file, "r")
+lines = f.readlines()
+f.close()
+
+write_plotter_gas_velocity(lines)
+
+f = open(source_file, "w")
+f.writelines(lines)
+f.close()
