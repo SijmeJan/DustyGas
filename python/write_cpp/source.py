@@ -21,20 +21,20 @@ def write_source(lines, n_dust, q, Stokes):
             # Source z: drag
             lines[i] = replace_with_indent(lines[i],
                                            'S[{}] = '.format(4*n + 6),
-                                           'S[{}] = - (Q[{}] - Q[{}]*Q[1]/Q[0])/{};\n'.format(4*n + 6, 4*n + 6, 4*n + 4, Stokes[n]))
+                                           'S[{}] = - (Q[{}] - Q[{}]*Q[2]/Q[0])/{};\n'.format(4*n + 6, 4*n + 6, 4*n + 4, Stokes[n]))
 
             # Source y: Coriolis + drag
             lines[i] = replace_with_indent(lines[i],
                                           'S[{}] = '.format(4*n + 7),
-                                          'S[{}] = {}*Q[{}] - (Q[{}] - Q[{}]*Q[1]/Q[0])/{};\n'.format(4*n + 7, q - 2, 4*n + 5, 4*n + 7, 4*n + 4, Stokes[n]))
+                                          'S[{}] = {}*Q[{}] - (Q[{}] - Q[{}]*Q[3]/Q[0])/{};\n'.format(4*n + 7, q - 2, 4*n + 5, 4*n + 7, 4*n + 4, Stokes[n]))
 
     gas_x_drag = []
     gas_y_drag = []
     gas_z_drag = []
     for n in range(0, n_dust):
         gas_x_drag.append('  S[1] += (Q[{}] -Q[{}]*Q[1]/Q[0])/{};\n'.format(4*n + 5, 4*n + 4, Stokes[n]))
-        gas_z_drag.append('  S[2] += (Q[{}] -Q[{}]*Q[1]/Q[0])/{};\n'.format(4*n + 6, 4*n + 4, Stokes[n]))
-        gas_y_drag.append('  S[3] += (Q[{}] -Q[{}]*Q[1]/Q[0])/{};\n'.format(4*n + 7, 4*n + 4, Stokes[n]))
+        gas_z_drag.append('  S[2] += (Q[{}] -Q[{}]*Q[2]/Q[0])/{};\n'.format(4*n + 6, 4*n + 4, Stokes[n]))
+        gas_y_drag.append('  S[3] += (Q[{}] -Q[{}]*Q[3]/Q[0])/{};\n'.format(4*n + 7, 4*n + 4, Stokes[n]))
 
     for i in range(0, len(lines)):
         if (lines[i].find('S[1] = ') != -1):

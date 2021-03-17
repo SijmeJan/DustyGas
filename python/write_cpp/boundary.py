@@ -1,6 +1,8 @@
 from common import replace_with_indent, remove_function_body, add_function_body
 
 def write_boundary(lines, n_vars, patch_size, offset, size, solver_name):
+    # Strategy: replace function body of mapQuantities to fill the
+    # boundaryValues vector.
     remove_function_body(lines, 'mapQuantities')
 
     x_bound = [offset[0], offset[0] + size[0]]
@@ -77,21 +79,25 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name):
     # Include solver header
     solver = ['#include "{}.h"\n'.format(solver_name)]
 
+    # Put it after first include command
     for i in range(0, len(lines)):
         if (lines[i].find('#include') != -1):
             lines[i+1:i+1] = solver
             break;
 
+    # Init pointers
     solver = ['  boundaryValues = &(solver.periodicBoundaryValues);\n',
               '  global_dx = &(solver.global_dx[0]);\n',
               '  global_n = &(solver.global_n[0]);\n']
 
+    # Put it as first line of first function
     for i in range(0, len(lines)):
         if (lines[i].find('::') != -1):
             lines[i+1:i+1] = solver
             break;
 
 def write_boundary_h(lines):
+    # Declare pointers in boundary header file
     boundary = [' private:\n',
                 '  std::vector<double> *boundaryValues;\n',
                 '  double *global_dx;\n',
@@ -107,6 +113,7 @@ def write_boundary_h(lines):
             lines[i:i] = boundary
             break;
 
+    # Make sure to include vector
     boundary = ['#include <vector>\n']
 
     for i in range(0, len(lines)):
@@ -115,6 +122,7 @@ def write_boundary_h(lines):
             break;
 
 def write_solver_h(lines):
+    # Declare arrays
     solver = ['    std::vector<double> periodicBoundaryValues;\n',
               '    double global_dx[2];\n',
               '    int global_n[2];\n']
@@ -124,11 +132,13 @@ def write_solver_h(lines):
         if (lines[i].find(solver[0]) != -1):
             return
 
+    # Put it just before end of class
     for i in range(0, len(lines)):
         if (lines[i].find('};') != -1):
             lines[i:i] = solver
             break;
 
+    # Make sure to include vector header
     solver = ['#include <vector>\n']
 
     for i in range(0, len(lines)):
@@ -137,8 +147,8 @@ def write_solver_h(lines):
             break;
 
 def write_solver_set_periodic(lines, n_vars):
-    # Save current function body
-    body = remove_function_body(lines, 'boundaryValues')
+    # Remove current function body
+    remove_function_body(lines, 'boundaryValues')
 
     periodic = ['  // Global cell number in x and y direction\n',
                 '  int i = (int) round(x[0]/global_dx[0] - 0.5);\n',
@@ -155,9 +165,6 @@ def write_solver_set_periodic(lines, n_vars):
                 '  if (faceIndex == 1) indx = 2*global_n[0] + j;\n',
                 '\n']
     for i in range(0, n_vars):
-        periodic.append('  stateOutside[{}] = periodicBoundaryValues[4*indx + {}];\n'.format(i,i))
-    periodic.append('  std::cout << " x = " << x[0] << ", y = " << x[1] << ", faceIndex = " << faceIndex << ", direction = " << direction << ", i = " << i << ", j = " << j << ", indx = " << indx << " " << stateOutside[0] << " " << stateInside[0] << std::endl;\n')
-
-    #body.extend(periodic)
+        periodic.append('  stateOutside[{}] = periodicBoundaryValues[{}*indx + {}];\n'.format(i, n_vars, i))
 
     add_function_body(lines, 'boundaryValues', periodic)
