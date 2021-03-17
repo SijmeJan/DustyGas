@@ -7,7 +7,7 @@ def write_initial(lines, n_dust, mu, Stokes):
     denom = '((1 + {})*(1 + {}) + {}*{})'.format(mu, mu, tau, tau)
 
     initial = ['  if (t == 0.0) {\n',
-               '    Q[0] = 1.0 + 0.001*cos(x[0]/30 + x[1]/30);\n',
+               '    Q[0] = 1.0 + 0.001*cos(x[0]*30 + x[1]*30);\n',
                '    Q[1] = 2*{}*{}/{};\n'.format(mu, tau, denom),
                '    Q[2] = 0.0;\n',
                '    Q[3] = -(1 + {}*{}*{}/{})/(1 + {});\n'.format(mu, tau, tau, denom, mu)]
