@@ -6,7 +6,7 @@ exahype-project DustyGas
     dimension const = 2
     width = 0.20943951023932, 0.20943951023932
     offset = 0.0, 0.0
-    end-time = 10.0
+    end-time = 1.0
   end computational-domain
   solver Finite-Volumes DustyGasSolver
     variables const = 8
