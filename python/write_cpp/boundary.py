@@ -171,7 +171,7 @@ def write_solver_set_periodic(lines, n_vars):
                 '  // Top boundary\n',
                 '  if (faceIndex == 3) {\n',
                 '    indx = i;\n',
-                '    indx += std::abs(j - global_n[1] - GhostLayerWidth + 1)*2*(global_n[0] + global_n[1]);\n',
+                '    indx += std::abs(j - global_n[1])*2*(global_n[0] + global_n[1]);\n',
                 '  }\n',
                 '  // Left boundary\n',
                 '  if (faceIndex == 0) {\n',
@@ -181,7 +181,7 @@ def write_solver_set_periodic(lines, n_vars):
                 '  // Right boundary\n',
                 '  if (faceIndex == 1) {\n',
                 '    indx = 2*global_n[0] + j;\n',
-                '    indx += std::abs(i - global_n[0] - GhostLayerWidth + 1)*2*(global_n[0] + global_n[1]);\n',
+                '    indx += std::abs(i - global_n[0])*2*(global_n[0] + global_n[1]);\n',
                 '  }\n',
                 '\n']
     for i in range(0, n_vars):
