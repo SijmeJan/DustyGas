@@ -6,12 +6,12 @@ exahype-project DustyGas
     dimension const = 2
     width = 0.20943951023932, 0.20943951023932
     offset = 0.0, 0.0
-    end-time = 1.0
+    end-time = 10.0
   end computational-domain
   solver Finite-Volumes DustyGasSolver
     variables const = 8
     patch-size const = 10
-    maximum-mesh-size = 5e-2
+    maximum-mesh-size = 2e-2
     time-stepping = global
     type const = musclhancock
     terms const = flux, source
@@ -20,25 +20,25 @@ exahype-project DustyGas
     plot vtk::Cartesian::cells::ascii GasDensityWriter
      variables const = 1
      time = 0.0
-     repeat = 0.5E-1
+     repeat = 1.0
      output = ./gasdensity
     end plot
     plot vtk::Cartesian::cells::ascii GasVelocityWriter
      variables const = 3
      time = 0.0
-     repeat = 0.5E-1
+     repeat = 1.0
      output = ./gasvelocity
     end plot
     plot vtk::Cartesian::cells::ascii DustDensityWriter
      variables const = 1
      time = 0.0
-     repeat = 0.5E-1
+     repeat = 1.0
      output = ./dustdensity
     end plot
     plot vtk::Cartesian::cells::ascii DustVelocityWriter
      variables const = 3
      time = 0.0
-     repeat = 0.5E-1
+     repeat = 1.0
      output = ./dustvelocity
     end plot
     plot vtk::Cartesian::cells::ascii BoundaryWriter
