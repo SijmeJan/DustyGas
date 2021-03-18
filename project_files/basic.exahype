@@ -6,12 +6,12 @@ exahype-project DustyGas
     dimension const = 2
     width = 0.20943951023932, 0.20943951023932
     offset = 0.0, 0.0
-    end-time = 10.0
+    end-time = 100.0
   end computational-domain
   solver Finite-Volumes DustyGasSolver
     variables const = 8
     patch-size const = 10
-    maximum-mesh-size = 2e-2
+    maximum-mesh-size = 5e-2
     time-stepping = global
     type const = musclhancock
     terms const = flux, source
