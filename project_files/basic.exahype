@@ -47,11 +47,12 @@ exahype-project DustyGas
      repeat = 1.0e-10
      output = ./boundary
     end plot
+
+    distributed-memory
+      identifier = static_load_balancing
+      configure = {greedy-naive,FCFS}
+      buffer-size = 64
+      timeout = 120
+    end distributed-memory
   end solver
-  distributed-memory
-    identifier = static_load_balancing
-    configure = {greedy-naive,FCFS}
-    buffer-size = 64
-    timeout = 120
-  end distributed-memory
 end exahype-project
