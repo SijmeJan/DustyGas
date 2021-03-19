@@ -1,4 +1,8 @@
 # Update/generate .exahype file
+# Export COMPILER, DISTRIBUTEDMEM
+export COMPILER=GNU
+export DISTRIBUTEDMEM=MPI
+
 # Use Toolkit to generate source code
 echo Generating generic source code...
 ExaHyPE-Engine/Toolkit/toolkit.sh $@
@@ -6,10 +10,6 @@ ExaHyPE-Engine/Toolkit/toolkit.sh $@
 # Write source code
 echo Modifying fluxes and eigenvalues...
 python python/write_cpp $@
-
-# Export COMPILER, DISTRIBUTEDMEM
-export COMPILER=GNU
-export DISTRIBUTEDMEM=MPI
 
 # Get output directory from exahype file
 output_string=$(grep output-directory $@)
