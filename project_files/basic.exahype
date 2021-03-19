@@ -12,7 +12,7 @@ exahype-project DustyGas
 
   distributed-memory
     identifier               = static_load_balancing
-    configure                = {hotspot,fair,ranks-per-node:4}
+    configure                = {greedy-regular, fair}
     buffer-size              = 64
     timeout                  = 120
   end distributed-memory
