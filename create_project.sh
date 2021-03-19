@@ -9,7 +9,7 @@ python python/write_cpp $@
 
 # Export COMPILER, DISTRIBUTEDMEM
 export COMPILER=GNU
-export DISTRIBUTEDMEM=None
+export DISTRIBUTEDMEM=MPI
 
 # Get output directory from exahype file
 output_string=$(grep output-directory $@)
