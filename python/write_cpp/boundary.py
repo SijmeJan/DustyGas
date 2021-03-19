@@ -1,6 +1,6 @@
 from common import replace_with_indent, remove_function_body, add_function_body
 
-def write_boundary(lines, n_vars, patch_size, offset, size, solver_name):
+def write_boundary(lines, n_vars, patch_size, offset, size, solver_name, boundary_name):
     # Strategy: replace function body of mapQuantities to fill the
     # boundaryValues vector.
     remove_function_body(lines, 'mapQuantities')
@@ -96,16 +96,30 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name):
               '  nGhostCells = solver.GhostLayerWidth;\n']
 
     # Put it as first line of first function
-    for i in range(0, len(lines)):
-        if (lines[i].find('::') != -1):
-            lines[i+1:i+1] = solver
-            break;
+    remove_function_body(lines, '::' + boundary_name)
+    add_function_body(lines, '::' + boundary_name, solver)
 
     solver = ['  std::fill(boundaryValues_local.begin(), boundaryValues_local.end(), 0.0);\n']
 
+    remove_function_body(lines, 'startPlotting')
     add_function_body(lines, 'startPlotting', solver)
 
     solver = ['#ifdef Parallel\n',
+              '  // Should only happen the first time of call\n',
+              '  if ((*boundaryValues).size() == 0) {\n',
+              '    // Main rank does not know the boundary size\n',
+              '    int s_loc = boundaryValues_local.size();\n',
+              '    int s_max = 0;\n',
+              '    MPI_Reduce(&s_loc, &s_max, 1, MPI_INT, MPI_MAX, 0,\n',
+              '               tarch::parallel::Node::getInstance().getCommunicator());\n',
+              '    // Set correct size so we can use Allreduce\n',
+              '    if (tarch::parallel::Node::getInstance().isGlobalMaster())\n',
+              '      boundaryValues_local.resize(s_max);\n',
+              '      std::fill(boundaryValues_local.begin(), boundaryValues_local.end(), 0.0);\n',
+              '      (*boundaryValues).resize(s_max);\n',
+              '    else\n',
+              '      (*boundaryValues).resize(boundaryValues_local.size());\n',
+              '  }\n',
               '  std::cout << "rank = " << tarch::parallel::Node::getInstance().getRank() << ", sizes: " << boundaryValues_local.size() << " " << (*boundaryValues).size() << std::endl;\n',
               '  std::cout << "Allreduce with rank " << tarch::parallel::Node::getInstance().getRank() << " and communicator " << tarch::parallel::Node::getInstance().getCommunicator() << std::endl;\n',
               '  MPI_Allreduce(&(boundaryValues_local[0]),\n',
@@ -118,6 +132,7 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name):
               '  (*boundaryValues) = boundaryValues_local;\n',
               '#endif\n']
 
+    remove_function_body(lines, 'finishPlotting')
     add_function_body(lines, 'finishPlotting', solver)
 
 

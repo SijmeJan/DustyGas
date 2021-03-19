@@ -133,7 +133,7 @@ if (use_periodic_boundaries == True):
 
     write_boundary(lines, n_vars, patch_size,
                    [offset_x, offset_y], [size_x, size_y],
-                   solver_name)
+                   solver_name, boundary_name)
 
     f = open(source_file, "w")
     f.writelines(lines)
