@@ -167,38 +167,38 @@ if (use_periodic_boundaries == True):
     f.close()
 
 
-source_file = output_dir + 'GasVelocityWriter.cpp'
+#source_file = output_dir + 'GasVelocityWriter.cpp'
 
-f = open(source_file, "r")
-lines = f.readlines()
-f.close()
+#f = open(source_file, "r")
+#lines = f.readlines()
+#f.close()
 
-write_plotter_gas_velocity(lines)
+#write_plotter_gas_velocity(lines)
 
-f = open(source_file, "w")
-f.writelines(lines)
-f.close()
+#f = open(source_file, "w")
+#f.writelines(lines)
+#f.close()
 
-source_file = output_dir + 'DustVelocityWriter.cpp'
+#source_file = output_dir + 'DustVelocityWriter.cpp'
 
-f = open(source_file, "r")
-lines = f.readlines()
-f.close()
+#f = open(source_file, "r")
+#lines = f.readlines()
+#f.close()
 
-write_plotter_dust_velocity(lines, 0)
+#write_plotter_dust_velocity(lines, 0)
 
-f = open(source_file, "w")
-f.writelines(lines)
-f.close()
+#f = open(source_file, "w")
+#f.writelines(lines)
+#f.close()
 
-source_file = output_dir + 'DustDensityWriter.cpp'
+#source_file = output_dir + 'DustDensityWriter.cpp'
 
-f = open(source_file, "r")
-lines = f.readlines()
-f.close()
+#f = open(source_file, "r")
+#lines = f.readlines()
+#f.close()
 
-write_plotter_dust_density(lines, 0)
+#write_plotter_dust_density(lines, 0)
 
-f = open(source_file, "w")
-f.writelines(lines)
-f.close()
+#f = open(source_file, "w")
+#f.writelines(lines)
+#f.close()
