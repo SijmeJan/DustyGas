@@ -27,7 +27,14 @@ exahype-project DustyGas
     optimisation const = generic
     language const = C
 
-    plot vtk::Cartesian::cells::ascii GasDensityWriter
+    plot vtk::Cartesian::cells::ascii State
+     variables const = 8
+     time = 0.0
+     repeat = 1.0
+     output = ./state
+    end plot
+
+    /*plot vtk::Cartesian::cells::ascii GasDensityWriter
      variables const = 1
      time = 0.0
      repeat = 1.0
@@ -53,7 +60,7 @@ exahype-project DustyGas
      time = 0.0
      repeat = 1.0
      output = ./dustvelocity
-    end plot
+    end plot*/
 
     plot vtk::Cartesian::cells::ascii BoundaryWriter
      variables const = 0
