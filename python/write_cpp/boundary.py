@@ -106,6 +106,7 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name):
     add_function_body(lines, 'startPlotting', solver)
 
     solver = ['#ifdef Parallel\n',
+              '  std::cout << "rank = " << tarch::parallel::Node::getInstance().getRank() << ", sizes: " << boundaryValues_local.size() << " " << (*boundaryValues).size() << std::endl;\n',
               '  std::cout << "Allreduce with rank " << tarch::parallel::Node::getInstance().getRank() << " and communicator " << tarch::parallel::Node::getInstance().getCommunicator() << std::endl;\n',
               '  MPI_Allreduce(&(boundaryValues_local[0]),\n',
               '                &((*boundaryValues)[0]),\n',
