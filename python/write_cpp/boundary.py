@@ -30,9 +30,9 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name):
                 '  // Make sure vecor is of the correct size, and set elements to zero.\n',
                 '  // Note that this should happen only the first time this function is called.\n',
                 '  int n_bound_cells = 2*nGhostCells*(global_n[0] + global_n[1]);\n',
-                '  if ((*boundaryValues).size() != {}*n_bound_cells) {{\n'.format(n_vars),
-                '    (*boundaryValues).resize({}*n_bound_cells);\n'.format(n_vars),
-                '    std::fill((*boundaryValues).begin(), (*boundaryValues).end(), 0.0);\n',
+                '  if (boundaryValues_local.size() != {}*n_bound_cells) {{\n'.format(n_vars),
+                '    boundaryValues_local.resize({}*n_bound_cells);\n'.format(n_vars),
+                '    std::fill(boundaryValues_local.begin(), boundaryValues_local.end(), 0.0);\n',
                 '  }\n',
                 '\n',
                 '  // Number of patches to left and bottom\n',
@@ -47,44 +47,32 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name):
                 '      indx = patch_x*{} + pos[0];\n'.format(patch_size),
                 '      indx = indx + 2*ng*(global_n[0] + global_n[1]);\n',
                 '      int arr_index = {}*indx;\n'.format(n_vars),
-                #'      // Resize if necessary\n',
-                #'      if (arr_index >= (*boundaryValues).size())\n',
-                #'        (*boundaryValues).resize(arr_index + {});\n'.format(n_vars),
                 '      for (int n = 0; n < {}; n++)\n'.format(n_vars),
-                '        (*boundaryValues)[arr_index + n] = Q[n];\n',
+                '        boundaryValues_local[arr_index + n] = Q[n];\n',
                 '    }\n',
                 '    if (x[1] + 0.5*sizeOfPatch[1] > {} && pos[1] == {} - ng) {{\n'.format(y_bound[1], patch_size-1),
                 '      // Top boundary\n',
                 '      indx = (n_patch_x + patch_x)*{} + pos[0];\n'.format(patch_size),
                 '      indx = indx + 2*ng*(global_n[0] + global_n[1]);\n',
                 '      int arr_index = {}*indx;\n'.format(n_vars),
-                #'      // Resize if necessary\n',
-                #'      if (arr_index >= (*boundaryValues).size())\n',
-                #'        (*boundaryValues).resize(arr_index + {});\n'.format(n_vars),
                 '      for (int n = 0; n < {}; n++)\n'.format(n_vars),
-                '        (*boundaryValues)[arr_index + n] = Q[n];\n',
+                '        boundaryValues_local[arr_index + n] = Q[n];\n',
                 '    }\n',
                 '    if (x[0] - 0.5*sizeOfPatch[0] < {} && pos[0] == ng) {{\n'.format(x_bound[0]),
                 '      // Left boundary\n',
                 '      indx = (2*n_patch_x + patch_y)*{} + pos[1];\n'.format(patch_size),
                 '      indx = indx + 2*ng*(global_n[0] + global_n[1]);\n',
                 '      int arr_index = {}*indx;\n'.format(n_vars),
-                #'      // Resize if necessary\n',
-                #'      if (arr_index >= (*boundaryValues).size())\n',
-                #'        (*boundaryValues).resize(arr_index + {});\n'.format(n_vars),
                 '      for (int n = 0; n < {}; n++)\n'.format(n_vars),
-                '        (*boundaryValues)[arr_index + n] = Q[n];\n',
+                '        boundaryValues_local[arr_index + n] = Q[n];\n',
                 '    }\n',
                 '    if (x[0] + 0.5*sizeOfPatch[0] > {} && pos[0] == {} - ng) {{\n'.format(x_bound[1], patch_size-1),
                 '      // Right boundary\n',
                 '      indx = (2*n_patch_x + n_patch_y + patch_y)*{} + pos[1];\n'.format(patch_size),
                 '      indx = indx + 2*ng*(global_n[0] + global_n[1]);\n',
                 '      int arr_index = {}*indx;\n'.format(n_vars),
-                #'      // Resize if necessary\n',
-                #'      if (arr_index >= (*boundaryValues).size())\n',
-                #'        (*boundaryValues).resize(arr_index + {});\n'.format(n_vars),
                 '      for (int n = 0; n < {}; n++)\n'.format(n_vars),
-                '        (*boundaryValues)[arr_index + n] = Q[n];\n',
+                '        boundaryValues_local[arr_index + n] = Q[n];\n',
                 '    }\n',
                 '  }\n']
 
@@ -111,10 +99,29 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name):
             lines[i+1:i+1] = solver
             break;
 
+    solver = ['  std::fill(boundaryValues_local.begin(), boundaryValues_local.end(), 0.0);\n']
+
+    add_function_body(lines, 'startPlotting', solver)
+
+    solver = ['#ifdef Parallel\n',
+              '  MPI_Allreduce(&((*boundaryValues)[0]),\n',
+              '                void* recv_data,\n',
+              '                int count,\n',
+              '                MPI_Datatype datatype,\n',
+              '                MPI_Op op,\n',
+              '                MPI_Comm communicator);\n',
+              '#else\n',
+              '  (*boundaryValues) = boundaryValues_local;\n',
+              '#endif\n']
+
+    add_function_body(lines, 'finishPlotting', solver)
+
+
 def write_boundary_h(lines):
     # Declare pointers in boundary header file
     boundary = [' private:\n',
                 '  std::vector<double> *boundaryValues;\n',
+                '  std::vector<double> boundaryValues_local;\n',
                 '  double *global_dx;\n',
                 '  int *global_n;\n',
                 '  int nGhostCells;\n']
