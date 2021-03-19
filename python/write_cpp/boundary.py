@@ -79,7 +79,9 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name):
     add_function_body(lines, 'mapQuantities', boundary)
 
     # Include solver header
-    solver = ['#include "{}.h"\n'.format(solver_name)]
+    solver = ['#include "tarch/parallel/Node.h"\n',
+              '#include "tarch/parallel/NodePool.h"\n',
+              '#include "{}.h"\n'.format(solver_name)]
 
     # Put it after first include command
     for i in range(0, len(lines)):
@@ -104,12 +106,13 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name):
     add_function_body(lines, 'startPlotting', solver)
 
     solver = ['#ifdef Parallel\n',
-              '  MPI_Allreduce(&((*boundaryValues)[0]),\n',
-              '                void* recv_data,\n',
-              '                int count,\n',
-              '                MPI_Datatype datatype,\n',
-              '                MPI_Op op,\n',
-              '                MPI_Comm communicator);\n',
+              '  std::cout << "Allreduce with rank " << tarch::parallel::Node::getInstance().getRank() << " and communicator " << tarch::parallel::Node::getInstance().getCommunicator() << std::endl;\n',
+              '  MPI_Allreduce(&(boundaryValues_local[0]),\n',
+              '                &((*boundaryValues)[0]),\n',
+              '                boundaryValues_local.size(),\n',
+              '                MPI_DOUBLE,\n',
+              '                MPI_SUM,\n',
+              '                tarch::parallel::Node::getInstance().getCommunicator());\n',
               '#else\n',
               '  (*boundaryValues) = boundaryValues_local;\n',
               '#endif\n']
