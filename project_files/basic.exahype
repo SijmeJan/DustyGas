@@ -2,12 +2,21 @@ exahype-project DustyGas
   peano-kernel-path const = ./Peano
   exahype-path const = ./ExaHyPE
   output-directory const = ../data
+
   computational-domain
     dimension const = 2
     width = 0.20943951023932, 0.20943951023932
     offset = 0.0, 0.0
     end-time = 100.0
   end computational-domain
+
+  distributed-memory
+    identifier               = static_load_balancing
+    configure                = {hotspot,fair,ranks-per-node:4}
+    buffer-size              = 64
+    timeout                  = 120
+  end distributed-memory
+
   solver Finite-Volumes DustyGasSolver
     variables const = 8
     patch-size const = 10
@@ -17,30 +26,35 @@ exahype-project DustyGas
     terms const = flux, source
     optimisation const = generic
     language const = C
+
     plot vtk::Cartesian::cells::ascii GasDensityWriter
      variables const = 1
      time = 0.0
      repeat = 1.0
      output = ./gasdensity
     end plot
+
     plot vtk::Cartesian::cells::ascii GasVelocityWriter
      variables const = 3
      time = 0.0
      repeat = 1.0
      output = ./gasvelocity
     end plot
+
     plot vtk::Cartesian::cells::ascii DustDensityWriter
      variables const = 1
      time = 0.0
      repeat = 1.0
      output = ./dustdensity
     end plot
+
     plot vtk::Cartesian::cells::ascii DustVelocityWriter
      variables const = 3
      time = 0.0
      repeat = 1.0
      output = ./dustvelocity
     end plot
+
     plot vtk::Cartesian::cells::ascii BoundaryWriter
      variables const = 0
      time = 0.0
@@ -48,11 +62,5 @@ exahype-project DustyGas
      output = ./boundary
     end plot
 
-    distributed-memory
-      identifier = static_load_balancing
-      configure = {greedy-naive,FCFS}
-      buffer-size = 64
-      timeout = 120
-    end distributed-memory
   end solver
 end exahype-project
