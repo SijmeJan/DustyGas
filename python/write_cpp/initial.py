@@ -12,7 +12,7 @@ def write_initial(lines, n_dust, mu, Stokes):
                '    Q[2] = 0.0;\n',
                '    Q[3] = -(1 + {}*{}*{}/{})/(1 + {});\n'.format(mu, tau, tau, denom, mu)]
     for n in range(0, n_dust):
-        initial.extend(['    Q[{}] = {};\n'.format(4*n + 4, mu),
+        initial.extend(['    Q[{}] = {}*(1.0 + 0.001*cos(x[0]*30 + x[1]*30));\n'.format(4*n + 4, mu),
                         '    Q[{}] = -2*{}*{}/{};\n'.format(4*n + 5, mu, tau, denom),
                         '    Q[{}] = 0.0;\n'.format(4*n + 6),
                         '    Q[{}] = -{}*(1-{}*{}/{})/(1+{});\n'.format(4*n + 7, mu, tau, tau, denom, mu)])

@@ -27,18 +27,19 @@ filename = '../../data/state-100-rank-0.vtk'
 #s = SnapShot(filename)
 #plt.tricontourf(s.x[:,0], s.x[:,1], s.Q[:,4])
 
-e = np.zeros((101))
+n = 21
+e = np.zeros((n))
 
-for i in range(0, 101):
+for i in range(0, n):
     s = SnapShot('../../data/state-{}-rank-0.vtk'.format(i))
-    #e[i] = np.sum(s.Q[:,6]*s.Q[:,6]/s.Q[:,4])
-    e[i] = np.sum(np.abs(s.Q[:,6]/s.Q[:,4]))
+    e[i] = np.sum(s.Q[:,6]*s.Q[:,6]/s.Q[:,4])
+    #e[i] = np.sum(np.abs(s.Q[:,6]/s.Q[:,4]))
 
 #plt.xscale('log')
 plt.yscale('log')
 plt.plot(e)
 
-plt.plot(0.1*np.exp(0.21*np.arange(0,101)))
+#plt.plot(0.1*np.exp(0.21*np.arange(0,n)))
 
 
 plt.show()
