@@ -22,7 +22,7 @@ class SnapShot():
         vtkCellCenters().ComputeCellCenters(output, temp)
         self.x = vtk_to_numpy(temp)
 
-filename = '../../data/state-10-rank-0.vtk'
+filename = '../../data/state-2-rank-0.vtk'
 
 s = SnapShot(filename)
 cs = plt.tricontourf(s.x[:,0], s.x[:,1], s.Q[:,4])
