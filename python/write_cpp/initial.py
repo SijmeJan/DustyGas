@@ -35,7 +35,7 @@ def write_initial(lines, n_dust, mu, Stokes):
              0.1305628 + 0.0640574*1j]
 
     for n in range(0, 4 + 4*n_dust):
-        initial.extend(['    Q[{}] += a*({}*c-{}*s);\n'.format(n, np.real(eigen[n]), np.imag(eigen[n]))])
+        initial.extend(['    Q[{}] += a*({}*c + {}*s);\n'.format(n, np.real(eigen[n]), -np.imag(eigen[n]))])
 
     initial.extend(['  }\n'])
 
