@@ -75,7 +75,9 @@ if (n_vars % 4 != 0):
     exit(1)
 
 # Parameters
-c = 2.0          # gas sound speed
+c = 1.0           # gas sound speed
+eta = 0.05        # eta/c
+
 q = 1.5           # non-dimensional shear rate
 Stokes = [0.1]    # list of Stokes numbers
 mu = 3.0          # dust/gas ratio
@@ -99,8 +101,8 @@ f.close()
 # Modify eigenvalues, fluxes, sources and initial conditions
 write_eigenvalues(lines, n_dust, c)
 write_flux(lines, n_dust, c)
-write_source(lines, n_dust, q, Stokes)
-write_initial(lines, n_dust, mu, Stokes)
+write_source(lines, n_dust, q, Stokes, eta)
+write_initial(lines, n_dust, mu, Stokes, eta)
 
 # Write to file
 f = open(source_file, "w")

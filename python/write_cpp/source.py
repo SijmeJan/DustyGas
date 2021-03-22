@@ -1,12 +1,12 @@
 from common import replace_with_indent
 
-def write_source(lines, n_dust, q, Stokes):
+def write_source(lines, n_dust, q, Stokes, eta):
 
     for i in range(0, len(lines)):
         # Source x: eta + Coriolis
         lines[i] = replace_with_indent(lines[i],
                                       'S[1] = ',
-                                      'S[1] = 2*Q[0] + 2*Q[3];\n')
+                                      'S[1] = 2*Q[0]*{} + 2*Q[3];\n'.format(eta))
         # Source y: Coriolis
         lines[i] = replace_with_indent(lines[i],
                                       'S[3] = ',

@@ -1,11 +1,11 @@
 import numpy as np
 from common import replace_with_indent, remove_function_body
 
-def write_initial(lines, n_dust, mu, Stokes):
+def write_initial(lines, n_dust, mu, Stokes, eta):
     remove_function_body(lines, 'adjustSolution')
 
-    Kx = 30.0
-    Kz = 30.0
+    Kx = 30.0/eta
+    Kz = 30.0/eta
 
     tau = Stokes[0]
     denom = '((1 + {})*(1 + {}) + {}*{})'.format(mu, mu, tau, tau)
@@ -48,6 +48,16 @@ def write_initial(lines, n_dust, mu, Stokes):
         initial.extend(['    Q[{}] *= Q[{}];\n'.format(4*n + 5, 4*n + 4),
                         '    Q[{}] *= Q[{}];\n'.format(4*n + 6, 4*n + 4),
                         '    Q[{}] *= Q[{}];\n'.format(4*n + 7, 4*n + 4)])
+
+    if (eta != 1.0):
+        # Adjust velocities in terms of eta
+        initial.extend(['    Q[1] *= {};\n'.format(eta),
+                        '    Q[2] *= {};\n'.format(eta),
+                        '    Q[3] *= {};\n'.format(eta)])
+    for n in range(0, n_dust):
+        initial.extend(['    Q[{}] *= {};\n'.format(4*n + 5, eta),
+                        '    Q[{}] *= {};\n'.format(4*n + 6, eta),
+                        '    Q[{}] *= {};\n'.format(4*n + 7, eta)])
 
     initial.extend(['  }\n'])
 

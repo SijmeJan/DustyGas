@@ -27,7 +27,7 @@ class SnapShot():
 #cs = plt.tricontourf(s.x[:,0], s.x[:,1], s.Q[:,4], 100)
 #plt.colorbar(cs)
 
-n = 21
+n = 17
 e = np.zeros((n))
 
 for i in range(0, n):
