@@ -7,7 +7,7 @@ exahype-project DustyGas
     dimension const = 2
     width = 0.010471975511966, 0.010471975511966
     offset = 0.0, 0.0
-    end-time = 100.0
+    end-time = 1.0
   end computational-domain
 
   distributed-memory
@@ -30,7 +30,7 @@ exahype-project DustyGas
     plot vtk::Cartesian::cells::ascii State
      variables const = 4
      time = 0.0
-     repeat = 0.1
+     repeat = 0.001
      output = ./state
     end plot
 

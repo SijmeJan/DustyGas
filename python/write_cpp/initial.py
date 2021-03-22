@@ -6,20 +6,24 @@ def write_initial(lines, n_dust, mu, Stokes, eta):
 
     #Kx = 30.0/eta
     #Kz = 30.0/eta
+    Kx = 30.0/0.05
+    Kz = 0.0
+    omega = np.sqrt(Kx*Kx + 1.0)
 
+    amp = 0.001
     tau = Stokes[0]
     denom = '((1 + {})*(1 + {}) + {}*{})'.format(mu, mu, tau, tau)
 
     initial = ['  if (t == 0.0) {\n',
-               '    Q[0] = 1.0;\n',
-               '    Q[1] = 0.001;\n',
+               '    double a = {};\n'.format(amp),
+               '    double c = cos(x[0]*{} + x[1]*{});\n'.format(Kx, Kz),
+               '    double s = sin(x[0]*{} + x[1]*{});\n'.format(Kx, Kz),
+               '\n',
+               '    Q[0] = 1.0 + {}*a*c/{};\n'.format(Kx, omega),
+               '    Q[1] = a*c;\n',
                '    Q[2] = 0.0;\n',
-               '    Q[3] = 0.0;\n',
+               '    Q[3] = 0.5*a*s/{};\n'.format(omega),
                '  }\n']
-               #'    double a = 0.001;\n',
-               #'    double c = cos(x[0]*{} + x[1]*{});\n'.format(Kx, Kz),
-               #'    double s = sin(x[0]*{} + x[1]*{});\n'.format(Kx, Kz),
-               #'\n',
                #'    Q[0] = 1.0;\n',
                #'    Q[1] = 2*{}*{}/{};\n'.format(mu, tau, denom),
                #'    Q[2] = 0.0;\n',
