@@ -35,7 +35,7 @@ offset_x = None
 offset_y = None
 size_x = None
 size_y = None
-
+order = None
 
 for line in lines:
     if (line.find('exahype-project ') != -1):
@@ -55,6 +55,8 @@ for line in lines:
         offset_y = float(line.lstrip().split()[-1])
     if (line.find('patch-size const') != -1):
         patch_size = int(line.lstrip().split()[-1])
+    if (line.find('order const') != -1):
+        order = int(line.lstrip().split()[-1])
 
 # Unfortunately, vanilla ExaHyPE does not allow for periodic boundaries.
 # A hack that does not require modifying the ExaHyPE core is to make use

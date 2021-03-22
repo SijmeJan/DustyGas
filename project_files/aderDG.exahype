@@ -1,0 +1,45 @@
+exahype-project DustyGas
+  peano-kernel-path const = ./Peano
+  exahype-path const = ./ExaHyPE
+  output-directory const = ../data
+
+  computational-domain
+    dimension const = 2
+    width = 0.20943951023932, 0.20943951023932
+    offset = 0.0, 0.0
+    end-time = 100.0
+  end computational-domain
+
+  distributed-memory
+    identifier               = static_load_balancing
+    configure                = {greedy-regular,FCFS,ranks-per-node:1}
+    buffer-size              = 64
+    timeout                  = 120
+  end distributed-memory
+
+  solver ADER-DG DustyGasSolver
+    variables const = 8
+    order const = 3
+    maximum-mesh-size = 5e-3
+    time-stepping = global
+    type const = nonlinear
+    terms const = flux, source
+    optimisation const = generic
+    language const = C
+
+    plot vtk::Cartesian::cells::ascii State
+     variables const = 8
+     time = 0.0
+     repeat = 1.0
+     output = ./state
+    end plot
+
+    plot vtk::Cartesian::cells::ascii BoundaryWriter
+     variables const = 0
+     time = 0.0
+     repeat = 1.0e-10
+     output = ./boundary
+    end plot
+
+  end solver
+end exahype-project
