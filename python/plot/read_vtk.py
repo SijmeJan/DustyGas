@@ -22,23 +22,22 @@ class SnapShot():
         vtkCellCenters().ComputeCellCenters(output, temp)
         self.x = vtk_to_numpy(temp)
 
-filename = '../../data/state-10-rank-0.vtk'
+#filename = '../../data/state-100-rank-0.vtk'
+#s = SnapShot(filename)
+#cs = plt.tricontourf(s.x[:,0], s.x[:,1], s.Q[:,4], 100)
+#plt.colorbar(cs)
 
-s = SnapShot(filename)
-cs = plt.tricontourf(s.x[:,0], s.x[:,1], s.Q[:,0], 100)
-plt.colorbar(cs)
+n = 21
+e = np.zeros((n))
 
-#n = 21
-#e = np.zeros((n))
+for i in range(0, n):
+    s = SnapShot('../../data/state-{}-rank-0.vtk'.format(i))
+    e[i] = np.sum(s.Q[:,6]*s.Q[:,6]/s.Q[:,4])
 
-#for i in range(0, n):
-#    s = SnapShot('../../data/state-{}-rank-0.vtk'.format(i))
-#    e[i] = np.sum(s.Q[:,6]*s.Q[:,6]/s.Q[:,4])
+plt.yscale('log')
+plt.plot(e)
 
-#plt.yscale('log')
-#plt.plot(e)
-
-#plt.plot(0.1*np.exp(0.21*np.arange(0,n)))
+plt.plot(0.0001*np.exp(0.42*np.arange(0,n)))
 
 
 plt.show()

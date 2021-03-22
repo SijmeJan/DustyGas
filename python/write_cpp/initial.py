@@ -40,7 +40,10 @@ def write_initial(lines, n_dust, mu, Stokes):
     for n in range(0, 4 + 4*n_dust):
         initial.extend(['    Q[{}] += a*({}*c + {}*s);\n'.format(n, np.real(eigen[n]), -np.imag(eigen[n]))])
 
-    # Change into dust momenta
+    # Change into momenta
+    initial.extend = ['    Q[1] *= Q[0];\n',
+                      '    Q[2] *= Q[0];\n',
+                      '    Q[3] *= Q[0];\n']
     for n in range(0, n_dust):
         initial.extend(['    Q[{}] *= Q[{}];\n'.format(4*n + 5, 4*n + 4),
                         '    Q[{}] *= Q[{}];\n'.format(4*n + 6, 4*n + 4),
