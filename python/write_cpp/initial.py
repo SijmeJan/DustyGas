@@ -4,21 +4,32 @@ from common import replace_with_indent, remove_function_body
 def write_initial(lines, n_dust, mu, Stokes, eta):
     remove_function_body(lines, 'adjustSolution')
 
-    Kx = 30.0/eta
-    Kz = 30.0/eta
+    #Kx = 30.0/eta
+    #Kz = 30.0/eta
 
     tau = Stokes[0]
     denom = '((1 + {})*(1 + {}) + {}*{})'.format(mu, mu, tau, tau)
 
     initial = ['  if (t == 0.0) {\n',
-               '    double a = 0.001;\n',
-               '    double c = cos(x[0]*{} + x[1]*{});\n'.format(Kx, Kz),
-               '    double s = sin(x[0]*{} + x[1]*{});\n'.format(Kx, Kz),
-               '\n',
                '    Q[0] = 1.0;\n',
-               '    Q[1] = 2*{}*{}/{};\n'.format(mu, tau, denom),
+               '    Q[1] = 1.0;\n',
                '    Q[2] = 0.0;\n',
-               '    Q[3] = -(1 + {}*{}*{}/{})/(1 + {});\n'.format(mu, tau, tau, denom, mu)]
+               '    Q[3] = 0.0;\n',
+               '  }\n']
+               #'    double a = 0.001;\n',
+               #'    double c = cos(x[0]*{} + x[1]*{});\n'.format(Kx, Kz),
+               #'    double s = sin(x[0]*{} + x[1]*{});\n'.format(Kx, Kz),
+               #'\n',
+               #'    Q[0] = 1.0;\n',
+               #'    Q[1] = 2*{}*{}/{};\n'.format(mu, tau, denom),
+               #'    Q[2] = 0.0;\n',
+               #'    Q[3] = -(1 + {}*{}*{}/{})/(1 + {});\n'.format(mu, tau, tau, denom, mu)]
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('adjustSolution(') != -1):
+            lines[i+1:i+1] = initial
+            break;
+    return
 
     # Dust density and *velocities*
     for n in range(0, n_dust):
