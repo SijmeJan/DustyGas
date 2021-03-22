@@ -75,7 +75,7 @@ if (n_vars % 4 != 0):
     exit(1)
 
 # Parameters
-c = 20.0          # gas sound speed
+c = 2.0          # gas sound speed
 q = 1.5           # non-dimensional shear rate
 Stokes = [0.1]    # list of Stokes numbers
 mu = 3.0          # dust/gas ratio
