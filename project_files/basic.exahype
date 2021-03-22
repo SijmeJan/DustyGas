@@ -34,34 +34,6 @@ exahype-project DustyGas
      output = ./state
     end plot
 
-    /*plot vtk::Cartesian::cells::ascii GasDensityWriter
-     variables const = 1
-     time = 0.0
-     repeat = 1.0
-     output = ./gasdensity
-    end plot
-
-    plot vtk::Cartesian::cells::ascii GasVelocityWriter
-     variables const = 3
-     time = 0.0
-     repeat = 1.0
-     output = ./gasvelocity
-    end plot
-
-    plot vtk::Cartesian::cells::ascii DustDensityWriter
-     variables const = 1
-     time = 0.0
-     repeat = 1.0
-     output = ./dustdensity
-    end plot
-
-    plot vtk::Cartesian::cells::ascii DustVelocityWriter
-     variables const = 3
-     time = 0.0
-     repeat = 1.0
-     output = ./dustvelocity
-    end plot*/
-
     plot vtk::Cartesian::cells::ascii BoundaryWriter
      variables const = 0
      time = 0.0
