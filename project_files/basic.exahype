@@ -30,7 +30,7 @@ exahype-project DustyGas
     plot vtk::Cartesian::cells::ascii State
      variables const = 4
      time = 0.0
-     repeat = 1.0
+     repeat = 0.1
      output = ./state
     end plot
 
