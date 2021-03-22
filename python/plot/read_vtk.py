@@ -28,7 +28,7 @@ class SnapShot():
 #plt.colorbar(cs)
 
 
-n = 10
+n = 1001
 e = np.zeros((n))
 
 for i in range(0, n):

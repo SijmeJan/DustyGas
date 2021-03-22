@@ -12,7 +12,7 @@ def write_initial(lines, n_dust, mu, Stokes, eta):
 
     initial = ['  if (t == 0.0) {\n',
                '    Q[0] = 1.0;\n',
-               '    Q[1] = 1.0;\n',
+               '    Q[1] = 0.001;\n',
                '    Q[2] = 0.0;\n',
                '    Q[3] = 0.0;\n',
                '  }\n']
