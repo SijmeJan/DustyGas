@@ -1,8 +1,12 @@
 import numpy as np
 from common import replace_with_indent, remove_function_body
 
-def write_initial(lines, n_dust, mu, Stokes, eta):
-    remove_function_body(lines, 'adjustSolution')
+def write_initial(lines, n_dust, mu, Stokes, eta, solver_type):
+    function_name = 'adjustSolution'
+    if (solver_type == 'ADER-DG'):
+        function_name = 'adjustPointSolution'
+
+    remove_function_body(lines, function_name)
 
     #Kx = 30.0/eta
     #Kz = 30.0/eta
@@ -30,7 +34,7 @@ def write_initial(lines, n_dust, mu, Stokes, eta):
                #'    Q[3] = -(1 + {}*{}*{}/{})/(1 + {});\n'.format(mu, tau, tau, denom, mu)]
 
     for i in range(0, len(lines)):
-        if (lines[i].find('adjustSolution(') != -1):
+        if (lines[i].find(function_name + '(') != -1):
             lines[i+1:i+1] = initial
             break;
     return
@@ -78,6 +82,6 @@ def write_initial(lines, n_dust, mu, Stokes, eta):
 
 
     for i in range(0, len(lines)):
-        if (lines[i].find('adjustSolution(') != -1):
+        if (lines[i].find(function_name + '(') != -1):
             lines[i+1:i+1] = initial
             break;

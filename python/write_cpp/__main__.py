@@ -23,25 +23,39 @@ f = open(args.infile, "r")
 lines = f.readlines()
 f.close()
 
+# Remove comments between /* and */
+start_comment = []
+end_comment = []
+for i in range(0, len(lines)):
+    if (lines[i].find('/*') != -1):
+        start_comment.append(i)
+    if (lines[i].find('*/') != -1):
+        end_comment.append(i)
+for n in range(len(start_comment)-1, -1, -1):
+    for i in range(0, end_comment[n] - start_comment[n] + 1):
+        lines.pop(start_comment[n])
+
 # Parameters to be read from exahype file
 n_vars = 0
 patch_size = 0
+order = None
 output_dir = None
 project_name = None
 solver_name = None
+solver_type = None
 boundary_name = None
 found_nvar = False
 offset_x = None
 offset_y = None
 size_x = None
 size_y = None
-order = None
 
 for line in lines:
     if (line.find('exahype-project ') != -1):
         project_name = line.lstrip().split()[-1]
     if (line.find('solver ') != -1):
         solver_name = line.lstrip().split()[-1]
+        solver_type = line.lstrip().split()[-2]
     if (line.find('variables const') != -1 and found_nvar == False):
         n_vars = int(line.lstrip().split()[-1])
         found_nvar = True
@@ -102,7 +116,7 @@ f.close()
 write_eigenvalues(lines, n_dust, c)
 write_flux(lines, n_dust, c)
 write_source(lines, n_dust, q, Stokes, eta)
-write_initial(lines, n_dust, mu, Stokes, eta)
+write_initial(lines, n_dust, mu, Stokes, eta, solver_type)
 
 # Write to file
 f = open(source_file, "w")
