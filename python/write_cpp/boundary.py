@@ -8,7 +8,7 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name, boundar
     x_bound = [offset[0], offset[0] + size[0]]
     y_bound = [offset[1], offset[1] + size[1]]
 
-    boundary = ['  std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", patch size = " << sizeOfPatch[0] << " " << sizeOfPatch[1] << ", offset " << offsetOfPatch[0] << " " << offsetOfPatch[1] << ", position " << pos[0] << " " << pos[1] << std::endl;\n',
+    boundary = ['  std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", patch size = " << sizeOfPatch[0] << " " << sizeOfPatch[1] << ", offset " << offsetOfPatch[0]/sizeOfPatch[0] << " " << offsetOfPatch[1]/sizeOfPatch[1] << ", position " << pos[0] << " " << pos[1] << std::endl;\n',
                 '  // Fill a boundary array for setting periodic boundaries in 2D, non-AMR runs.\n',
                 '  // If FV mesh = nx times ny, the first nx entries correspond to the bottom boundary.\n',
                 '  // The second nx entries correspond to the top boundary.\n',
