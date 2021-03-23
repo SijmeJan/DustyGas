@@ -94,7 +94,7 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name, boundar
     solver = ['  boundaryValues = &(solver.periodicBoundaryValues);\n',
               '  global_dx = &(solver.global_dx[0]);\n',
               '  global_n = &(solver.global_n[0]);\n',
-              '  nGhostCells = solver.GhostLayerWidth;\n']
+              '  //nGhostCells = solver.GhostLayerWidth;\n']
 
     # Put it as first line of first function
     remove_function_body(lines, '::' + boundary_name)
@@ -105,7 +105,7 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name, boundar
     remove_function_body(lines, 'startPlotting')
     add_function_body(lines, 'startPlotting', solver)
 
-    solver = ['#ifdef Parallel\n',
+    solver = ['/*#ifdef Parallel\n',
               '  // Should only happen the first time of call\n',
               '  if ((*boundaryValues).size() == 0) {\n',
               '    if (tarch::parallel::Node::getInstance().getNumberOfNodes() > 1) {\n',
@@ -136,7 +136,7 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name, boundar
               '                tarch::parallel::Node::getInstance().getCommunicator());\n',
               '#else\n',
               '  (*boundaryValues) = boundaryValues_local;\n',
-              '#endif\n']
+              '#endif\n'*/]
 
     remove_function_body(lines, 'finishPlotting')
     add_function_body(lines, 'finishPlotting', solver)
