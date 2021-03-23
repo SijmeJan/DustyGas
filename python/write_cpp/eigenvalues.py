@@ -1,9 +1,11 @@
 from common import replace_with_indent
 
-def write_eigenvalues(lines, n_dust, c):
+def write_eigenvalues(lines, n_dust, c, solver_type):
     for i in range(0, len(lines)):
         # Gas normal velocity
         vg = 'Q[dIndex + 1]/Q[0]'
+        if (solver_type == 'ADER-DG'):
+            vg = 'Q[direction + 1]/Q[0]'
 
         # Gas eigenvalues
         lines[i] = replace_with_indent(lines[i],
@@ -26,6 +28,8 @@ def write_eigenvalues(lines, n_dust, c):
 
                 # Dust normal velocity
                 vd = 'Q[dIndex + {}]/Q[{}]'.format(5 + 4*n, 4 + 4*n)
+                if (solver_type == 'ADER-DG'):
+                    vd = 'Q[direction + {}]/Q[{}]'.format(5 + 4*n, 4 + 4*n)
                 lines[i] =replace_with_indent(lines[i],
                                              'lambda[{}] = '.format(l),
                                              'lambda[{}] = {};\n'.format(l,vd))
