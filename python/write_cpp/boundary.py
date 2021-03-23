@@ -14,7 +14,7 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name, boundar
                 '  // The second nx entries correspond to the top boundary.\n',
                 '  // The next ny entries correspond to the left boundary.\n',
                 '  // The next ny entries correspont to the right boundary.\n',
-                '\n',
+                '/*\n',
                 '  assertion(outputQuantities==nullptr);\n\n',
                 '  // Hack: number of patches in x and y\n',
                 '  int n_patch_x = (int) round({}/sizeOfPatch[0]);\n'.format(size[0]),
@@ -75,7 +75,7 @@ def write_boundary(lines, n_vars, patch_size, offset, size, solver_name, boundar
                 '      for (int n = 0; n < {}; n++)\n'.format(n_vars),
                 '        boundaryValues_local[arr_index + n] = Q[n];\n',
                 '    }\n',
-                '  }\n']
+                '  }*/\n']
 
     add_function_body(lines, 'mapQuantities', boundary)
 
