@@ -113,7 +113,7 @@ lines = f.readlines()
 f.close()
 
 # Modify eigenvalues, fluxes, sources and initial conditions
-write_eigenvalues(lines, n_dust, c)
+write_eigenvalues(lines, n_dust, c, solver_type)
 write_flux(lines, n_dust, c)
 write_source(lines, n_dust, q, Stokes, eta)
 write_initial(lines, n_dust, mu, Stokes, eta, solver_type)
