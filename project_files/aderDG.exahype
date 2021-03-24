@@ -20,7 +20,7 @@ exahype-project DustyGas
   solver ADER-DG DustyGasSolver
     variables const = 4
     order const = 3
-    maximum-mesh-size = 2e-3
+    maximum-mesh-size = 5e-4
     time-stepping = global
     type const = nonlinear
     terms const = flux, source
