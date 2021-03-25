@@ -33,7 +33,7 @@ def write_boundary(lines, n_vars, order, offset, size, solver_name, boundary_nam
                 '  // Note that this should happen only the first time this function is called.\n',
                 '  int n_bound_cells = 2*(global_n[0] + global_n[1]);\n',
                 '  int n_send_per_cell = {};\n'.format(n_vars*(order+1)*(order+1)),
-                '  if (boundaryValues_local.size() != n_send_per_cell*n_bound_cells) {\n'),
+                '  if (boundaryValues_local.size() != n_send_per_cell*n_bound_cells) {\n',
                 '    boundaryValues_local.resize(n_send_per_cell*n_bound_cells);\n',
                 '    std::fill(boundaryValues_local.begin(), boundaryValues_local.end(), 0.0);\n',
                 '  }\n',
