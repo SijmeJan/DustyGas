@@ -19,7 +19,7 @@ def write_initial(lines, n_dust, mu, Stokes, eta, solver_type):
     denom = '((1 + {})*(1 + {}) + {}*{})'.format(mu, mu, tau, tau)
 
     initial = ['  if (t == 0.0) {\n',
-               '    std::cout << "Setting initial conditions at x = " << x[0] << ", y = " << x[1] << std::endl;\n',
+               '    //std::cout << "Setting initial conditions at x = " << x[0] << ", y = " << x[1] << std::endl;\n',
                '    double a = {};\n'.format(amp),
                '    double c = cos(x[0]*{} + x[1]*{});\n'.format(Kx, Kz),
                '    double s = sin(x[0]*{} + x[1]*{});\n'.format(Kx, Kz),
