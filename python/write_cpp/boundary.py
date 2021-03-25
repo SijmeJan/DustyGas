@@ -72,7 +72,7 @@ def write_boundary(lines, n_vars, order, offset, size, solver_name, boundary_nam
                 '      boundaryValues_local[arr_index + n] = Q[n];\n',
                 '  }\n',
                 '  if (indx >= 0)\n',
-                '    std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", position " << pos[0] << " " << pos[1] << ", index = " << indx << ", arr_index = " << n_send_per_cell*indx + 4*pos[1] + pos[0] << " " << cell_x << " " << cell_y << std::endl;\n',
+                '    std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", position " << pos[0] << " " << pos[1] << ", index = " << indx << ", arr_index = " << n_send_per_cell*indx + 4*pos[1] + pos[0] << ", cell index " << cell_x << " " << cell_y << std::endl;\n',
                 ]
 
     add_function_body(lines, 'mapQuantities', boundary)
@@ -211,10 +211,11 @@ def write_solver_set_periodic(lines, n_vars, order):
                 '    if (i == global_n[0] - 1) indx = 2*global_n[0] + j;\n',
                 '\n',
                 '    if (indx >= 0) {\n',
-                '      std::cout << "Adjusting point solution at x = " << x[0] << ", y = " << x[1] << " " << (int) (x[0]/global_dx[0]) << " " << (int) (x[1]/global_dx[1]) << " " << global_dof_index % {} << std::endl;\n'.format((order + 1)*(order + 1)),
-                '\n',
                 '      int dof = global_dof_index % {};\n'.format((order + 1)*(order + 1)),
                 '      int arr_index = (indx + dof)*{};\n'.format(n_vars),
+                '      std::cout << "Adjusting point solution at x = " << x[0] << ", y = " << x[1] << ", cell index " << (int) (x[0]/global_dx[0]) << " " << (int) (x[1]/global_dx[1]) << ", index = " << index << ", arr_index = " << arr-index << std::endl;\n',
+                '\n',
+
                 '      for (int n = 0; n < {}; n++)\n'.format(n_vars),
                 '        Q[n] = periodicBoundaryValues[arr_index + n];\n',
                 '    }\n',
