@@ -10,9 +10,9 @@ def write_initial(lines, n_dust, mu, Stokes, eta, solver_type):
 
     #Kx = 30.0/eta
     #Kz = 30.0/eta
-    Kx = 30.0/0.05
-    Kz = 0.0
-    omega = np.sqrt(Kx*Kx + 1.0)
+    Kx = 0.0/0.05
+    Kz = 30.0/0.05
+    omega = np.sqrt(Kz*Kz + 1.0)
 
     amp = 0.001
     tau = Stokes[0]
@@ -23,7 +23,7 @@ def write_initial(lines, n_dust, mu, Stokes, eta, solver_type):
                '    double c = cos(x[0]*{} + x[1]*{});\n'.format(Kx, Kz),
                '    double s = sin(x[0]*{} + x[1]*{});\n'.format(Kx, Kz),
                '\n',
-               '    Q[0] = 1.0 + {}*a*c/{};\n'.format(Kx, omega),
+               '    Q[0] = 1.0 + {}*a*c/{};\n'.format(Kz, omega),
                '    Q[1] = a*c;\n',
                '    Q[2] = 0.0;\n',
                '    Q[3] = 0.5*a*s/{};\n'.format(omega),
