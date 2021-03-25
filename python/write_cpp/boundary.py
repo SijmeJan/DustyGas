@@ -72,7 +72,7 @@ def write_boundary(lines, n_vars, order, offset, size, solver_name, boundary_nam
                 '      boundaryValues_local[arr_index + n] = Q[n];\n',
                 '  }\n',
                 '  if (indx >= 0) {\n',
-                '    std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", position " << pos[0] << " " << pos[1] << ", index = " << indx << ", arr_index = " << arr_index << std::endl;\n',
+                '    std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", position " << pos[0] << " " << pos[1] << ", index = " << indx << ", arr_index = " << n_send_per_cell*indx + 4*pos[1] + pos[0] << std::endl;\n',
                 ]
 
     add_function_body(lines, 'mapQuantities', boundary)
