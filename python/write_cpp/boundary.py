@@ -194,7 +194,6 @@ def write_solver_set_periodic(lines, n_vars, order):
 
     periodic = ['  if (t > 0.0) {\n',
                 '    // Keep a counter of dofs visited\n',
-                '    global_dof_index++;\n',
                 '    int max_global_dof_index = global_n[0]*global_n[1]*{}*{};\n'.format(order + 1, order + 1),
                 '    if (global_dof_index >= max_global_dof_index)\n',
                 '      global_dof_index -= max_global_dof_index;\n',
@@ -212,6 +211,7 @@ def write_solver_set_periodic(lines, n_vars, order):
                 '    if (i == global_n[0] - 1) indx = 2*global_n[0] + j;\n',
                 '\n',
                 #'    if (indx >= 0) {\n',
+                '    global_dof_index++;\n',
 
                 '  }\n']
 
