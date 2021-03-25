@@ -211,7 +211,7 @@ def write_solver_set_periodic(lines, n_vars, order):
                 '    if (i == 0) indx = 2*global_n[0] + global_n[1] + j;\n',
                 '    if (i == global_n[0] - 1) indx = 2*global_n[0] + j;\n',
                 '\n',
-                '    if (indx >= 0) {\n',
+                #'    if (indx >= 0) {\n',
 
                 '  }\n']
 
