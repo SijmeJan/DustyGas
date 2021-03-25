@@ -9,7 +9,7 @@ def write_boundary(lines, n_vars, order, offset, size, solver_name, boundary_nam
     y_bound = [offset[1], offset[1] + size[1]]
 
 
-    boundary = ['  std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", global_n = " << {}/sizeOfPatch[0] << " " << {}/sizeOfPatch[1] << ", offset " << offsetOfPatch[0]/sizeOfPatch[0] << " " << offsetOfPatch[1]/sizeOfPatch[1] << ", position " << pos[0] << " " << pos[1] << std::endl;\n'.format(size[0], size[1]),
+    boundary = ['  //std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", global_n = " << {}/sizeOfPatch[0] << " " << {}/sizeOfPatch[1] << ", offset " << offsetOfPatch[0]/sizeOfPatch[0] << " " << offsetOfPatch[1]/sizeOfPatch[1] << ", position " << pos[0] << " " << pos[1] << std::endl;\n'.format(size[0], size[1]),
                 '  // Fill a boundary array for setting periodic boundaries in 2D, non-AMR runs.\n',
                 '  // If mesh = nx times ny, the first nx entries correspond to the bottom boundary.\n',
                 '  // The second nx entries correspond to the top boundary.\n',
@@ -47,28 +47,28 @@ def write_boundary(lines, n_vars, order, offset, size, solver_name, boundary_nam
                 '  if (cell_y == 1) {\n',
                 '    // Bottom boundary\n',
                 '    indx = cell_x;\n',
-                '    int arr_index = n_send_per_cell*indx + {}*pos[0] + pos[1];\n'.format(order + 1),
+                '    int arr_index = n_send_per_cell*indx + {}*pos[1] + pos[0];\n'.format(order + 1),
                 '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
                 '      boundaryValues_local[arr_index + n] = Q[n];\n',
                 '  }\n',
                 '  if (cell_y == global_n[1] - 2) {\n',
                 '    // Top boundary\n',
                 '    indx = n_cell_x + cell_x;\n',
-                '    int arr_index = n_send_per_cell*indx + {}*pos[0] + pos[1];\n'.format(order + 1),
+                '    int arr_index = n_send_per_cell*indx + {}*pos[1] + pos[0];\n'.format(order + 1),
                 '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
                 '      boundaryValues_local[arr_index + n] = Q[n];\n',
                 '  }\n',
                 '  if (cell_x == 1) {\n',
                 '    // Left boundary\n',
                 '    indx = 2*n_cell_x + cell_y;\n',
-                '    int arr_index = n_send_per_cell*indx + {}*pos[0] + pos[1];\n'.format(order + 1),
+                '    int arr_index = n_send_per_cell*indx + {}*pos[1] + pos[0];\n'.format(order + 1),
                 '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
                 '      boundaryValues_local[arr_index + n] = Q[n];\n',
                 '  }\n',
                 '  if (cell_x == global_n[0] - 2) {\n',
                 '    // Right boundary\n',
                 '    indx = 2*n_cell_x + n_cell_y + cell_y;\n',
-                '    int arr_index = n_send_per_cell*indx + {}*pos[0] + pos[1];\n'.format(order + 1),
+                '    int arr_index = n_send_per_cell*indx + {}*pos[1] + pos[0];\n'.format(order + 1),
                 '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
                 '      boundaryValues_local[arr_index + n] = Q[n];\n',
                 '  }\n']
@@ -89,8 +89,7 @@ def write_boundary(lines, n_vars, order, offset, size, solver_name, boundary_nam
     # Init pointers
     solver = ['  boundaryValues = &(solver.periodicBoundaryValues);\n',
               '  global_dx = &(solver.global_dx[0]);\n',
-              '  global_n = &(solver.global_n[0]);\n',
-              '  //nGhostCells = solver.GhostLayerWidth;\n']
+              '  global_n = &(solver.global_n[0]);\n']
 
     # Put it as first line of first function
     remove_function_body(lines, '::' + boundary_name)
@@ -101,7 +100,7 @@ def write_boundary(lines, n_vars, order, offset, size, solver_name, boundary_nam
     remove_function_body(lines, 'startPlotting')
     add_function_body(lines, 'startPlotting', solver)
 
-    solver = ['/*#ifdef Parallel\n',
+    solver = ['#ifdef Parallel\n',
               '  // Should only happen the first time of call\n',
               '  if ((*boundaryValues).size() == 0) {\n',
               '    if (tarch::parallel::Node::getInstance().getNumberOfNodes() > 1) {\n',
@@ -132,7 +131,7 @@ def write_boundary(lines, n_vars, order, offset, size, solver_name, boundary_nam
               '                tarch::parallel::Node::getInstance().getCommunicator());\n',
               '#else\n',
               '  (*boundaryValues) = boundaryValues_local;\n',
-              '#endif\n*/']
+              '#endif\n']
 
     remove_function_body(lines, 'finishPlotting')
     add_function_body(lines, 'finishPlotting', solver)
