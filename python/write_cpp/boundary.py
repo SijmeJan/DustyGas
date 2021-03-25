@@ -9,7 +9,7 @@ def write_boundary(lines, n_vars, order, offset, size, solver_name, boundary_nam
     y_bound = [offset[1], offset[1] + size[1]]
 
 
-    boundary = ['  std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", global_n = " << {}/sizeOfPatch[0] << " " << {}/sizeOfPatch[1] << ", offset " << offsetOfPatch[0]/sizeOfPatch[0] << " " << offsetOfPatch[1]/sizeOfPatch[1] << ", position " << pos[0] << " " << pos[1] << " " << timeStamp << std::endl;\n'.format(size[0], size[1]),
+    boundary = ['  //std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", global_n = " << {}/sizeOfPatch[0] << " " << {}/sizeOfPatch[1] << ", offset " << offsetOfPatch[0]/sizeOfPatch[0] << " " << offsetOfPatch[1]/sizeOfPatch[1] << ", position " << pos[0] << " " << pos[1] << std::endl;\n'.format(size[0], size[1]),
                 '  // Fill a boundary array for setting periodic boundaries in 2D, non-AMR runs.\n',
                 '  // If mesh = nx times ny, the first nx entries correspond to the bottom boundary.\n',
                 '  // The second nx entries correspond to the top boundary.\n',
@@ -143,8 +143,7 @@ def write_boundary_h(lines):
                 '  std::vector<double> *boundaryValues;\n',
                 '  std::vector<double> boundaryValues_local;\n',
                 '  double *global_dx;\n',
-                '  int *global_n;\n',
-                '  int nGhostCells;\n']
+                '  int *global_n;\n']
 
     # Do nothing if line already present
     for i in range(0, len(lines)):
@@ -190,6 +189,22 @@ def write_solver_h(lines):
             break;
 
 def write_solver_set_periodic(lines, n_vars):
+    body = remove_function_body(lines, 'adjustPointSolution')
+
+    periodic = ['  if (t > 0.0) {\n',
+                '    std::cout << "Adjusting point solution at x = " << x[0] << ", y = " << x[1] << " " << x[0]/global_dx[0] << " " << x[1]/global_dx[1] << std::endl;\n',
+                '\n',
+                '    // Global cell number in x and y direction\n',
+                '    int i = (int) round(x[0]/global_dx[0] - 0.5);\n',
+                '    int j = (int) round(x[1]/global_dx[1] - 0.5);\n',
+                '  }\n']
+
+    body.extend(periodic)
+
+    add_function_body(lines, 'adjustPointSolution', body)
+
+    return
+
     # Remove current function body
     remove_function_body(lines, 'boundaryValues')
 

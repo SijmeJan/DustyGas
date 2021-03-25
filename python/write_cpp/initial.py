@@ -18,8 +18,7 @@ def write_initial(lines, n_dust, mu, Stokes, eta, solver_type):
     tau = Stokes[0]
     denom = '((1 + {})*(1 + {}) + {}*{})'.format(mu, mu, tau, tau)
 
-    initial = ['  std::cout << "Adjusting point solution at t = " << t << std::endl;\n',
-               '  if (t == 0.0) {\n',
+    initial = ['  if (t == 0.0) {\n',
                '    double a = {};\n'.format(amp),
                '    double c = cos(x[0]*{} + x[1]*{});\n'.format(Kx, Kz),
                '    double s = sin(x[0]*{} + x[1]*{});\n'.format(Kx, Kz),
