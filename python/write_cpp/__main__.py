@@ -1,5 +1,6 @@
 import argparse
 import os
+from scipy.optimize import fsolve
 
 from common import replace_with_indent
 from eigenvalues import write_eigenvalues
@@ -11,6 +12,15 @@ from boundary import write_solver_set_periodic
 from plot import write_plotter_gas_velocity
 from plot import write_plotter_dust_velocity
 from plot import write_plotter_dust_density
+
+def guess_mesh(domain_size, cell_size):
+    dx = domain_size
+    nx = 1
+    while (dx > cell_size):
+        nx = 3*nx + 4
+        dx = domain_size/nx
+
+    return nx
 
 # Needs single argument; exahype file
 parser = argparse.ArgumentParser(description='Write flux and eigenvalue cpp')
@@ -49,6 +59,7 @@ offset_x = None
 offset_y = None
 size_x = None
 size_y = None
+cell_size = None
 
 for line in lines:
     if (line.find('exahype-project ') != -1):
@@ -71,6 +82,8 @@ for line in lines:
         patch_size = int(line.lstrip().split()[-1])
     if (line.find('order const') != -1):
         order = int(line.lstrip().split()[-1])
+    if (line.find('maximum-mesh-size') != -1):
+        cell_size = float(line.lstrip().split()[-1])
 
 # Unfortunately, vanilla ExaHyPE does not allow for periodic boundaries.
 # A hack that does not require modifying the ExaHyPE core is to make use
@@ -128,6 +141,22 @@ f.close()
 ################################
 if (use_periodic_boundaries == True):
     print("Implementing periodic boundaries...")
+
+    if (solver_type == 'ADER-DG'):
+        nx = guess_mesh(size_x, cell_size)
+        ny = guess_mesh(size_y, cell_size)
+
+        dx = size_x/nx
+        dy = size_y/ny
+
+        f = lambda x: x - 2*x/guess_mesh(x, cell_size) - size_x
+        size_x_want = fsolve(f, size_x)[0]
+        f = lambda x: x - 2*x/guess_mesh(x, cell_size) - size_y
+        size_y_want = fsolve(f, size_y)[0]
+
+        print('Estimated mesh size: {}x{}'.format(nx, ny))
+        print('NOTE: periodic domain size will be {}x{}'.format(size_x-2*dx, size_y-2*dy))
+        print('If a periodic domain of size {}x{} is needed, change domain size in .exahype file to {}x{}'.format(size_x, size_y, size_x_want, size_y_want))
 
     # Edit solver header file to declare boundary array
     source_file = output_dir + solver_name + '.h'
