@@ -6,11 +6,11 @@ def write_source(lines, n_dust, q, Stokes, eta):
         # Source x: eta + Coriolis
         lines[i] = replace_with_indent(lines[i],
                                       'S[1] = ',
-                                      'S[1] = 2*Q[0]*{} + 0*Q[3];\n'.format(eta))
+                                      'S[1] = 2*Q[0]*{} + 2*Q[3];\n'.format(eta))
         # Source y: Coriolis
         lines[i] = replace_with_indent(lines[i],
                                       'S[3] = ',
-                                      'S[3] = 0*{}*Q[1];\n'.format(q - 2))
+                                      'S[3] = {}*Q[1];\n'.format(q - 2))
 
         for n in range(0, n_dust):
             # Source x: Coriolis + drag
