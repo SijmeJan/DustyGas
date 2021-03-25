@@ -22,8 +22,19 @@ class SnapShot():
         vtkCellCenters().ComputeCellCenters(output, temp)
         self.x = vtk_to_numpy(temp)
 
-filename = '../../data/state-1-rank-0.vtk'
+    def remove_ghost(self, order):
+        x_sort = np.sort(np.unique(self.x[:,0]))
+        y_sort = np.sort(np.unique(self.x[:,1]))
+
+        sel = np.asarray((self.x[:,0] > x_sort[order-1])*(self.x[:,0] < x_sort[-order])*(self.x[:,1] > y_sort[order-1])*(self.x[:,1] < y_sort[-order])).nonzero()
+
+        self.Q = self.Q[sel]
+        self.x = self.x[sel]
+
+filename = '../../data/state-300-rank-0.vtk'
 s = SnapShot(filename)
+s.remove_ghost(3)
+
 cs = plt.tricontourf(s.x[:,0], s.x[:,1], s.Q[:,0], 100)
 plt.colorbar(cs)
 #plt.plot(s.x[:,0], s.Q[:,1], marker='o', linestyle='None')
