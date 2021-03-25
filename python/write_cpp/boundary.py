@@ -229,6 +229,17 @@ def write_solver_set_periodic(lines, n_vars, order):
     body = ['  global_dof_index = 0;\n']
     add_function_body(lines, 'init', body)
 
+    # Remove current function body
+    remove_function_body(lines, 'boundaryValues')
+
+    periodic = ['  // Outflow boundaries, unimportant since periodic anyway\n']
+
+    for n in range(0, n_vars):
+        periodic.extend(['  stateOut[{}] = stateIn[{}];\n'.format(n, n)])
+    for n in range(0, n_vars):
+        periodic.extend(['  fluxOut[{}] = fluxIn[{}];\n'.format(n, n)])
+
+    add_function_body(lines, 'boundaryValues', periodic)
 
     return
 
