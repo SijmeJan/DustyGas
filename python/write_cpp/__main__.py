@@ -207,7 +207,7 @@ if (use_periodic_boundaries == True):
     lines = f.readlines()
     f.close()
 
-    write_solver_set_periodic(lines, n_vars)
+    write_solver_set_periodic(lines, n_vars, order)
 
     f = open(source_file, "w")
     f.writelines(lines)

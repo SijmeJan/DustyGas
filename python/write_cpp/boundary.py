@@ -167,7 +167,8 @@ def write_solver_h(lines):
     # Declare arrays
     solver = ['    std::vector<double> periodicBoundaryValues;\n',
               '    double global_dx[2];\n',
-              '    int global_n[2];\n']
+              '    int global_n[2];\n',
+              '    int global_dof_index;\n']
 
     # Do nothing if line already present
     for i in range(0, len(lines)):
@@ -188,20 +189,41 @@ def write_solver_h(lines):
             lines[i:i] = solver
             break;
 
-def write_solver_set_periodic(lines, n_vars):
+def write_solver_set_periodic(lines, n_vars, order):
     body = remove_function_body(lines, 'adjustPointSolution')
 
     periodic = ['  if (t > 0.0) {\n',
-                '    std::cout << "Adjusting point solution at x = " << x[0] << ", y = " << x[1] << " " << (int) (x[0]/global_dx[0]) << " " << (int) (x[1]/global_dx[1]) << std::endl;\n',
+                '    // Keep a counter of dofs visited\n',
+                '    global_dof_index++;\n',
+                '    int max_global_dof_index = global_n[0]*global_n[1]*{}*{};\n'.format(order + 1, order + 1),
+                '    if (global_dof_index >= max_global_dof_index)\n',
+                '      global_dof_index -= max_global_dof_index;\n',
+                '\n',
+                '    std::cout << "Adjusting point solution at x = " << x[0] << ", y = " << x[1] << " " << (int) (x[0]/global_dx[0]) << " " << (int) (x[1]/global_dx[1]) << " " << global_dof_index % {} << std::endl;\n'.format((order + 1)*(order + 1)),
                 '\n',
                 '    // Global cell number in x and y direction\n',
-                '    int i = (int) round(x[0]/global_dx[0] - 0.5);\n',
-                '    int j = (int) round(x[1]/global_dx[1] - 0.5);\n',
+                '    int i = (int) (x[0]/global_dx[0]);\n',
+                '    int j = (int) (x[1]/global_dx[1]);\n',
+                '\n',
+                '    int indx = -1;\n',
+                '    if (j == 0) indx = global_n[0] + i;\n',
+                '    if (j == global_n[1] - 1) indx = i;\n',
+                '    if (i == 0) indx = 2*global_n[0] + global_n[1] + j;\n',
+                '    if (i == global_n[0] - 1) indx = 2*global_n[0] + j;\n',
+                '\n',
+                '    if (indx >= 0) {\n',
+
                 '  }\n']
 
     body.extend(periodic)
 
     add_function_body(lines, 'adjustPointSolution', body)
+
+    remove_function_body(lines, 'init')
+
+    body = ['  global_dof_index = 0;\n']
+    add_function_body(lines, 'init', body)
+
 
     return
 
