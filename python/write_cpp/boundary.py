@@ -192,7 +192,7 @@ def write_solver_set_periodic(lines, n_vars):
     body = remove_function_body(lines, 'adjustPointSolution')
 
     periodic = ['  if (t > 0.0) {\n',
-                '    std::cout << "Adjusting point solution at x = " << x[0] << ", y = " << x[1] << " " << (int) x[0]/global_dx[0] << " " << (int) x[1]/global_dx[1] << std::endl;\n',
+                '    std::cout << "Adjusting point solution at x = " << x[0] << ", y = " << x[1] << " " << (int) (x[0]/global_dx[0]) << " " << (int) (x[1]/global_dx[1]) << std::endl;\n',
                 '\n',
                 '    // Global cell number in x and y direction\n',
                 '    int i = (int) round(x[0]/global_dx[0] - 0.5);\n',
