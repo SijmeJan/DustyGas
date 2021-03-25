@@ -178,7 +178,7 @@ if (use_periodic_boundaries == True):
     lines = f.readlines()
     f.close()
 
-    write_boundary(lines, n_vars, patch_size,
+    write_boundary(lines, n_vars, order,
                    [offset_x, offset_y], [size_x, size_y],
                    solver_name, boundary_name)
 

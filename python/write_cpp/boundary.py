@@ -64,7 +64,7 @@ def write_boundary(lines, n_vars, order, offset, size, solver_name, boundary_nam
                 '    int arr_index = n_send_per_cell*indx + {}*pos[0] + pos[1];\n'.format(order + 1),
                 '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
                 '      boundaryValues_local[arr_index + n] = Q[n];\n',
-                '   \n',
+                '  }\n',
                 '  if (cell_x == global_n[0] - 2) {\n',
                 '    // Right boundary\n',
                 '    indx = 2*n_cell_x + n_cell_y + cell_y;\n',
