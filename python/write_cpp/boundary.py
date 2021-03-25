@@ -96,7 +96,8 @@ def write_boundary(lines, n_vars, order, offset, size, solver_name, boundary_nam
     remove_function_body(lines, '::' + boundary_name)
     add_function_body(lines, '::' + boundary_name, solver)
 
-    solver = ['  std::fill(boundaryValues_local.begin(), boundaryValues_local.end(), 0.0);\n']
+    solver = ['  std::fill(boundaryValues_local.begin(), boundaryValues_local.end(), 0.0);\n',
+              '  logInfo("startPlotting(...)","start boundary plotter at t = "<<time);']
 
     remove_function_body(lines, 'startPlotting')
     add_function_body(lines, 'startPlotting', solver)
