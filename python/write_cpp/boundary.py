@@ -194,7 +194,7 @@ def write_solver_set_periodic(lines, n_vars, order):
                 '    if (indx >= 0) {\n',
                 '      int dof = global_dof_index % {};\n'.format((order + 1)*(order + 1)),
                 '      int arr_index = indx*{} + dof*{};\n'.format(n_vars*(order+1)*(order+1), n_vars),
-                '      std::cout << "Adjusting point solution at x = " << x[0] << ", y = " << x[1] << ", cell index " << (int) (x[0]/global_dx[0]) << " " << (int) (x[1]/global_dx[1]) << ", index = " << indx << ", arr_index = " << arr_index << std::endl;\n',
+                '      std::cout << "Adjusting point solution at x = " << x[0] << ", y = " << x[1] << ", cell index " << i << " " << j << ", index = " << indx << ", arr_index = " << arr_index << " " << periodicBoundaryValues[arr_index] << std::endl;\n',
                 '\n',
 
                 '      for (int n = 0; n < {}; n++)\n'.format(n_vars),
