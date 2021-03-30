@@ -214,40 +214,4 @@ if (use_periodic_boundaries == True):
     f.writelines(lines)
     f.close()
 
-    correction_boundary_hack(output_dir)
-
-#source_file = output_dir + 'GasVelocityWriter.cpp'
-
-#f = open(source_file, "r")
-#lines = f.readlines()
-#f.close()
-
-#write_plotter_gas_velocity(lines)
-
-#f = open(source_file, "w")
-#f.writelines(lines)
-#f.close()
-
-#source_file = output_dir + 'DustVelocityWriter.cpp'
-
-#f = open(source_file, "r")
-#lines = f.readlines()
-#f.close()
-
-#write_plotter_dust_velocity(lines, 0)
-
-#f = open(source_file, "w")
-#f.writelines(lines)
-#f.close()
-
-#source_file = output_dir + 'DustDensityWriter.cpp'
-
-#f = open(source_file, "r")
-#lines = f.readlines()
-#f.close()
-
-#write_plotter_dust_density(lines, 0)
-
-#f = open(source_file, "w")
-#f.writelines(lines)
-#f.close()
+    #correction_boundary_hack(output_dir)

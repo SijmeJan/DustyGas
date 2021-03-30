@@ -31,7 +31,7 @@ class SnapShot():
         self.Q = self.Q[sel]
         self.x = self.x[sel]
 
-filename = '../../data/state-3-rank-0.vtk'
+filename = '../../data/state-2-rank-0.vtk'
 s = SnapShot(filename)
 #s.remove_ghost(3)
 
