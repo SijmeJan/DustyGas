@@ -9,6 +9,7 @@ from source import write_source
 from initial import write_initial
 from boundary import write_boundary, write_boundary_h, write_solver_h
 from boundary import write_solver_set_periodic
+from boundary import correction_boundary_hack
 from plot import write_plotter_gas_velocity
 from plot import write_plotter_dust_velocity
 from plot import write_plotter_dust_density
@@ -213,6 +214,7 @@ if (use_periodic_boundaries == True):
     f.writelines(lines)
     f.close()
 
+    correction_boundary_hack(output_dir)
 
 #source_file = output_dir + 'GasVelocityWriter.cpp'
 

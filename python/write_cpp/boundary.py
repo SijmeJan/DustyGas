@@ -517,3 +517,30 @@ def write_solver_set_periodic_fv(lines, n_vars):
     #periodic.append('  std::cout << "Setting boundary at x = " << x[0] << ", y = " << x[1] << ", i = " << i << ", j = " << j << " " << indx << std::endl;\n')
 
     add_function_body(lines, 'boundaryValues', periodic)
+
+
+def correction_boundary_hack(output_dir):
+    fname = output_dir + '/../ExaHyPE-Engine/ExaHyPE/exahype/solvers/ADERDGSolver.cpp'
+
+    f = open(fname, "r")
+    lines = f.readlines()
+    f.close()
+
+    body = remove_function_body(lines, '::correction')
+
+    surface_integral_line = -1
+    adjust_solution_line = -1
+    for i in range(0, len(body)):
+        if (body[i].find('surfaceIntegral(cellDescription') != -1):
+            surface_integral_line = i
+        if (body[i].find('adjustSolutionAfterUpdate(cellDescription)') != -1):
+            adjust_solution_line = i
+
+    if (adjust_solution_line > surface_integral_line):
+        body.insert(surface_integral_line, body.pop(adjust_solution_line))
+
+        add_function_body(lines, '::correction', body)
+
+        f = open(fname, "w")
+        f.writelines(lines)
+        f.close()
