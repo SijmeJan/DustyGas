@@ -10,7 +10,7 @@ def write_initial(lines, n_dust, mu, Stokes, eta, solver_type):
 
     #Kx = 30.0/eta
     #Kz = 30.0/eta
-    Kx = 30.0/0.05
+    Kx = 0.0/0.05
     Kz = 0.0
     omega = np.sqrt(Kx*Kx + 1.0)
 
