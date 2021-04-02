@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Backup original ExaHyPE files
+echo "Backing up ExaHyPE files..."
+mkdir backup
+cp -r ExaHyPE-Engine backup/
+
 if [ "$(uname)" == "Darwin" ]; then
     # Running on MacOS
 
@@ -16,6 +21,7 @@ if [ "$(uname)" == "Darwin" ]; then
     export SHAREDMEM=None
 
 fi
+
 
 ExaHyPE-Engine/Submodules/updateSubmodules.sh
 
