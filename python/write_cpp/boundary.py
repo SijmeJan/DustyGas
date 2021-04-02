@@ -635,6 +635,36 @@ def correction_boundary_hack(repo_dir):
 
     add_function_body(lines, '::enterCell', body)
 
-    f = open('temp.cpp', "w")
-    f.writelines(lines)
+    #f = open(fname, "w")
+    #f.writelines(lines)
+    #f.close()
+
+    # Now update correction step, which is done in ADERDG
+    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/solvers/ADERDGSolver.cpp'
+
+    f = open(fname, "r")
+    lines = f.readlines()
     f.close()
+
+    # Replace correction function
+    body = remove_function_body(lines, '::correction')
+
+    # Check if not already present
+    matches = [match for match in body if "PredictCorrect" in match]
+    if (len(matches) == 0):
+        for i in range(0, len(body)):
+            if (body[i].find('surfaceIntegral(cellDescription,boundaryMarkers,addSurfaceIntegralResultToUpdate)') != -1):
+                body[i+4] = '  ' + body[i+4]
+                body[i+4:i+4] = ['  }\n', '  if (PlotAdjust == true)\n']
+                body[i+3] = '  ' + body[i+3]
+                body[i+2] = '  ' + body[i+2]
+                body[i+1] = '  ' + body[i+1]
+                body[i+0] = '  ' + body[i+0]
+                body[i:i] = ['  if (PredictCorrect == true) {\n']
+                break;
+
+    add_function_body(lines, '::correction', body)
+
+    #f = open(fname, "w")
+    #f.writelines(lines)
+    #f.close()
