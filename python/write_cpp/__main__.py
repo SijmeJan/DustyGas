@@ -114,6 +114,7 @@ mu = 3.0          # dust/gas ratio
 n_dust = int(n_vars/4 - 1)
 
 # Full path to cpp files
+repo_dir = os.path.dirname(os.path.abspath(__file__)) + '/../../'
 output_dir = os.path.dirname(os.path.abspath(args.infile)) \
   + '/' + output_dir + '/'
 
@@ -214,4 +215,4 @@ if (use_periodic_boundaries == True):
     f.writelines(lines)
     f.close()
 
-    #correction_boundary_hack(output_dir)
+    correction_boundary_hack(repo_dir)

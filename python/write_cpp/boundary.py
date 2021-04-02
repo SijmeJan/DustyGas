@@ -1,4 +1,4 @@
-from common import replace_with_indent, remove_function_body, add_function_body
+from common import replace_with_indent, remove_function_body, add_function_body, add_class_member
 
 def write_boundary(lines, n_vars, order, offset, size, solver_name, boundary_name):
     # Strategy: replace function body of mapQuantities to fill the
@@ -519,28 +519,122 @@ def write_solver_set_periodic_fv(lines, n_vars):
     add_function_body(lines, 'boundaryValues', periodic)
 
 
-def correction_boundary_hack(output_dir):
-    fname = output_dir + '/../ExaHyPE-Engine/ExaHyPE/exahype/solvers/ADERDGSolver.cpp'
+def correction_boundary_hack(repo_dir):
+    # ExaHyPE fuses the correction step with the 'adjustSolution' step, and the
+    # prediction step with the plotting step. For periodic boundaries with
+    # ADERDG, this is unwanted. One of the plotters 'plots' the periodic data
+    # into an array, while the 'adjustSolution' gets the data from the array
+    # to the grid.
+    #
+    # We therefore need two versions of both prediction and correction: one
+    # doing *only* predict/correct and one doing *only* plot/adjust. The
+    # original scheme is correct/adjust -> predict/plot. Modified to allow
+    # periodic boundaries: correct -> plot -> adjust -> predict.
+    #
+    # One could in principle add two extra actions, mappings, adapters,
+    # grid functions, etc, but an (ugly) hack minimizing the amount of edits
+    # of ExaHyPE is to add two booleans to each Solver: PredictCorrect and
+    # PlotAdjust. Only do the prediction/correction step if the relevant boolean
+    # is True, and only to the plotting/adjusting step when PlotAdjust is True.
+
+    # We put these booleans in Solver.h so that each solver has them.
+    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/solvers/Solver.h'
 
     f = open(fname, "r")
     lines = f.readlines()
     f.close()
 
-    body = remove_function_body(lines, '::correction')
+    # Check if not already present
+    matches = [match for match in lines if "PredictCorrect" in match]
+    if (len(matches) == 0):
+        # By default, they are true, so both steps are fused
+        add_class_member(lines, 'Solver', 'public',
+                        ['  // Flags to split the prediction/correction step\n',
+                         '  bool PredictCorrect = true;\n',
+                         '  bool PlotAdjust = true;\n'])
 
-    surface_integral_line = -1
-    adjust_solution_line = -1
-    for i in range(0, len(body)):
-        if (body[i].find('surfaceIntegral(cellDescription') != -1):
-            surface_integral_line = i
-        if (body[i].find('adjustSolutionAfterUpdate(cellDescription)') != -1):
-            adjust_solution_line = i
+    #f = open(fname, "w")
+    #f.writelines(lines)
+    #f.close()
 
-    if (adjust_solution_line > surface_integral_line):
-        body.insert(surface_integral_line, body.pop(adjust_solution_line))
+    # We need two extra iterations in the Runner:
+    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/runners/Runner.cpp'
 
-        add_function_body(lines, '::correction', body)
+    f = open(fname, "r")
+    lines = f.readlines()
+    f.close()
 
-        f = open(fname, "w")
-        f.writelines(lines)
-        f.close()
+    # NOTE: only works with unfused time steps!!!
+    body = remove_function_body(lines,
+                                '::runOneTimeStepWithThreeSeparateAlgorithmicSteps')
+
+    # Check if not already present
+    matches = [match for match in body if "PredictCorrect" in match]
+    if (len(matches) == 0):
+        # Correction step without adjustPointSolution
+        for i in range(0, len(body)):
+            if (body[i].find('repository.switchToUpdateAndReduce()') != -1):
+                body[i:i] = ['  auto* solver = exahype::solvers::RegisteredSolvers[0];\n', '  solver->PredictCorrect = true;\n', '  solver->PlotAdjust = false;\n']
+                break;
+
+        for i in range(0, len(body)):
+            if (body[i].find('repository.switchToPrediction()') != -1):
+                body[i:i] = ['  // Periodic boundaries: first plot\n',
+                             '  solver->PredictCorrect = false;\n',
+                             '  solver->PlotAdjust = true;\n',
+                             '  repository.switchToPrediction();\n',
+                             '  repository.iterate( exahype::solvers::Solver::PredictionSweeps, communicatePeanoVertices );\n',
+                             '  \n',
+                             '  // Periodic boundaries: now adjust solution\n',
+                             '  repository.switchToUpdateAndReduce();\n',
+                             '  repository.iterate( 1, communicatePeanoVertices );\n',
+                             '\n',
+                             '  solver->PredictCorrect = true;\n',
+                             '  solver->PlotAdjust = false;\n']
+                break;
+
+    add_function_body(lines, '::runOneTimeStepWithThreeSeparateAlgorithmicSteps', body)
+
+    #f = open(fname, "w")
+    #f.writelines(lines)
+    #f.close()
+
+    # Now update the mappings: first do prediction
+    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/mappings/Prediction.cpp'
+
+    f = open(fname, "r")
+    lines = f.readlines()
+    f.close()
+
+    # Replace enterCell function
+    body = remove_function_body(lines, '::enterCell')
+
+    # Check if not already present
+    matches = [match for match in body if "PredictCorrect" in match]
+    if (len(matches) == 0):
+        for i in range(0, len(body)):
+            if (body[i].find('for (int solverNumber=0; solverNumber<static_cast<int>(solvers::RegisteredSolvers.size()); solverNumber++)') != -1):
+                body[i+4:i+4] = ['    }\n']
+                body[i+3] = '  ' + body[i+3]
+                body[i+2] = '  ' + body[i+2]
+                body[i+1] = '  ' + body[i+1]
+                body[i+0] = '  ' + body[i+0]
+                body[i:i] = ['    auto* solver = exahype::solvers::RegisteredSolvers[0];\n', '    if (solver->PlotAdjust == true) {\n']
+                break;
+
+        for i in range(0, len(body)):
+            if (body[i].find('exahype::mappings::Prediction::performPredictionOrProlongate(') != -1):
+                body[i+5:i+5] = ['  }\n']
+                body[i+4] = '  ' + body[i+4]
+                body[i+3] = '  ' + body[i+3]
+                body[i+2] = '  ' + body[i+2]
+                body[i+1] = '  ' + body[i+1]
+                body[i+0] = '  ' + body[i+0]
+                body[i:i] = ['  if (solver->PredictCorrect == true) {\n']
+                break;
+
+    add_function_body(lines, '::enterCell', body)
+
+    f = open('temp.cpp', "w")
+    f.writelines(lines)
+    f.close()

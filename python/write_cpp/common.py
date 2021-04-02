@@ -33,3 +33,12 @@ def add_function_body(lines, func_name, body):
                 i = i + 1
             lines[i+1:i+1] = body
             break;
+
+def add_class_member(lines, class_name, public, member):
+    for i in range(0, len(lines)):
+        if (lines[i].find(class_name) != -1 and
+            lines[i].split()[0] == 'class'):
+            while (lines[i].find(public) == -1):
+                i = i + 1
+            lines[i+1:i+1] = member
+            break;
