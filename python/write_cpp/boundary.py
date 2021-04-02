@@ -48,21 +48,21 @@ def write_boundary(lines, n_vars, order, offset, size, solver_name, boundary_nam
                 '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
                 '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
                 '      boundaryValues_local[arr_index + n] = Q[n];\n',
-                '    std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", position " << pos[0] << " " << pos[1] << ", index = " << indx << ", arr_index = " << arr_index << ", cell index " << cell_x << " " << cell_y << std::endl;\n',
+                '    //std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", position " << pos[0] << " " << pos[1] << ", index = " << indx << ", arr_index = " << arr_index << ", cell index " << cell_x << " " << cell_y << std::endl;\n',
                 '  }\n'
                 '  if (cell_y == global_n[1] - 2) {\n',
                 '    indx = n_cell_x + cell_x;\n',
                 '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
                 '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
                 '      boundaryValues_local[arr_index + n] = Q[n];\n',
-                '    std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", position " << pos[0] << " " << pos[1] << ", index = " << indx << ", arr_index = " << arr_index << ", cell index " << cell_x << " " << cell_y << std::endl;\n',
+                '    //std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", position " << pos[0] << " " << pos[1] << ", index = " << indx << ", arr_index = " << arr_index << ", cell index " << cell_x << " " << cell_y << std::endl;\n',
                 '  }\n'
                 '  if (cell_x == 1) {\n',
                 '    indx = 2*n_cell_x + cell_y;\n',
                 '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
                 '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
                 '      boundaryValues_local[arr_index + n] = Q[n];\n',
-                '    std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", position " << pos[0] << " " << pos[1] << ", index = " << indx << ", arr_index = " << arr_index << ", cell index " << cell_x << " " << cell_y << std::endl;\n',
+                '    //std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", position " << pos[0] << " " << pos[1] << ", index = " << indx << ", arr_index = " << arr_index << ", cell index " << cell_x << " " << cell_y << std::endl;\n',
                 '  }\n'
                 '  if (cell_x == global_n[0] - 2) {\n',
                 '    indx = 2*n_cell_x + n_cell_y + cell_y;\n',
@@ -123,7 +123,7 @@ def write_boundary(lines, n_vars, order, offset, size, solver_name, boundary_nam
               '      (*boundaryValues).resize(boundaryValues_local.size());\n',
               '    }\n',
               '  }\n',
-              '  std::cout << "rank = " << tarch::parallel::Node::getInstance().getRank() << ", sizes: " << boundaryValues_local.size() << " " << (*boundaryValues).size() << std::endl;\n',
+              '  //std::cout << "rank = " << tarch::parallel::Node::getInstance().getRank() << ", sizes: " << boundaryValues_local.size() << " " << (*boundaryValues).size() << std::endl;\n',
               '  std::cout << "Allreduce with rank " << tarch::parallel::Node::getInstance().getRank() << " and communicator " << tarch::parallel::Node::getInstance().getCommunicator() << std::endl;\n',
               '  MPI_Allreduce(&(boundaryValues_local[0]),\n',
               '                &((*boundaryValues)[0]),\n',
@@ -213,7 +213,7 @@ def write_solver_set_periodic(lines, n_vars, order):
                 '    if (indx >= 0) {\n',
                 '      int dof = global_dof_index % {};\n'.format((order + 1)*(order + 1)),
                 '      int arr_index = indx*{} + dof*{};\n'.format(n_vars*(order+1)*(order+1), n_vars),
-                '      if (i == 0 && j == 0) std::cout << "Adjusting point solution at x = " << x[0] << ", y = " << x[1] << ", cell index " << i << " " << j << ", index = " << indx << ", arr_index = " << arr_index << " at t = " << t << std::endl;\n',
+                '      //if (i == 0 && j == 0) std::cout << "Adjusting point solution at x = " << x[0] << ", y = " << x[1] << ", cell index " << i << " " << j << ", index = " << indx << ", arr_index = " << arr_index << " at t = " << t << std::endl;\n',
                 '\n',
 
                 '      for (int n = 0; n < {}; n++)\n'.format(n_vars),
@@ -577,11 +577,13 @@ def correction_boundary_hack(repo_dir):
         # Correction step without adjustPointSolution
         for i in range(0, len(body)):
             if (body[i].find('repository.switchToUpdateAndReduce()') != -1):
+                body[i+2:i+2] = ['  for (int solverNumber=0; solverNumber<static_cast<int>(solvers::RegisteredSolvers.size()); solverNumber++) {\n', '    auto* solver = exahype::solvers::RegisteredSolvers[solverNumber];\n', '    solver->PredictCorrect = true;\n', '    solver->PlotAdjust = true;\n', '  }\n']
                 body[i:i] = ['  for (int solverNumber=0; solverNumber<static_cast<int>(solvers::RegisteredSolvers.size()); solverNumber++) {\n', '    auto* solver = exahype::solvers::RegisteredSolvers[solverNumber];\n', '    solver->PredictCorrect = true;\n', '    solver->PlotAdjust = false;\n', '  }\n']
                 break;
 
         for i in range(0, len(body)):
             if (body[i].find('repository.switchToPrediction()') != -1):
+                body[i+2:i+2] = ['  for (int solverNumber=0; solverNumber<static_cast<int>(solvers::RegisteredSolvers.size()); solverNumber++) {\n', '    auto* solver = exahype::solvers::RegisteredSolvers[solverNumber];\n', '    solver->PredictCorrect = true;\n', '    solver->PlotAdjust = true;\n', '  }\n']
                 body[i:i] = ['  // Periodic boundaries: first plot\n',
                              '  for (int solverNumber=0; solverNumber<static_cast<int>(solvers::RegisteredSolvers.size()); solverNumber++) {\n'
                              '    auto* solver = exahype::solvers::RegisteredSolvers[solverNumber];\n'
