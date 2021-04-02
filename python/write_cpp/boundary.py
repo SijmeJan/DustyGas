@@ -641,7 +641,7 @@ def correction_boundary_hack(repo_dir):
                 body[i+2] = '  ' + body[i+2]
                 body[i+1] = '  ' + body[i+1]
                 body[i+0] = '  ' + body[i+0]
-                body[i:i] = ['  if (solver->PredictCorrect == true) {\n']
+                body[i:i] = ['  auto* solver = exahype::solvers::RegisteredSolvers[0];\n', '  if (solver->PredictCorrect == true) {\n']
                 break;
 
     add_function_body(lines, '::enterCell', body)
