@@ -547,15 +547,16 @@ def correction_boundary_hack(repo_dir):
     # Check if not already present
     matches = [match for match in lines if "PredictCorrect" in match]
     if (len(matches) == 0):
+        print('Modifying Solver.h')
         # By default, they are true, so both steps are fused
         add_class_member(lines, 'Solver', 'public',
                         ['  // Flags to split the prediction/correction step\n',
                          '  bool PredictCorrect = true;\n',
                          '  bool PlotAdjust = true;\n'])
 
-    #f = open(fname, "w")
-    #f.writelines(lines)
-    #f.close()
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
 
     # We need two extra iterations in the Runner:
     fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/runners/Runner.cpp'
@@ -571,17 +572,22 @@ def correction_boundary_hack(repo_dir):
     # Check if not already present
     matches = [match for match in body if "PredictCorrect" in match]
     if (len(matches) == 0):
+        print('Modifying Runner.cpp')
+
         # Correction step without adjustPointSolution
         for i in range(0, len(body)):
             if (body[i].find('repository.switchToUpdateAndReduce()') != -1):
-                body[i:i] = ['  auto* solver = exahype::solvers::RegisteredSolvers[0];\n', '  solver->PredictCorrect = true;\n', '  solver->PlotAdjust = false;\n']
+                body[i:i] = ['  for (int solverNumber=0; solverNumber<static_cast<int>(solvers::RegisteredSolvers.size()); solverNumber++) {\n', '    auto* solver = exahype::solvers::RegisteredSolvers[solverNumber];\n', '    solver->PredictCorrect = true;\n', '    solver->PlotAdjust = false;\n', '  }\n']
                 break;
 
         for i in range(0, len(body)):
             if (body[i].find('repository.switchToPrediction()') != -1):
                 body[i:i] = ['  // Periodic boundaries: first plot\n',
-                             '  solver->PredictCorrect = false;\n',
-                             '  solver->PlotAdjust = true;\n',
+                             '  for (int solverNumber=0; solverNumber<static_cast<int>(solvers::RegisteredSolvers.size()); solverNumber++) {\n'
+                             '    auto* solver = exahype::solvers::RegisteredSolvers[solverNumber];\n'
+                             '    solver->PredictCorrect = false;\n',
+                             '    solver->PlotAdjust = true;\n',
+                             '  }\n',
                              '  repository.switchToPrediction();\n',
                              '  repository.iterate( exahype::solvers::Solver::PredictionSweeps, communicatePeanoVertices );\n',
                              '  \n',
@@ -589,15 +595,18 @@ def correction_boundary_hack(repo_dir):
                              '  repository.switchToUpdateAndReduce();\n',
                              '  repository.iterate( 1, communicatePeanoVertices );\n',
                              '\n',
-                             '  solver->PredictCorrect = true;\n',
-                             '  solver->PlotAdjust = false;\n']
+                             '  for (int solverNumber=0; solverNumber<static_cast<int>(solvers::RegisteredSolvers.size()); solverNumber++) {\n'
+                             '    auto* solver = exahype::solvers::RegisteredSolvers[solverNumber];\n'
+                             '    solver->PredictCorrect = true;\n',
+                             '    solver->PlotAdjust = false;\n',
+                             '  }\n']
                 break;
 
     add_function_body(lines, '::runOneTimeStepWithThreeSeparateAlgorithmicSteps', body)
 
-    #f = open(fname, "w")
-    #f.writelines(lines)
-    #f.close()
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
 
     # Now update the mappings: first do prediction
     fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/mappings/Prediction.cpp'
@@ -612,6 +621,8 @@ def correction_boundary_hack(repo_dir):
     # Check if not already present
     matches = [match for match in body if "PredictCorrect" in match]
     if (len(matches) == 0):
+        print('Modifying Prediction.cpp')
+
         for i in range(0, len(body)):
             if (body[i].find('for (int solverNumber=0; solverNumber<static_cast<int>(solvers::RegisteredSolvers.size()); solverNumber++)') != -1):
                 body[i+4:i+4] = ['    }\n']
@@ -635,9 +646,9 @@ def correction_boundary_hack(repo_dir):
 
     add_function_body(lines, '::enterCell', body)
 
-    #f = open(fname, "w")
-    #f.writelines(lines)
-    #f.close()
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
 
     # Now update correction step, which is done in ADERDG
     fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/solvers/ADERDGSolver.cpp'
@@ -652,6 +663,7 @@ def correction_boundary_hack(repo_dir):
     # Check if not already present
     matches = [match for match in body if "PredictCorrect" in match]
     if (len(matches) == 0):
+        print('Modifying ADERDGSolver.cpp')
         for i in range(0, len(body)):
             if (body[i].find('surfaceIntegral(cellDescription,boundaryMarkers,addSurfaceIntegralResultToUpdate)') != -1):
                 body[i+4] = '  ' + body[i+4]
@@ -665,6 +677,6 @@ def correction_boundary_hack(repo_dir):
 
     add_function_body(lines, '::correction', body)
 
-    #f = open(fname, "w")
-    #f.writelines(lines)
-    #f.close()
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
