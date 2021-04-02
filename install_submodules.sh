@@ -3,7 +3,7 @@
 # Backup original ExaHyPE files
 echo "Backing up ExaHyPE files..."
 mkdir backup
-cp -r ExaHyPE-Engine backup/
+cp -r ExaHyPE-Engine/ExaHyPE backup/
 
 if [ "$(uname)" == "Darwin" ]; then
     # Running on MacOS
