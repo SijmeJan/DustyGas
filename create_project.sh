@@ -1,3 +1,9 @@
+# Restore potentially modified files
+cp backup/ExaHyPE/exahype/runners/Runner.cpp ExaHyPE-Engine/ExaHyPE/exahype/runners/
+cp backup/ExaHyPE/exahype/solvers/Solver.h ExaHyPE-Engine/ExaHyPE/exahype/solvers/
+cp backup/ExaHyPE/exahype/mappings/Prediction.cpp ExaHyPE-Engine/ExaHyPE/exahype/mappings/
+cp backup/ExaHyPE/exahype/solvers/ADERDGSolver.cpp ExaHyPE-Engine/ExaHyPE/exahype/solvers/
+
 # Update/generate .exahype file
 # Export COMPILER, DISTRIBUTEDMEM
 export COMPILER=GNU
