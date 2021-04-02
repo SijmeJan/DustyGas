@@ -32,7 +32,7 @@ class SnapShot():
         self.x = self.x[sel]
 
 # 9.887e-3
-filename = '../../data/state-1-rank-0.vtk'
+filename = '../../data/state-5-rank-0.vtk'
 s = SnapShot(filename)
 #s.remove_ghost(3)
 
