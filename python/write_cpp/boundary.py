@@ -194,7 +194,7 @@ def write_solver_h(lines):
 def write_solver_set_periodic(lines, n_vars, order):
     body = remove_function_body(lines, 'adjustPointSolution')
 
-    periodic = ['  if (t > 0.0) {\n',
+    periodic = ['  if (t < 0.0) {\n',
                 '    // Keep a counter of dofs visited\n',
                 '    int max_global_dof_index = global_n[0]*global_n[1]*{}*{};\n'.format(order + 1, order + 1),
                 '    if (global_dof_index >= max_global_dof_index)\n',
@@ -606,9 +606,9 @@ def correction_boundary_hack(repo_dir):
 
     add_function_body(lines, '::runOneTimeStepWithThreeSeparateAlgorithmicSteps', body)
 
-    f = open(fname, "w")
-    f.writelines(lines)
-    f.close()
+    #f = open(fname, "w")
+    #f.writelines(lines)
+    #f.close()
 
     # Now update the mappings: first do prediction
     fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/mappings/Prediction.cpp'
