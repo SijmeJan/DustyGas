@@ -19,7 +19,7 @@ exahype-project DustyGas
 
   solver ADER-DG DustyGasSolver
     variables const = 4
-    order const = 2
+    order const = 1
     maximum-mesh-size = 5e-3
     time-stepping = global
     type const = nonlinear
@@ -33,13 +33,13 @@ exahype-project DustyGas
      repeat = 1.0e-1
      output = ./state
     end plot
-    /*
+
     plot vtk::Legendre::vertices::ascii BoundaryWriter
      variables const = 0
      time = 0.0
      repeat = 1.0e-10
      output = ./boundary
     end plot
-    */
+
   end solver
 end exahype-project
