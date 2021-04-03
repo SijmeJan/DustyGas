@@ -1,5 +1,18 @@
 from common import replace_with_indent, remove_function_body, add_function_body, add_class_member
 
+def write_outflow_boundary(lines, n_vars):
+    # Remove current function body
+    remove_function_body(lines, 'boundaryValues')
+
+    periodic = ['  // Outflow boundaries, unimportant if periodic\n']
+
+    for n in range(0, n_vars):
+        periodic.extend(['  stateOut[{}] = stateIn[{}];\n'.format(n, n)])
+    for n in range(0, n_vars):
+        periodic.extend(['  fluxOut[{}] = fluxIn[{}];\n'.format(n, n)])
+
+    add_function_body(lines, 'boundaryValues', periodic)
+
 def write_boundary(lines, n_vars, order, offset, size, solver_name, boundary_name):
     # Strategy: replace function body of mapQuantities to fill the
     # boundaryValues vector.
@@ -233,16 +246,16 @@ def write_solver_set_periodic(lines, n_vars, order):
     add_function_body(lines, 'init', body)
 
     # Remove current function body
-    remove_function_body(lines, 'boundaryValues')
+    #remove_function_body(lines, 'boundaryValues')
 
-    periodic = ['  // Outflow boundaries, unimportant since periodic anyway\n']
+    #periodic = ['  // Outflow boundaries, unimportant since periodic anyway\n']
 
-    for n in range(0, n_vars):
-        periodic.extend(['  stateOut[{}] = stateIn[{}];\n'.format(n, n)])
-    for n in range(0, n_vars):
-        periodic.extend(['  fluxOut[{}] = fluxIn[{}];\n'.format(n, n)])
+    #for n in range(0, n_vars):
+    #    periodic.extend(['  stateOut[{}] = stateIn[{}];\n'.format(n, n)])
+    #for n in range(0, n_vars):
+    #    periodic.extend(['  fluxOut[{}] = fluxIn[{}];\n'.format(n, n)])
 
-    add_function_body(lines, 'boundaryValues', periodic)
+    #add_function_body(lines, 'boundaryValues', periodic)
 
     return
 

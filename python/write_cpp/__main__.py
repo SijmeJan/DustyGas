@@ -10,6 +10,7 @@ from initial import write_initial
 from boundary import write_boundary, write_boundary_h, write_solver_h
 from boundary import write_solver_set_periodic
 from boundary import correction_boundary_hack
+from boundary import write_outflow_boundary
 from plot import write_plotter_gas_velocity
 from plot import write_plotter_dust_velocity
 from plot import write_plotter_dust_density
@@ -132,6 +133,7 @@ write_eigenvalues(lines, n_dust, c, solver_type)
 write_flux(lines, n_dust, c)
 write_source(lines, n_dust, q, Stokes, eta)
 write_initial(lines, n_dust, mu, Stokes, eta, solver_type)
+write_outflow_boundary(lines, n_vars)
 
 # Write to file
 f = open(source_file, "w")
