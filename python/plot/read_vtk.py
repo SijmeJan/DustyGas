@@ -32,27 +32,28 @@ class SnapShot():
         self.x = self.x[sel]
 
 # 9.887e-3
-filename = '../../data/state-5-rank-0.vtk'
-s = SnapShot(filename)
+#filename = '../../data/state-100-rank-0.vtk'
+#s = SnapShot(filename)
 #s.remove_ghost(3)
 
-#cs = plt.tricontourf(s.x[:,0], s.x[:,1], s.Q[:,0], 100)
+#cs = plt.tricontourf(s.x[:,0], s.x[:,1], s.Q[:,1], 100)
 #plt.colorbar(cs)
 
-sel = np.asarray(s.x[:,0] == np.min(s.x[:,0])).nonzero()
-plt.plot(s.x[sel,1], s.Q[sel,1], marker='o', linestyle='None')
+#sel = np.asarray(s.x[:,0] == np.min(s.x[:,0])).nonzero()
+#plt.plot(s.x[sel,1], s.Q[sel,1], marker='o', linestyle='None', color='blue')
+#plt.plot(s.x[sel,1], s.Q[sel,3], marker='o', linestyle='None', color='green')
 
 
-#n = 1001
-#e = np.zeros((n))
+n = 100
+e = np.zeros((n))
 
-#for i in range(0, n):
-#    s = SnapShot('../../data/state-{}-rank-0.vtk'.format(i))
+for i in range(0, n):
+    s = SnapShot('../../data/state-{}-rank-0.vtk'.format(i))
     #e[i] = np.sum(s.Q[:,6]*s.Q[:,6]/s.Q[:,4])
-#    e[i] = np.max(s.Q[:,1]/s.Q[:,0])
+    e[i] = np.max(s.Q[:,1]/s.Q[:,0])
 
 #plt.yscale('log')
-#plt.plot(e)
+plt.plot(e)
 
 #plt.plot(0.0001*np.exp(0.42*np.arange(0,n)))
 
