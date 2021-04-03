@@ -619,9 +619,9 @@ def correction_boundary_hack(repo_dir):
 
     add_function_body(lines, '::runOneTimeStepWithThreeSeparateAlgorithmicSteps', body)
 
-    #f = open(fname, "w")
-    #f.writelines(lines)
-    #f.close()
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
 
     # Now update the mappings: first do prediction
     fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/mappings/Prediction.cpp'
