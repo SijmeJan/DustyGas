@@ -533,9 +533,6 @@ def write_solver_set_periodic_fv(lines, n_vars):
 
 
 def correction_boundary_hack(repo_dir):
-
-    return
-
     # Add adapter names to RepositoryState
     fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/records/RepositoryState.h'
     f = open(fname, "r")
@@ -563,6 +560,8 @@ def correction_boundary_hack(repo_dir):
     f = open(fname, "w")
     f.writelines(lines)
     f.close()
+
+    return
 
     # Add switch functions to Repository.h
     fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/repositories/Repository.h'
