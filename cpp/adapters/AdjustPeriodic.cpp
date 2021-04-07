@@ -1,86 +1,86 @@
-#include "exahype/adapters/UpdateAndReduce.h"
+#include "exahype/adapters/AdjustPeriodic.h"
 
 
-peano::CommunicationSpecification   exahype::adapters::UpdateAndReduce::communicationSpecification() const {
+peano::CommunicationSpecification   exahype::adapters::AdjustPeriodic::communicationSpecification() const {
   return peano::CommunicationSpecification::getMinimalSpecification()
-    &  _map2UpdateAndReduce.communicationSpecification()
+    &  _map2AdjustPeriodic.communicationSpecification()
 
   ;
 }
 
 
-peano::MappingSpecification   exahype::adapters::UpdateAndReduce::touchVertexLastTimeSpecification(int level) const {
+peano::MappingSpecification   exahype::adapters::AdjustPeriodic::touchVertexLastTimeSpecification(int level) const {
   return peano::MappingSpecification::getMinimalSpecification()
-    &  _map2UpdateAndReduce.touchVertexLastTimeSpecification(level)
+    &  _map2AdjustPeriodic.touchVertexLastTimeSpecification(level)
 
   ;
 }
 
 
-peano::MappingSpecification   exahype::adapters::UpdateAndReduce::touchVertexFirstTimeSpecification(int level) const { 
+peano::MappingSpecification   exahype::adapters::AdjustPeriodic::touchVertexFirstTimeSpecification(int level) const {
   return peano::MappingSpecification::getMinimalSpecification()
-    &  _map2UpdateAndReduce.touchVertexFirstTimeSpecification(level)
+    &  _map2AdjustPeriodic.touchVertexFirstTimeSpecification(level)
 
   ;
 }
 
 
-peano::MappingSpecification   exahype::adapters::UpdateAndReduce::enterCellSpecification(int level) const {
+peano::MappingSpecification   exahype::adapters::AdjustPeriodic::enterCellSpecification(int level) const {
   return peano::MappingSpecification::getMinimalSpecification()
-    &  _map2UpdateAndReduce.enterCellSpecification(level)
+    &  _map2AdjustPeriodic.enterCellSpecification(level)
 
   ;
 }
 
 
-peano::MappingSpecification   exahype::adapters::UpdateAndReduce::leaveCellSpecification(int level) const {
+peano::MappingSpecification   exahype::adapters::AdjustPeriodic::leaveCellSpecification(int level) const {
   return peano::MappingSpecification::getMinimalSpecification()
-    &  _map2UpdateAndReduce.leaveCellSpecification(level)
+    &  _map2AdjustPeriodic.leaveCellSpecification(level)
 
   ;
 }
 
 
-peano::MappingSpecification   exahype::adapters::UpdateAndReduce::ascendSpecification(int level) const {
+peano::MappingSpecification   exahype::adapters::AdjustPeriodic::ascendSpecification(int level) const {
   return peano::MappingSpecification::getMinimalSpecification()
-    &  _map2UpdateAndReduce.ascendSpecification(level)
+    &  _map2AdjustPeriodic.ascendSpecification(level)
 
   ;
 }
 
 
-peano::MappingSpecification   exahype::adapters::UpdateAndReduce::descendSpecification(int level) const {
+peano::MappingSpecification   exahype::adapters::AdjustPeriodic::descendSpecification(int level) const {
   return peano::MappingSpecification::getMinimalSpecification()
-    &  _map2UpdateAndReduce.descendSpecification(level)
+    &  _map2AdjustPeriodic.descendSpecification(level)
 
   ;
 }
 
 
-exahype::adapters::UpdateAndReduce::UpdateAndReduce() {
+exahype::adapters::AdjustPeriodic::AdjustPeriodic() {
 }
 
 
-exahype::adapters::UpdateAndReduce::~UpdateAndReduce() {
+exahype::adapters::AdjustPeriodic::~AdjustPeriodic() {
 }
 
 
 #if defined(SharedMemoryParallelisation)
-exahype::adapters::UpdateAndReduce::UpdateAndReduce(const UpdateAndReduce&  masterThread):
-  _map2UpdateAndReduce(masterThread._map2UpdateAndReduce) 
+exahype::adapters::AdjustPeriodic::AdjustPeriodic(const AdjustPeriodic&  masterThread):
+  _map2AdjustPeriodic(masterThread._map2AdjustPeriodic)
 
 {
 }
 
 
-void exahype::adapters::UpdateAndReduce::mergeWithWorkerThread(const UpdateAndReduce& workerThread) {
-  _map2UpdateAndReduce.mergeWithWorkerThread(workerThread._map2UpdateAndReduce);
+void exahype::adapters::AdjustPeriodic::mergeWithWorkerThread(const AdjustPeriodic& workerThread) {
+  _map2AdjustPeriodic.mergeWithWorkerThread(workerThread._map2AdjustPeriodic);
 
 }
 #endif
 
 
-void exahype::adapters::UpdateAndReduce::createHangingVertex(
+void exahype::adapters::AdjustPeriodic::createHangingVertex(
       exahype::Vertex&     fineGridVertex,
       const tarch::la::Vector<DIMENSIONS,double>&                fineGridX,
       const tarch::la::Vector<DIMENSIONS,double>&                fineGridH,
@@ -89,13 +89,13 @@ void exahype::adapters::UpdateAndReduce::createHangingVertex(
       exahype::Cell&       coarseGridCell,
       const tarch::la::Vector<DIMENSIONS,int>&                   fineGridPositionOfVertex
 ) {
-  _map2UpdateAndReduce.createHangingVertex(fineGridVertex, fineGridX, fineGridH, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfVertex );
+  _map2AdjustPeriodic.createHangingVertex(fineGridVertex, fineGridX, fineGridH, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfVertex );
 
 
 }
 
 
-void exahype::adapters::UpdateAndReduce::destroyHangingVertex(
+void exahype::adapters::AdjustPeriodic::destroyHangingVertex(
       const exahype::Vertex&   fineGridVertex,
       const tarch::la::Vector<DIMENSIONS,double>&                    fineGridX,
       const tarch::la::Vector<DIMENSIONS,double>&                    fineGridH,
@@ -104,12 +104,12 @@ void exahype::adapters::UpdateAndReduce::destroyHangingVertex(
       exahype::Cell&           coarseGridCell,
       const tarch::la::Vector<DIMENSIONS,int>&                       fineGridPositionOfVertex
 ) {
-  _map2UpdateAndReduce.destroyHangingVertex(fineGridVertex, fineGridX, fineGridH, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfVertex );
+  _map2AdjustPeriodic.destroyHangingVertex(fineGridVertex, fineGridX, fineGridH, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfVertex );
 
 }
 
 
-void exahype::adapters::UpdateAndReduce::createInnerVertex(
+void exahype::adapters::AdjustPeriodic::createInnerVertex(
       exahype::Vertex&               fineGridVertex,
       const tarch::la::Vector<DIMENSIONS,double>&                          fineGridX,
       const tarch::la::Vector<DIMENSIONS,double>&                          fineGridH,
@@ -118,12 +118,12 @@ void exahype::adapters::UpdateAndReduce::createInnerVertex(
       exahype::Cell&                 coarseGridCell,
       const tarch::la::Vector<DIMENSIONS,int>&                             fineGridPositionOfVertex
 ) {
-  _map2UpdateAndReduce.createInnerVertex(fineGridVertex, fineGridX, fineGridH, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfVertex );
+  _map2AdjustPeriodic.createInnerVertex(fineGridVertex, fineGridX, fineGridH, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfVertex );
 
 }
 
 
-void exahype::adapters::UpdateAndReduce::createBoundaryVertex(
+void exahype::adapters::AdjustPeriodic::createBoundaryVertex(
       exahype::Vertex&               fineGridVertex,
       const tarch::la::Vector<DIMENSIONS,double>&                          fineGridX,
       const tarch::la::Vector<DIMENSIONS,double>&                          fineGridH,
@@ -132,12 +132,12 @@ void exahype::adapters::UpdateAndReduce::createBoundaryVertex(
       exahype::Cell&                 coarseGridCell,
       const tarch::la::Vector<DIMENSIONS,int>&                             fineGridPositionOfVertex
 ) {
-  _map2UpdateAndReduce.createBoundaryVertex( fineGridVertex, fineGridX, fineGridH, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfVertex );
+  _map2AdjustPeriodic.createBoundaryVertex( fineGridVertex, fineGridX, fineGridH, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfVertex );
 
 }
 
 
-void exahype::adapters::UpdateAndReduce::destroyVertex(
+void exahype::adapters::AdjustPeriodic::destroyVertex(
       const exahype::Vertex&   fineGridVertex,
       const tarch::la::Vector<DIMENSIONS,double>&                    fineGridX,
       const tarch::la::Vector<DIMENSIONS,double>&                    fineGridH,
@@ -146,12 +146,12 @@ void exahype::adapters::UpdateAndReduce::destroyVertex(
       exahype::Cell&           coarseGridCell,
       const tarch::la::Vector<DIMENSIONS,int>&                       fineGridPositionOfVertex
 ) {
-  _map2UpdateAndReduce.destroyVertex( fineGridVertex, fineGridX, fineGridH, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfVertex );
+  _map2AdjustPeriodic.destroyVertex( fineGridVertex, fineGridX, fineGridH, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfVertex );
 
 }
 
 
-void exahype::adapters::UpdateAndReduce::createCell(
+void exahype::adapters::AdjustPeriodic::createCell(
       exahype::Cell&                 fineGridCell,
       exahype::Vertex * const        fineGridVertices,
       const peano::grid::VertexEnumerator&                fineGridVerticesEnumerator,
@@ -160,12 +160,12 @@ void exahype::adapters::UpdateAndReduce::createCell(
       exahype::Cell&                 coarseGridCell,
       const tarch::la::Vector<DIMENSIONS,int>&                             fineGridPositionOfCell
 ) {
-  _map2UpdateAndReduce.createCell( fineGridCell, fineGridVertices, fineGridVerticesEnumerator, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfCell );
+  _map2AdjustPeriodic.createCell( fineGridCell, fineGridVertices, fineGridVerticesEnumerator, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfCell );
 
 }
 
 
-void exahype::adapters::UpdateAndReduce::destroyCell(
+void exahype::adapters::AdjustPeriodic::destroyCell(
       const exahype::Cell&           fineGridCell,
       exahype::Vertex * const        fineGridVertices,
       const peano::grid::VertexEnumerator&                fineGridVerticesEnumerator,
@@ -174,13 +174,13 @@ void exahype::adapters::UpdateAndReduce::destroyCell(
       exahype::Cell&                 coarseGridCell,
       const tarch::la::Vector<DIMENSIONS,int>&                             fineGridPositionOfCell
 ) {
-  _map2UpdateAndReduce.destroyCell( fineGridCell, fineGridVertices, fineGridVerticesEnumerator, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfCell );
+  _map2AdjustPeriodic.destroyCell( fineGridCell, fineGridVertices, fineGridVerticesEnumerator, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfCell );
 
 }
 
 
 #ifdef Parallel
-void exahype::adapters::UpdateAndReduce::mergeWithNeighbour(
+void exahype::adapters::AdjustPeriodic::mergeWithNeighbour(
   exahype::Vertex&  vertex,
   const exahype::Vertex&  neighbour,
   int                                           fromRank,
@@ -188,48 +188,48 @@ void exahype::adapters::UpdateAndReduce::mergeWithNeighbour(
   const tarch::la::Vector<DIMENSIONS,double>&   fineGridH,
   int                                           level
 ) {
-   _map2UpdateAndReduce.mergeWithNeighbour( vertex, neighbour, fromRank, fineGridX, fineGridH, level );
+   _map2AdjustPeriodic.mergeWithNeighbour( vertex, neighbour, fromRank, fineGridX, fineGridH, level );
 
 }
 
 
-void exahype::adapters::UpdateAndReduce::prepareSendToNeighbour(
+void exahype::adapters::AdjustPeriodic::prepareSendToNeighbour(
   exahype::Vertex&  vertex,
   int                                           toRank,
   const tarch::la::Vector<DIMENSIONS,double>&   x,
   const tarch::la::Vector<DIMENSIONS,double>&   h,
   int                                           level
 ) {
-   _map2UpdateAndReduce.prepareSendToNeighbour( vertex, toRank, x, h, level );
+   _map2AdjustPeriodic.prepareSendToNeighbour( vertex, toRank, x, h, level );
 
 }
 
 
-void exahype::adapters::UpdateAndReduce::prepareCopyToRemoteNode(
+void exahype::adapters::AdjustPeriodic::prepareCopyToRemoteNode(
   exahype::Vertex&  localVertex,
   int                                           toRank,
   const tarch::la::Vector<DIMENSIONS,double>&   x,
   const tarch::la::Vector<DIMENSIONS,double>&   h,
   int                                           level
 ) {
-   _map2UpdateAndReduce.prepareCopyToRemoteNode( localVertex, toRank, x, h, level );
+   _map2AdjustPeriodic.prepareCopyToRemoteNode( localVertex, toRank, x, h, level );
 
 }
 
 
-void exahype::adapters::UpdateAndReduce::prepareCopyToRemoteNode(
+void exahype::adapters::AdjustPeriodic::prepareCopyToRemoteNode(
   exahype::Cell&  localCell,
       int                                           toRank,
       const tarch::la::Vector<DIMENSIONS,double>&   x,
       const tarch::la::Vector<DIMENSIONS,double>&   h,
       int                                           level
 ) {
-   _map2UpdateAndReduce.prepareCopyToRemoteNode( localCell, toRank, x, h, level );
+   _map2AdjustPeriodic.prepareCopyToRemoteNode( localCell, toRank, x, h, level );
 
 }
 
 
-void exahype::adapters::UpdateAndReduce::mergeWithRemoteDataDueToForkOrJoin(
+void exahype::adapters::AdjustPeriodic::mergeWithRemoteDataDueToForkOrJoin(
   exahype::Vertex&  localVertex,
   const exahype::Vertex&  masterOrWorkerVertex,
   int                                       fromRank,
@@ -237,12 +237,12 @@ void exahype::adapters::UpdateAndReduce::mergeWithRemoteDataDueToForkOrJoin(
   const tarch::la::Vector<DIMENSIONS,double>&  h,
   int                                       level
 ) {
-   _map2UpdateAndReduce.mergeWithRemoteDataDueToForkOrJoin( localVertex, masterOrWorkerVertex, fromRank, x, h, level );
+   _map2AdjustPeriodic.mergeWithRemoteDataDueToForkOrJoin( localVertex, masterOrWorkerVertex, fromRank, x, h, level );
 
 }
 
 
-void exahype::adapters::UpdateAndReduce::mergeWithRemoteDataDueToForkOrJoin(
+void exahype::adapters::AdjustPeriodic::mergeWithRemoteDataDueToForkOrJoin(
   exahype::Cell&  localCell,
   const exahype::Cell&  masterOrWorkerCell,
   int                                       fromRank,
@@ -250,12 +250,12 @@ void exahype::adapters::UpdateAndReduce::mergeWithRemoteDataDueToForkOrJoin(
   const tarch::la::Vector<DIMENSIONS,double>&  h,
   int                                       level
 ) {
-   _map2UpdateAndReduce.mergeWithRemoteDataDueToForkOrJoin( localCell, masterOrWorkerCell, fromRank, x, h, level );
+   _map2AdjustPeriodic.mergeWithRemoteDataDueToForkOrJoin( localCell, masterOrWorkerCell, fromRank, x, h, level );
 
 }
 
 
-bool exahype::adapters::UpdateAndReduce::prepareSendToWorker(
+bool exahype::adapters::AdjustPeriodic::prepareSendToWorker(
   exahype::Cell&                 fineGridCell,
   exahype::Vertex * const        fineGridVertices,
   const peano::grid::VertexEnumerator&                fineGridVerticesEnumerator,
@@ -266,27 +266,27 @@ bool exahype::adapters::UpdateAndReduce::prepareSendToWorker(
   int                                                                  worker
 ) {
   bool result = false;
-   result |= _map2UpdateAndReduce.prepareSendToWorker( fineGridCell, fineGridVertices, fineGridVerticesEnumerator, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfCell, worker );
+   result |= _map2AdjustPeriodic.prepareSendToWorker( fineGridCell, fineGridVertices, fineGridVerticesEnumerator, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfCell, worker );
 
   return result;
 }
 
 
-void exahype::adapters::UpdateAndReduce::prepareSendToMaster(
+void exahype::adapters::AdjustPeriodic::prepareSendToMaster(
   exahype::Cell&                       localCell,
   exahype::Vertex *                    vertices,
-  const peano::grid::VertexEnumerator&       verticesEnumerator, 
+  const peano::grid::VertexEnumerator&       verticesEnumerator,
   const exahype::Vertex * const        coarseGridVertices,
   const peano::grid::VertexEnumerator&       coarseGridVerticesEnumerator,
   const exahype::Cell&                 coarseGridCell,
   const tarch::la::Vector<DIMENSIONS,int>&   fineGridPositionOfCell
 ) {
-   _map2UpdateAndReduce.prepareSendToMaster( localCell, vertices, verticesEnumerator, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfCell );
+   _map2AdjustPeriodic.prepareSendToMaster( localCell, vertices, verticesEnumerator, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfCell );
 
 }
 
 
-void exahype::adapters::UpdateAndReduce::mergeWithMaster(
+void exahype::adapters::AdjustPeriodic::mergeWithMaster(
   const exahype::Cell&           workerGridCell,
   exahype::Vertex * const        workerGridVertices,
   const peano::grid::VertexEnumerator& workerEnumerator,
@@ -301,13 +301,13 @@ void exahype::adapters::UpdateAndReduce::mergeWithMaster(
     const exahype::State&          workerState,
   exahype::State&                masterState
 ) {
-   _map2UpdateAndReduce.mergeWithMaster( workerGridCell, workerGridVertices, workerEnumerator, fineGridCell, fineGridVertices, fineGridVerticesEnumerator, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfCell, worker, workerState, masterState );
+   _map2AdjustPeriodic.mergeWithMaster( workerGridCell, workerGridVertices, workerEnumerator, fineGridCell, fineGridVertices, fineGridVerticesEnumerator, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfCell, worker, workerState, masterState );
 
 }
 
 
-void exahype::adapters::UpdateAndReduce::receiveDataFromMaster(
-      exahype::Cell&                        receivedCell, 
+void exahype::adapters::AdjustPeriodic::receiveDataFromMaster(
+      exahype::Cell&                        receivedCell,
       exahype::Vertex *                     receivedVertices,
       const peano::grid::VertexEnumerator&        receivedVerticesEnumerator,
       exahype::Vertex * const               receivedCoarseGridVertices,
@@ -318,37 +318,37 @@ void exahype::adapters::UpdateAndReduce::receiveDataFromMaster(
       exahype::Cell&                        workersCoarseGridCell,
       const tarch::la::Vector<DIMENSIONS,int>&    fineGridPositionOfCell
 ) {
-   _map2UpdateAndReduce.receiveDataFromMaster( receivedCell, receivedVertices, receivedVerticesEnumerator, receivedCoarseGridVertices, receivedCoarseGridVerticesEnumerator, receivedCoarseGridCell, workersCoarseGridVertices, workersCoarseGridVerticesEnumerator, workersCoarseGridCell, fineGridPositionOfCell );
+   _map2AdjustPeriodic.receiveDataFromMaster( receivedCell, receivedVertices, receivedVerticesEnumerator, receivedCoarseGridVertices, receivedCoarseGridVerticesEnumerator, receivedCoarseGridCell, workersCoarseGridVertices, workersCoarseGridVerticesEnumerator, workersCoarseGridCell, fineGridPositionOfCell );
 
 }
 
 
-void exahype::adapters::UpdateAndReduce::mergeWithWorker(
-  exahype::Cell&           localCell, 
+void exahype::adapters::AdjustPeriodic::mergeWithWorker(
+  exahype::Cell&           localCell,
   const exahype::Cell&     receivedMasterCell,
   const tarch::la::Vector<DIMENSIONS,double>&  cellCentre,
   const tarch::la::Vector<DIMENSIONS,double>&  cellSize,
   int                                          level
 ) {
-   _map2UpdateAndReduce.mergeWithWorker( localCell, receivedMasterCell, cellCentre, cellSize, level );
+   _map2AdjustPeriodic.mergeWithWorker( localCell, receivedMasterCell, cellCentre, cellSize, level );
 
 }
 
 
-void exahype::adapters::UpdateAndReduce::mergeWithWorker(
+void exahype::adapters::AdjustPeriodic::mergeWithWorker(
   exahype::Vertex&        localVertex,
   const exahype::Vertex&  receivedMasterVertex,
   const tarch::la::Vector<DIMENSIONS,double>&   x,
   const tarch::la::Vector<DIMENSIONS,double>&   h,
   int                                           level
 ) {
-   _map2UpdateAndReduce.mergeWithWorker( localVertex, receivedMasterVertex, x, h, level );
+   _map2AdjustPeriodic.mergeWithWorker( localVertex, receivedMasterVertex, x, h, level );
 
 }
 #endif
 
 
-void exahype::adapters::UpdateAndReduce::touchVertexFirstTime(
+void exahype::adapters::AdjustPeriodic::touchVertexFirstTime(
       exahype::Vertex&               fineGridVertex,
       const tarch::la::Vector<DIMENSIONS,double>&                          fineGridX,
       const tarch::la::Vector<DIMENSIONS,double>&                          fineGridH,
@@ -357,12 +357,12 @@ void exahype::adapters::UpdateAndReduce::touchVertexFirstTime(
       exahype::Cell&                 coarseGridCell,
       const tarch::la::Vector<DIMENSIONS,int>&                             fineGridPositionOfVertex
 ) {
-  _map2UpdateAndReduce.touchVertexFirstTime( fineGridVertex, fineGridX, fineGridH, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfVertex );
+  _map2AdjustPeriodic.touchVertexFirstTime( fineGridVertex, fineGridX, fineGridH, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfVertex );
 
 }
 
 
-void exahype::adapters::UpdateAndReduce::touchVertexLastTime(
+void exahype::adapters::AdjustPeriodic::touchVertexLastTime(
       exahype::Vertex&         fineGridVertex,
       const tarch::la::Vector<DIMENSIONS,double>&                    fineGridX,
       const tarch::la::Vector<DIMENSIONS,double>&                    fineGridH,
@@ -371,12 +371,12 @@ void exahype::adapters::UpdateAndReduce::touchVertexLastTime(
       exahype::Cell&           coarseGridCell,
       const tarch::la::Vector<DIMENSIONS,int>&                       fineGridPositionOfVertex
 ) {
-  _map2UpdateAndReduce.touchVertexLastTime( fineGridVertex, fineGridX, fineGridH, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfVertex );
+  _map2AdjustPeriodic.touchVertexLastTime( fineGridVertex, fineGridX, fineGridH, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfVertex );
 
 }
 
 
-void exahype::adapters::UpdateAndReduce::enterCell(
+void exahype::adapters::AdjustPeriodic::enterCell(
       exahype::Cell&                 fineGridCell,
       exahype::Vertex * const        fineGridVertices,
       const peano::grid::VertexEnumerator&                fineGridVerticesEnumerator,
@@ -385,12 +385,12 @@ void exahype::adapters::UpdateAndReduce::enterCell(
       exahype::Cell&                 coarseGridCell,
       const tarch::la::Vector<DIMENSIONS,int>&                             fineGridPositionOfCell
 ) {
-  _map2UpdateAndReduce.enterCell( fineGridCell, fineGridVertices, fineGridVerticesEnumerator, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfCell );
+  _map2AdjustPeriodic.enterCell( fineGridCell, fineGridVertices, fineGridVerticesEnumerator, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfCell );
 
 }
 
 
-void exahype::adapters::UpdateAndReduce::leaveCell(
+void exahype::adapters::AdjustPeriodic::leaveCell(
       exahype::Cell&           fineGridCell,
       exahype::Vertex * const  fineGridVertices,
       const peano::grid::VertexEnumerator&          fineGridVerticesEnumerator,
@@ -399,30 +399,30 @@ void exahype::adapters::UpdateAndReduce::leaveCell(
       exahype::Cell&           coarseGridCell,
       const tarch::la::Vector<DIMENSIONS,int>&                       fineGridPositionOfCell
 ) {
-  _map2UpdateAndReduce.leaveCell( fineGridCell, fineGridVertices, fineGridVerticesEnumerator, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfCell );
+  _map2AdjustPeriodic.leaveCell( fineGridCell, fineGridVertices, fineGridVerticesEnumerator, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell, fineGridPositionOfCell );
 
 }
 
 
-void exahype::adapters::UpdateAndReduce::beginIteration(
+void exahype::adapters::AdjustPeriodic::beginIteration(
   exahype::State&  solverState
 ) {
-  _map2UpdateAndReduce.beginIteration( solverState );
+  _map2AdjustPeriodic.beginIteration( solverState );
 
 }
 
 
-void exahype::adapters::UpdateAndReduce::endIteration(
+void exahype::adapters::AdjustPeriodic::endIteration(
   exahype::State&  solverState
 ) {
-  _map2UpdateAndReduce.endIteration( solverState );
+  _map2AdjustPeriodic.endIteration( solverState );
 
 }
 
 
 
 
-void exahype::adapters::UpdateAndReduce::descend(
+void exahype::adapters::AdjustPeriodic::descend(
   exahype::Cell * const          fineGridCells,
   exahype::Vertex * const        fineGridVertices,
   const peano::grid::VertexEnumerator&                fineGridVerticesEnumerator,
@@ -430,12 +430,12 @@ void exahype::adapters::UpdateAndReduce::descend(
   const peano::grid::VertexEnumerator&                coarseGridVerticesEnumerator,
   exahype::Cell&                 coarseGridCell
 ) {
-  _map2UpdateAndReduce.descend( fineGridCells, fineGridVertices, fineGridVerticesEnumerator, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell );
+  _map2AdjustPeriodic.descend( fineGridCells, fineGridVertices, fineGridVerticesEnumerator, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell );
 
 }
 
 
-void exahype::adapters::UpdateAndReduce::ascend(
+void exahype::adapters::AdjustPeriodic::ascend(
   exahype::Cell * const    fineGridCells,
   exahype::Vertex * const  fineGridVertices,
   const peano::grid::VertexEnumerator&          fineGridVerticesEnumerator,
@@ -443,6 +443,6 @@ void exahype::adapters::UpdateAndReduce::ascend(
   const peano::grid::VertexEnumerator&          coarseGridVerticesEnumerator,
   exahype::Cell&           coarseGridCell
 ) {
-  _map2UpdateAndReduce.ascend( fineGridCells, fineGridVertices, fineGridVerticesEnumerator, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell );
+  _map2AdjustPeriodic.ascend( fineGridCells, fineGridVertices, fineGridVerticesEnumerator, coarseGridVertices, coarseGridVerticesEnumerator, coarseGridCell );
 
 }

@@ -1,7 +1,7 @@
-// This file is part of the Peano project. For conditions of distribution and 
+// This file is part of the Peano project. For conditions of distribution and
 // use, please see the copyright notice at www.peano-framework.org
-#ifndef EXAHYPE_ADAPTERS_UpdateAndReduce_H_
-#define EXAHYPE_ADAPTERS_UpdateAndReduce_H_
+#ifndef EXAHYPE_ADAPTERS_AdjustPeriodic_H_
+#define EXAHYPE_ADAPTERS_AdjustPeriodic_H_
 
 
 #include "tarch/logging/Log.h"
@@ -18,29 +18,29 @@
 #include "exahype/State.h"
 
 
- #include "exahype/mappings/UpdateAndReduce.h"
+ #include "exahype/mappings/AdjustPeriodic.h"
 
 
 
 namespace exahype {
       namespace adapters {
-        class UpdateAndReduce;
-      } 
+        class AdjustPeriodic;
+      }
 }
 
 
 /**
  * This is a mapping from the spacetree traversal events to your user-defined activities.
- * The latter are realised within the mappings. 
- * 
+ * The latter are realised within the mappings.
+ *
  * @author Peano Development Toolkit (PDT) by  Tobias Weinzierl
  * @version $Revision: 1.10 $
  */
-class exahype::adapters::UpdateAndReduce {
+class exahype::adapters::AdjustPeriodic {
   private:
-    typedef mappings::UpdateAndReduce Mapping0;
+    typedef mappings::AdjustPeriodic Mapping0;
 
-     Mapping0  _map2UpdateAndReduce;
+     Mapping0  _map2AdjustPeriodic;
 
 
   public:
@@ -52,16 +52,16 @@ class exahype::adapters::UpdateAndReduce {
     peano::MappingSpecification         descendSpecification(int level) const;
     peano::CommunicationSpecification   communicationSpecification() const;
 
-    UpdateAndReduce();
+    AdjustPeriodic();
 
     #if defined(SharedMemoryParallelisation)
-    UpdateAndReduce(const UpdateAndReduce& masterThread);
+    AdjustPeriodic(const AdjustPeriodic& masterThread);
     #endif
 
-    virtual ~UpdateAndReduce();
-  
+    virtual ~AdjustPeriodic();
+
     #if defined(SharedMemoryParallelisation)
-    void mergeWithWorkerThread(const UpdateAndReduce& workerThread);
+    void mergeWithWorkerThread(const AdjustPeriodic& workerThread);
     #endif
 
     void createInnerVertex(
@@ -139,7 +139,7 @@ class exahype::adapters::UpdateAndReduce {
       exahype::Cell&                 coarseGridCell,
       const tarch::la::Vector<DIMENSIONS,int>&                             fineGridPositionOfCell
     );
-        
+
     #ifdef Parallel
     void mergeWithNeighbour(
       exahype::Vertex&  vertex,
@@ -206,7 +206,7 @@ class exahype::adapters::UpdateAndReduce {
     void prepareSendToMaster(
       exahype::Cell&                       localCell,
       exahype::Vertex *                    vertices,
-      const peano::grid::VertexEnumerator&       verticesEnumerator, 
+      const peano::grid::VertexEnumerator&       verticesEnumerator,
       const exahype::Vertex * const        coarseGridVertices,
       const peano::grid::VertexEnumerator&       coarseGridVerticesEnumerator,
       const exahype::Cell&                 coarseGridCell,
@@ -231,7 +231,7 @@ class exahype::adapters::UpdateAndReduce {
 
 
     void receiveDataFromMaster(
-      exahype::Cell&                        receivedCell, 
+      exahype::Cell&                        receivedCell,
       exahype::Vertex *                     receivedVertices,
       const peano::grid::VertexEnumerator&        receivedVerticesEnumerator,
       exahype::Vertex * const               receivedCoarseGridVertices,
@@ -245,7 +245,7 @@ class exahype::adapters::UpdateAndReduce {
 
 
     void mergeWithWorker(
-      exahype::Cell&           localCell, 
+      exahype::Cell&           localCell,
       const exahype::Cell&     receivedMasterCell,
       const tarch::la::Vector<DIMENSIONS,double>&  cellCentre,
       const tarch::la::Vector<DIMENSIONS,double>&  cellSize,
@@ -283,7 +283,7 @@ class exahype::adapters::UpdateAndReduce {
       exahype::Cell&           coarseGridCell,
       const tarch::la::Vector<DIMENSIONS,int>&                       fineGridPositionOfVertex
     );
-    
+
 
     void enterCell(
       exahype::Cell&                 fineGridCell,
@@ -333,7 +333,7 @@ class exahype::adapters::UpdateAndReduce {
       exahype::Vertex * const  coarseGridVertices,
       const peano::grid::VertexEnumerator&          coarseGridVerticesEnumerator,
       exahype::Cell&           coarseGridCell
-    );    
+    );
 };
 
 
