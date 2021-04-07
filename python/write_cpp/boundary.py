@@ -578,8 +578,6 @@ def correction_boundary_hack(repo_dir):
     f.writelines(lines)
     f.close()
 
-    return
-
     # Add functions to RepositorySTDStack.h
     fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/repositories/RepositorySTDStack.h'
     f = open(fname, "r")
@@ -606,6 +604,8 @@ def correction_boundary_hack(repo_dir):
     f = open(fname, "w")
     f.writelines(lines)
     f.close()
+
+    return
 
     # Add functions to RepositorySTDStack.cpp
     fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/repositories/RepositorySTDStack.cpp'
