@@ -1,8 +1,17 @@
 # Restore potentially modified files
-cp backup/ExaHyPE/exahype/runners/Runner.cpp ExaHyPE-Engine/ExaHyPE/exahype/runners/
-cp backup/ExaHyPE/exahype/solvers/Solver.h ExaHyPE-Engine/ExaHyPE/exahype/solvers/
-cp backup/ExaHyPE/exahype/mappings/Prediction.cpp ExaHyPE-Engine/ExaHyPE/exahype/mappings/
-cp backup/ExaHyPE/exahype/solvers/ADERDGSolver.cpp ExaHyPE-Engine/ExaHyPE/exahype/solvers/
+#cp backup/ExaHyPE/exahype/runners/Runner.cpp ExaHyPE-Engine/ExaHyPE/exahype/runners/
+#cp backup/ExaHyPE/exahype/solvers/Solver.h ExaHyPE-Engine/ExaHyPE/exahype/solvers/
+#cp backup/ExaHyPE/exahype/mappings/Prediction.cpp ExaHyPE-Engine/ExaHyPE/exahype/mappings/
+#cp backup/ExaHyPE/exahype/solvers/ADERDGSolver.cpp ExaHyPE-Engine/ExaHyPE/exahype/solvers/
+
+cp backup/ExaHyPE/exahype/records/RepositoryState.h ExaHyPE-Engine/ExaHyPE/exahype/records/
+cp backup/ExaHyPE/exahype/records/RepositoryState.cpp ExaHyPE-Engine/ExaHyPE/exahype/records/
+cp backup/ExaHyPE/exahype/repositories/Repository.h ExaHyPE-Engine/ExaHyPE/exahype/repositories/
+cp backup/ExaHyPE/exahype/repositories/RepositorySTDStack.h ExaHyPE-Engine/ExaHyPE/exahype/repositories/
+cp backup/ExaHyPE/exahype/repositories/RepositorySTDStack.cpp ExaHyPE-Engine/ExaHyPE/exahype/repositories/
+
+cp cpp/adapters/* ExaHyPE-Engine/ExaHyPE/exahype/adapters/
+cp cpp/mappings/* ExaHyPE-Engine/ExaHyPE/exahype/mappings/
 
 # Update/generate .exahype file
 # Export COMPILER, DISTRIBUTEDMEM

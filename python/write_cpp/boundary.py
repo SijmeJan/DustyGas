@@ -533,6 +533,118 @@ def write_solver_set_periodic_fv(lines, n_vars):
 
 
 def correction_boundary_hack(repo_dir):
+
+    # Add adapter names to RepositoryState
+    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/records/RepositoryState.h'
+    f = open(fname, "r")
+    lines = f.readlines()
+    f.close()
+
+    for i in range(0, len(lines)):
+        lines[i] = replace_with_indent(lines[i], 'NumberOfAdapters = 21', 'WriteCheckpoint = 0, ReadCheckpoint = 1, Terminate = 2, RunOnAllNodes = 3, UseAdapterUniformRefinement = 4, UseAdapterMeshRefinement = 5, UseAdapterMeshRefinementAndPlotTree = 6, UseAdapterFinaliseMeshRefinement = 7, UseAdapterFinaliseMeshRefinementOrLocalRollback = 8, UseAdapterInitialPrediction = 9, UseAdapterFusedTimeStep = 10, UseAdapterPredictionRerun = 11, UseAdapterBroadcast = 12, UseAdapterBroadcastAndDropNeighbourMessages = 13, UseAdapterRefinementStatusSpreading = 14, UseAdapterPredictionOrLocalRecomputation = 15, UseAdapterMergeNeighbours = 16, UseAdapterUpdateAndReduce = 17, UseAdapterPrediction = 18, UseAdapterCorrection = 19, UseAdapterAdjustPeriodic = 20, UseAdapterPlotPeriodic = 21, UseAdapterEmpty = 22, NumberOfAdapters = 23\n')
+
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
+
+    # Add adapter names to RepositoryState.cpp
+    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/records/RepositoryState.cpp'
+    f = open(fname, "r")
+    lines = f.readlines()
+    f.close()
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('case UseAdapterCorrection: return "UseAdapterCorrection";') != -1):
+                lines[i+1:i+1] = ['      case UseAdapterAdjustPeriodic: return "UseAdapterAdjustPeriodic";\n', '      case UseAdapterPlotPeriodic: return "UseAdapterPlotPeriodic";\n']
+        lines[i] = replace_with_indent(lines[i], 'NumberOfAdapters=21', 'return "Action(WriteCheckpoint=0,ReadCheckpoint=1,Terminate=2,RunOnAllNodes=3,UseAdapterUniformRefinement=4,UseAdapterMeshRefinement=5,UseAdapterMeshRefinementAndPlotTree=6,UseAdapterFinaliseMeshRefinement=7,UseAdapterFinaliseMeshRefinementOrLocalRollback=8,UseAdapterInitialPrediction=9,UseAdapterFusedTimeStep=10,UseAdapterPredictionRerun=11,UseAdapterBroadcast=12,UseAdapterBroadcastAndDropNeighbourMessages=13,UseAdapterRefinementStatusSpreading=14,UseAdapterPredictionOrLocalRecomputation=15,UseAdapterMergeNeighbours=16,UseAdapterUpdateAndReduce=17,UseAdapterPrediction=18,UseAdapterCorrection=19,UseAdapterAdjustPeriodic=20,UseAdapterPlotPeriodic=21,UseAdapterEmpty=22,NumberOfAdapters=23)";\n')
+
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
+
+    # Add switch functions to Repository.h
+    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/repositories/Repository.h'
+    f = open(fname, "r")
+    lines = f.readlines()
+    f.close()
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('virtual void switchToCorrection() = 0;') != -1):
+            lines[i+1:i+1] = ['    virtual void switchToAdjustPeriodic() = 0;\n',
+                              '    virtual void switchToPlotPeriodic() = 0;\n']
+        if (lines[i].find('virtual bool isActiveAdapterCorrection() const = 0;') != -1):
+            lines[i+1:i+1] = ['    virtual bool isActiveAdapterAdjustPeriodic() const = 0;\n', '    virtual bool isActiveAdapterPlotPeriodic() const = 0;\n']
+
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
+
+    # Add functions to RepositorySTDStack.h
+    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/repositories/RepositorySTDStack.h'
+    f = open(fname, "r")
+    lines = f.readlines()
+    f.close()
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('#include "exahype/adapters/Correction.h"') != -1):
+            lines[i+1:i+1] = [' #include "exahype/adapters/AdjustPeriodic.h"\n',
+                              ' #include "exahype/adapters/PlotPeriodic.h"\n']
+        if (lines[i].find('peano::grid::Grid<exahype::Vertex,exahype::Cell,exahype::State,VertexStack,CellStack,exahype::adapters::Correction> _gridWithCorrection;') != -1):
+            lines[i+1:i+1] = ['    peano::grid::Grid<exahype::Vertex,exahype::Cell,exahype::State,VertexStack,CellStack,exahype::adapters::AdjustPeriodic> _gridWithAdjustPeriodic;\n', '    peano::grid::Grid<exahype::Vertex,exahype::Cell,exahype::State,VertexStack,CellStack,exahype::adapters::PlotPeriodic> _gridWithPlotPeriodic;\n']
+        if (lines[i].find('virtual void switchToCorrection();') != -1):
+            lines[i+1:i+1] = ['    virtual void switchToAdjustPeriodic();\n',
+                              '    virtual void switchToPlotPeriodic();\n']
+        if (lines[i].find('virtual bool isActiveAdapterCorrection() const;') != -1):
+            lines[i+1:i+1] = ['    virtual bool isActiveAdapterAdjustPeriodic() const;\n', '    virtual bool isActiveAdapterPlotPeriodic() const;\n']
+        if (lines[i].find('tarch::timing::Measurement _measureCorrectionCPUTime;') != -1):
+            lines[i+1:i+1] = ['    tarch::timing::Measurement _measureAdjustPeriodicCPUTime;\n', '    tarch::timing::Measurement _measurePlotPeriodicCPUTime;\n']
+        if (lines[i].find('tarch::timing::Measurement _measureCorrectionCalendarTime;') != -1):
+            lines[i+1:i+1] = ['    tarch::timing::Measurement _measureAdjustPeriodicCalendarTime;\n', '    tarch::timing::Measurement _measurePlotPeriodicCalendarTime;\n']
+
+
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
+
+    # Add functions to RepositorySTDStack.cpp
+    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/repositories/RepositorySTDStack.cpp'
+    f = open(fname, "r")
+    lines = f.readlines()
+    f.close()
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('_gridWithCorrection(_vertexStack,_cellStack,_geometry,_solverState,domainSize,computationalDomainOffset,_regularGridContainer,_traversalOrderOnTopLevel),') != -1):
+            lines[i+1:i+1] = ['  _gridWithAdjustPeriodic(_vertexStack,_cellStack,_geometry,_solverState,domainSize,computationalDomainOffset,_regularGridContainer,_traversalOrderOnTopLevel),\n', '  _gridWithPlotPeriodic(_vertexStack,_cellStack,_geometry,_solverState,domainSize,computationalDomainOffset,_regularGridContainer,_traversalOrderOnTopLevel),\n']
+        if (lines[i].find('_gridWithCorrection(_vertexStack,_cellStack,_geometry,_solverState,_regularGridContainer,_traversalOrderOnTopLevel),') != -1):
+            lines[i+1:i+1] = ['  _gridWithAdjustPeriodic(_vertexStack,_cellStack,_geometry,_solverState,_regularGridContainer,_traversalOrderOnTopLevel),\n','  _gridWithPlotPeriodic(_vertexStack,_cellStack,_geometry,_solverState,_regularGridContainer,_traversalOrderOnTopLevel),\n']
+        if (lines[i].find('_gridWithCorrection.restart') != -1):
+            lines[i+1:i+1] = ['  _gridWithAdjustPeriodic.restart(domainSize,domainOffset,domainLevel, positionOfCentralElementWithRespectToCoarserRemoteLevel);\n', '  _gridWithPlotPeriodic.restart(domainSize,domainOffset,domainLevel, positionOfCentralElementWithRespectToCoarserRemoteLevel);\n']
+        if (lines[i].find('_gridWithCorrection.terminate') != -1):
+            lines[i+1:i+1] = ['  _gridWithAdjustPeriodic.terminate();\n',
+                              '  _gridWithPlotPeriodic.terminate();\n']
+        if (lines[i].find('case exahype::records::RepositoryState::UseAdapterCorrection:') != -1):
+            lines[i+1:i+1] = ['      case exahype::records::RepositoryState::UseAdapterAdjustPeriodic: watch.startTimer(); _gridWithAdjustPeriodic.iterate(); watch.stopTimer(); _measureAdjustPeriodicCPUTime.setValue( watch.getCPUTime() ); _measureAdjustPeriodicCalendarTime.setValue( watch.getCalendarTime() ); break;\n', '      case exahype::records::RepositoryState::UseAdapterPlotPeriodic: watch.startTimer(); _gridWithPlotPeriodic.iterate(); watch.stopTimer(); _measurePlotPeriodicCPUTime.setValue( watch.getCPUTime() ); _measurePlotPeriodicCalendarTime.setValue( watch.getCalendarTime() ); break;\n']
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('if (logAllAdapters || _measureCorrectionCPUTime.getNumberOfMeasurements()>0) logInfo( "logIterationStatistics()", "| Correction \t |  " << _measureCorrectionCPUTime.getNumberOfMeasurements() << " \t |  " << _measureCorrectionCPUTime.getAccumulatedValue() << " \t |  " << _measureCorrectionCPUTime.getValue()  << " \t |  " << _measureCorrectionCalendarTime.getAccumulatedValue() << " \t |  " << _measureCorrectionCalendarTime.getValue() << " \t |  " << _measureCorrectionCPUTime.toString() << " \t |  " << _measureCorrectionCalendarTime.toString() );') != -1):
+            lines[i+1:i+1] = ['    if (logAllAdapters || _measureAdjustPeriodicCPUTime.getNumberOfMeasurements()>0) logInfo( "logIterationStatistics()", "| AdjustPeriodic \t |  " << _measureAdjustPeriodicCPUTime.getNumberOfMeasurements() << " \t |  " << _measureAdjustPeriodicCPUTime.getAccumulatedValue() << " \t |  " << _measureAdjustPeriodicCPUTime.getValue()  << " \t |  " << _measureAdjustPeriodicCalendarTime.getAccumulatedValue() << " \t |  " << _measureAdjustPeriodicCalendarTime.getValue() << " \t |  " << _measureAdjustPeriodicCPUTime.toString() << " \t |  " << _measureAdjustPeriodicCalendarTime.toString() );\n', '    if (logAllAdapters || _measurePlotPeriodicCPUTime.getNumberOfMeasurements()>0) logInfo( "logIterationStatistics()", "| PlotPeriodic \t |  " << _measurePlotPeriodicCPUTime.getNumberOfMeasurements() << " \t |  " << _measurePlotPeriodicCPUTime.getAccumulatedValue() << " \t |  " << _measurePlotPeriodicCPUTime.getValue()  << " \t |  " << _measurePlotPeriodicCalendarTime.getAccumulatedValue() << " \t |  " << _measurePlotPeriodicCalendarTime.getValue() << " \t |  " << _measurePlotPeriodicCPUTime.toString() << " \t |  " << _measurePlotPeriodicCalendarTime.toString() );\n']
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('_measureCorrectionCPUTime.erase();') != -1):
+            lines[i+1:i+1] = ['   _measureAdjustPeriodicCPUTime.erase();\n',
+                              '   _measurePlotPeriodicCPUTime.erase();\n']
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('_measureCorrectionCalendarTime.erase();') != -1):
+            lines[i+1:i+1] = ['   _measureAdjustPeriodicCalendarTime.erase();\n', '   _measurePlotPeriodicCalendarTime.erase();\n']
+
+
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
+
+
+    return
     # ExaHyPE fuses the correction step with the 'adjustSolution' step, and the
     # prediction step with the plotting step. For periodic boundaries with
     # ADERDG, this is unwanted. One of the plotters 'plots' the periodic data
