@@ -532,7 +532,7 @@ def write_solver_set_periodic_fv(lines, n_vars):
     add_function_body(lines, 'boundaryValues', periodic)
 
 
-def correction_boundary_hack(repo_dir):
+def correction_boundary_hack(repo_dir, offset, size, n_vars, order):
     # Add adapter names to RepositoryState
     fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/records/RepositoryState.h'
     f = open(fname, "r")
@@ -687,7 +687,107 @@ def correction_boundary_hack(repo_dir):
        '    if ( cellDescription.getType()==CellDescription::Type::Leaf )\n',
        '      adjustSolutionAfterUpdate(cellDescription);\n',
        '  }\n',
+       '}\n',
+       '\n',
+       'void exahype::solvers::ADERDGSolver::PlotPeriodic(\n',
+       '  const int                                          solverNumber,\n',
+       '  CellInfo&                                          cellInfo) {\n',
+       '  const int element = cellInfo.indexOfADERDGCellDescription(solverNumber);\n',
+       '  if ( element != NotFound ) {\n',
+       '    CellDescription& cellDescription = cellInfo._ADERDGCellDescriptions[element];\n',
+       '    if ( cellDescription.getType()==CellDescription::Type::Leaf ) {\n',
+       '      double* solverSolution =\n',
+       '        static_cast<double*>(cellDescription.getSolution());\n',
+       '\n',
+       '      //PlotPeriodic(\n',
+       '      //   cellDescription.getOffset(),\n',
+       '      //   cellDescription.getSize(), solverSolution,\n',
+       '      //   cellDescription.getTimeStamp());\n',
+       '    }\n',
+       '  }\n',
        '}\n']
+
+
+    # Strategy: replace function body of mapQuantities to fill the
+    # boundaryValues vector.
+
+    x_bound = [offset[0], offset[0] + size[0]]
+    y_bound = [offset[1], offset[1] + size[1]]
+
+
+    boundary = ['void exahype::solvers::ADERDGSolver::PlotPeriodic(\n',
+                '  const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
+                '  const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
+                '  const tarch::la::Vector<DIMENSIONS, int>&    pos,\n',
+                '  double* const Q,\n',
+                '  ) {\n',
+                '  // Fill a boundary array for setting periodic boundaries in 2D, non-AMR runs.\n',
+                '  // If mesh = nx times ny, the first nx entries correspond to the bottom boundary.\n',
+                '  // The second nx entries correspond to the top boundary.\n',
+                '  // The next ny entries correspond to the left boundary.\n',
+                '  // The next ny entries correspont to the right boundary.\n',
+                '\n',
+                '  assertion(outputQuantities==nullptr);\n\n',
+                '  // Hack: number of cells in x and y\n',
+                '  int n_cell_x = (int) round({}/sizeOfPatch[0]);\n'.format(size[0]),
+                '  int n_cell_y = (int) round({}/sizeOfPatch[1]);\n'.format(size[1]),
+                '\n',
+                '  // Global (uniform) cell resolution\n',
+                '  global_dx[0] = sizeOfPatch[0];\n',
+                '  global_dx[1] = sizeOfPatch[1];\n',
+                '\n',
+                '  // Global mesh size\n',
+                '  global_n[0] = n_cell_x;\n',
+                '  global_n[1] = n_cell_y;\n',
+                '\n',
+                '  // Make sure vector is of the correct size, and set elements to zero.\n',
+                '  // Note that this should happen only the first time this function is called.\n',
+                '  int n_bound_cells = 2*(global_n[0] + global_n[1]);\n',
+                '  int n_send_per_cell = {};\n'.format(n_vars*(order+1)*(order+1)),
+                '  if (boundaryValues_local.size() != n_send_per_cell*n_bound_cells) {\n',
+                '    boundaryValues_local.resize(n_send_per_cell*n_bound_cells);\n',
+                '    std::fill(boundaryValues_local.begin(), boundaryValues_local.end(), 0.0);\n',
+                '  }\n',
+                '\n',
+                '  // Number of cells to left and bottom\n',
+                '  int cell_x = (int) ((offsetOfPatch[0] + 0.5*sizeOfPatch[0])/sizeOfPatch[0]);\n',
+                '  int cell_y = (int) ((offsetOfPatch[1] + 0.5*sizeOfPatch[1])/sizeOfPatch[1]);\n',
+                '\n',
+                '  int indx = -1;\n',
+                '\n',
+                '  if (cell_y == 1) {\n',
+                '    indx = cell_x;\n',
+                '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
+                '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
+                '      boundaryValues_local[arr_index + n] = Q[n];\n',
+                '    //std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", position " << pos[0] << " " << pos[1] << ", index = " << indx << ", arr_index = " << arr_index << ", cell index " << cell_x << " " << cell_y << std::endl;\n',
+                '  }\n'
+                '  if (cell_y == global_n[1] - 2) {\n',
+                '    indx = n_cell_x + cell_x;\n',
+                '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
+                '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
+                '      boundaryValues_local[arr_index + n] = Q[n];\n',
+                '    //std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", position " << pos[0] << " " << pos[1] << ", index = " << indx << ", arr_index = " << arr_index << ", cell index " << cell_x << " " << cell_y << std::endl;\n',
+                '  }\n'
+                '  if (cell_x == 1) {\n',
+                '    indx = 2*n_cell_x + cell_y;\n',
+                '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
+                '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
+                '      boundaryValues_local[arr_index + n] = Q[n];\n',
+                '    //std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", position " << pos[0] << " " << pos[1] << ", index = " << indx << ", arr_index = " << arr_index << ", cell index " << cell_x << " " << cell_y << std::endl;\n',
+                '  }\n'
+                '  if (cell_x == global_n[0] - 2) {\n',
+                '    indx = 2*n_cell_x + n_cell_y + cell_y;\n',
+                '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
+                '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
+                '      boundaryValues_local[arr_index + n] = Q[n];\n',
+                '    //std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", position " << pos[0] << " " << pos[1] << ", index = " << indx << ", arr_index = " << arr_index << ", cell index " << cell_x << " " << cell_y << std::endl;\n',
+                '  }\n'
+                '}\n',
+                '\n',
+                ]
+
+    #lines[len(lines):len(lines)] = boundary
 
     f = open(fname, "w")
     f.writelines(lines)
@@ -701,7 +801,10 @@ def correction_boundary_hack(repo_dir):
 
     for i in range(0, len(lines)):
         if (lines[i].find('void updateOrRestrict(') != -1):
-            lines[i:i] = ['  void AdjustPeriodic(\n',
+            lines[i:i] = ['  void PlotPeriodic(\n',
+                          '    const int solverNumber,\n',
+                          '    CellInfo& cellInfo) final override;\n',
+                          '  void AdjustPeriodic(\n',
                           '    const int solverNumber,\n',
                           '    CellInfo& cellInfo) final override;\n\n']
             break;
@@ -710,7 +813,7 @@ def correction_boundary_hack(repo_dir):
     f.writelines(lines)
     f.close()
 
-    # Add function to Solver.h
+    # Add functions to Solver.h
     fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/solvers/Solver.h'
     f = open(fname, "r")
     lines = f.readlines()
@@ -718,7 +821,10 @@ def correction_boundary_hack(repo_dir):
 
     for i in range(0, len(lines)):
         if (lines[i].find('* The nonfused update routine.') != -1):
-            lines[i-1:i-1] = ['  virtual void AdjustPeriodic(\n',
+            lines[i-1:i-1] = ['  virtual void PlotPeriodic(\n',
+                          '    const int solverNumber,\n',
+                          '    CellInfo& cellInfo) = 0;\n',
+                          '  virtual void AdjustPeriodic(\n',
                           '    const int solverNumber,\n',
                           '    CellInfo& cellInfo) = 0;\n\n']
             break;

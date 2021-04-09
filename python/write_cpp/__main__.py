@@ -217,4 +217,5 @@ if (use_periodic_boundaries == True):
     f.writelines(lines)
     f.close()
 
-    correction_boundary_hack(repo_dir)
+    correction_boundary_hack(repo_dir, [offset_x, offset_y], [size_x, size_y],
+                             n_vars, order)
