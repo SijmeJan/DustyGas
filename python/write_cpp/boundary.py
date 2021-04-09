@@ -647,6 +647,30 @@ def correction_boundary_hack(repo_dir):
     f.writelines(lines)
     f.close()
 
+    # Modify time stepping
+    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/runners/Runner.cpp'
+    f = open(fname, "r")
+    lines = f.readlines()
+    f.close()
+
+    body = remove_function_body(lines, '::runOneTimeStepWithThreeSeparateAlgorithmicSteps')
+
+    print(body)
+
+    for i in range(0, len(body)):
+        if (body[i].find('repository.switchToPrediction(); // Cell onto faces') != -1):
+            body[i:i] = ['  repository.switchToPlotPeriodic();\n',
+                          '  repository.iterate(1, communicatePeanoVertices);\n',
+                          '  repository.switchToAdjustPeriodic();\n',
+                          '  repository.iterate(1, communicatePeanoVertices);\n',
+                          '\n']
+
+    add_function_body(lines, '::runOneTimeStepWithThreeSeparateAlgorithmicSteps',
+                      body)
+
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
 
     return
     # ExaHyPE fuses the correction step with the 'adjustSolution' step, and the

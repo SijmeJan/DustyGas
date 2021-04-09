@@ -9,6 +9,7 @@ cp backup/ExaHyPE/exahype/records/RepositoryState.cpp ExaHyPE-Engine/ExaHyPE/exa
 cp backup/ExaHyPE/exahype/repositories/Repository.h ExaHyPE-Engine/ExaHyPE/exahype/repositories/
 cp backup/ExaHyPE/exahype/repositories/RepositorySTDStack.h ExaHyPE-Engine/ExaHyPE/exahype/repositories/
 cp backup/ExaHyPE/exahype/repositories/RepositorySTDStack.cpp ExaHyPE-Engine/ExaHyPE/exahype/repositories/
+cp backup/ExaHyPE/exahype/runners/Runner.cpp ExaHyPE-Engine/ExaHyPE/exahype/runners/
 
 cp cpp/adapters/* ExaHyPE-Engine/ExaHyPE/exahype/adapters/
 cp cpp/mappings/* ExaHyPE-Engine/ExaHyPE/exahype/mappings/
