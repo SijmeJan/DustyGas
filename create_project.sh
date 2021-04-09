@@ -10,6 +10,9 @@ cp backup/ExaHyPE/exahype/repositories/Repository.h ExaHyPE-Engine/ExaHyPE/exahy
 cp backup/ExaHyPE/exahype/repositories/RepositorySTDStack.h ExaHyPE-Engine/ExaHyPE/exahype/repositories/
 cp backup/ExaHyPE/exahype/repositories/RepositorySTDStack.cpp ExaHyPE-Engine/ExaHyPE/exahype/repositories/
 cp backup/ExaHyPE/exahype/runners/Runner.cpp ExaHyPE-Engine/ExaHyPE/exahype/runners/
+cp backup/ExaHyPE/exahype/solvers/ADERDGSolver.cpp ExaHyPE-Engine/ExaHyPE/exahype/solvers/
+cp backup/ExaHyPE/exahype/solvers/ADERDGSolver.h ExaHyPE-Engine/ExaHyPE/exahype/solvers/
+cp backup/ExaHyPE/exahype/solvers/Solver.h ExaHyPE-Engine/ExaHyPE/exahype/solvers/
 
 cp cpp/adapters/* ExaHyPE-Engine/ExaHyPE/exahype/adapters/
 cp cpp/mappings/* ExaHyPE-Engine/ExaHyPE/exahype/mappings/

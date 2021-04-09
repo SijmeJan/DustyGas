@@ -655,8 +655,6 @@ def correction_boundary_hack(repo_dir):
 
     body = remove_function_body(lines, '::runOneTimeStepWithThreeSeparateAlgorithmicSteps')
 
-    print(body)
-
     for i in range(0, len(body)):
         if (body[i].find('repository.switchToPrediction(); // Cell onto faces') != -1):
             body[i:i] = ['  repository.switchToPlotPeriodic();\n',
@@ -667,6 +665,63 @@ def correction_boundary_hack(repo_dir):
 
     add_function_body(lines, '::runOneTimeStepWithThreeSeparateAlgorithmicSteps',
                       body)
+
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
+
+    # Add function to ADERDGsolver.cpp
+    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/solvers/ADERDGSolver.cpp'
+    f = open(fname, "r")
+    lines = f.readlines()
+    f.close()
+
+    lines[len(lines):len(lines)] = \
+      ['\n',
+       'void exahype::solvers::ADERDGSolver::AdjustPeriodic(\n',
+       '  const int                                          solverNumber,\n',
+       '  CellInfo&                                          cellInfo) {\n',
+       '  const int element = cellInfo.indexOfADERDGCellDescription(solverNumber);\n',
+       '  if ( element != NotFound ) {\n',
+       '    CellDescription& cellDescription = cellInfo._ADERDGCellDescriptions[element];\n',
+       '    if ( cellDescription.getType()==CellDescription::Type::Leaf )\n',
+       '      adjustSolutionAfterUpdate(cellDescription);\n',
+       '  }\n',
+       '}\n']
+
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
+
+    # Add function to ADERDGsolver.h
+    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/solvers/ADERDGSolver.h'
+    f = open(fname, "r")
+    lines = f.readlines()
+    f.close()
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('void updateOrRestrict(') != -1):
+            lines[i:i] = ['  void AdjustPeriodic(\n',
+                          '    const int solverNumber,\n',
+                          '    CellInfo& cellInfo) final override;\n\n']
+            break;
+
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
+
+    # Add function to Solver.h
+    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/solvers/Solver.h'
+    f = open(fname, "r")
+    lines = f.readlines()
+    f.close()
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('* The nonfused update routine.') != -1):
+            lines[i-1:i-1] = ['  virtual void AdjustPeriodic(\n',
+                          '    const int solverNumber,\n',
+                          '    CellInfo& cellInfo) = 0;\n\n']
+            break;
 
     f = open(fname, "w")
     f.writelines(lines)
