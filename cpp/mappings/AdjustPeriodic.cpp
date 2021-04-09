@@ -118,7 +118,7 @@ void exahype::mappings::AdjustPeriodic::leaveCell(
     exahype::Cell& coarseGridCell,
     const tarch::la::Vector<DIMENSIONS, int>& fineGridPositionOfCell) {
   logTraceInWith4Arguments("leaveCell(...)", fineGridCell,fineGridVerticesEnumerator.toString(),coarseGridCell, fineGridPositionOfCell);
-  /*
+
   if (fineGridCell.isInitialised()) {
     solvers::Solver::CellInfo cellInfo = fineGridCell.createCellInfo();
 
@@ -144,7 +144,7 @@ void exahype::mappings::AdjustPeriodic::leaveCell(
       }
     }
   }
-  */
+
   /*
   if (fineGridCell.isInitialised()) {
     solvers::Solver::CellInfo cellInfo = fineGridCell.createCellInfo();
