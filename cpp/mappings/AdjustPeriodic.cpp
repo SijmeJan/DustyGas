@@ -85,6 +85,7 @@ exahype::mappings::AdjustPeriodic::descendSpecification(int level) const {
 
 void exahype::mappings::AdjustPeriodic::beginIteration(
     exahype::State& solverState) {
+  std::cout << "STARTING ADJUSTPERIODIC" << std::endl;
   /*
   #ifdef Parallel
   // enforce reductions from worker side
@@ -96,6 +97,8 @@ void exahype::mappings::AdjustPeriodic::beginIteration(
 void exahype::mappings::AdjustPeriodic::endIteration(
     exahype::State& state) {
   logTraceInWith1Argument("endIteration(State)", state);
+  std::cout << "END ADJUSTPERIODIC" << std::endl;
+
   /*
   for (auto* solver : solvers::RegisteredSolvers) {
     solver->wrapUpTimeStep(true,true);
