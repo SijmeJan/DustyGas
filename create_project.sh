@@ -41,4 +41,5 @@ output_dir=$(dirname "$@")"/"$output_dir
 
 echo Starting Make...
 cd $output_dir
+make clean
 make
