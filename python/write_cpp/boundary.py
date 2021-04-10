@@ -699,13 +699,20 @@ def correction_boundary_hack(repo_dir, offset, size, n_vars, order):
        '      double* solverSolution =\n',
        '        static_cast<double*>(cellDescription.getSolution());\n',
        '\n',
-       '      //PlotPeriodic(\n',
-       '      //   cellDescription.getOffset(),\n',
-       '      //   cellDescription.getSize(), solverSolution,\n',
-       '      //   cellDescription.getTimeStamp());\n',
+       '    const int basisX = order + 1;\n',
+       '    const int basisY = order + 1;\n',
+       '    const int basisZ = (DIMENSIONS == 3 ? order  : 0 ) + 1;\n',
+       '    kernels::index idx_u(basisZ, basisY, basisX, solverUnknowns);\n',
+       '\n',
+       '    dfor(i, order + 1) {\n',
+       '      PlotPeriodic(\n',
+       '      cellDescription.getOffset(),\n',
+       '      cellDescription.getSize(),\n',
+       '      i,\n',
+       '      solverSolution + idx_u(DIMENSIONS == 3 ? i(2) : 0, i(1), i(0), 0));\n',
        '    }\n',
        '  }\n',
-       '}\n']
+       '}\n\n']
 
 
     # Strategy: replace function body of mapQuantities to fill the
@@ -719,8 +726,9 @@ def correction_boundary_hack(repo_dir, offset, size, n_vars, order):
                 '  const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
                 '  const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
                 '  const tarch::la::Vector<DIMENSIONS, int>&    pos,\n',
-                '  double* const Q,\n',
+                '  double* const Q\n',
                 '  ) {\n',
+                '/*',
                 '  // Fill a boundary array for setting periodic boundaries in 2D, non-AMR runs.\n',
                 '  // If mesh = nx times ny, the first nx entries correspond to the bottom boundary.\n',
                 '  // The second nx entries correspond to the top boundary.\n',
@@ -760,34 +768,31 @@ def correction_boundary_hack(repo_dir, offset, size, n_vars, order):
                 '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
                 '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
                 '      boundaryValues_local[arr_index + n] = Q[n];\n',
-                '    //std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", position " << pos[0] << " " << pos[1] << ", index = " << indx << ", arr_index = " << arr_index << ", cell index " << cell_x << " " << cell_y << std::endl;\n',
                 '  }\n'
                 '  if (cell_y == global_n[1] - 2) {\n',
                 '    indx = n_cell_x + cell_x;\n',
                 '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
                 '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
                 '      boundaryValues_local[arr_index + n] = Q[n];\n',
-                '    //std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", position " << pos[0] << " " << pos[1] << ", index = " << indx << ", arr_index = " << arr_index << ", cell index " << cell_x << " " << cell_y << std::endl;\n',
                 '  }\n'
                 '  if (cell_x == 1) {\n',
                 '    indx = 2*n_cell_x + cell_y;\n',
                 '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
                 '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
                 '      boundaryValues_local[arr_index + n] = Q[n];\n',
-                '    //std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", position " << pos[0] << " " << pos[1] << ", index = " << indx << ", arr_index = " << arr_index << ", cell index " << cell_x << " " << cell_y << std::endl;\n',
                 '  }\n'
                 '  if (cell_x == global_n[0] - 2) {\n',
                 '    indx = 2*n_cell_x + n_cell_y + cell_y;\n',
                 '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
                 '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
                 '      boundaryValues_local[arr_index + n] = Q[n];\n',
-                '    //std::cout << "Mapping quantities at x = " << x[0] << ", y = " << x[1] << ", position " << pos[0] << " " << pos[1] << ", index = " << indx << ", arr_index = " << arr_index << ", cell index " << cell_x << " " << cell_y << std::endl;\n',
                 '  }\n'
+                '*/',
                 '}\n',
                 '\n',
                 ]
 
-    #lines[len(lines):len(lines)] = boundary
+    lines[len(lines):len(lines)] = boundary
 
     f = open(fname, "w")
     f.writelines(lines)
@@ -806,7 +811,12 @@ def correction_boundary_hack(repo_dir, offset, size, n_vars, order):
                           '    CellInfo& cellInfo) final override;\n',
                           '  void AdjustPeriodic(\n',
                           '    const int solverNumber,\n',
-                          '    CellInfo& cellInfo) final override;\n\n']
+                          '    CellInfo& cellInfo) final override;\n',
+                          '  void PlotPeriodic(\n',
+                          '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
+                          '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
+                          '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
+                          '    double* const Q);\n\n']
             break;
 
     f = open(fname, "w")
