@@ -547,7 +547,9 @@ def write_abstract_class(n_vars, order, offset, size, output_dir, solver_name):
                '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
                '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
                '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
-               '    double* const Q);\n\n',
+               '    double* const Q) override;\n',
+               '  void SendPeriodic() override;\n',
+               '\n',
                '  //std::vector<double> *boundaryValues;\n',
                '  std::vector<double> boundaryValues_local;\n',
                '  //double *global_dx;\n',
@@ -630,7 +632,9 @@ def write_abstract_class(n_vars, order, offset, size, output_dir, solver_name):
        '      boundaryValues_local[arr_index + n] = Q[n];\n',
        '  }\n'
        '\n',
-       '}\n']
+       '}\n\n',
+       'void {}::{}::SendPeriodic() {{\n'.format(solver_name[:-6], solver_name),
+       '}\n\n']
 
     f = open(fname, "w")
     f.writelines(lines)

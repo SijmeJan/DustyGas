@@ -122,6 +122,28 @@ void exahype::mappings::PlotPeriodic::beginIteration(
 
 void exahype::mappings::PlotPeriodic::endIteration(
     exahype::State& solverState) {
+
+  // Communicate data to all nodes
+  for (int solverNumber=0; solverNumber<static_cast<int>(solvers::RegisteredSolvers.size()); solverNumber++) {
+      auto* solver = exahype::solvers::RegisteredSolvers[solverNumber];
+
+      switch ( solver->getType() ) {
+        case solvers::Solver::Type::ADERDG:
+          static_cast<solvers::ADERDGSolver*>(solver)->FinishPeriodic();
+          break;
+          //case solvers::Solver::Type::LimitingADERDG:
+          //static_cast<solvers::LimitingADERDGSolver*>(solver)->AdjustPeriodic(cellInfo);
+          //break;
+          //case solvers::Solver::Type::FiniteVolumes:
+          //static_cast<solvers::FiniteVolumesSolver*>(solver)->AdjustPeriodic(cellInfo);
+          //break;
+        default:
+          assertionMsg(false,"Unrecognised solver type: "<<solvers::Solver::toString(solver->getType()));
+          logError("mergeWithBoundaryDataIfNotDoneYet(...)","Unrecognised solver type: "<<solvers::Solver::toString(solver->getType()));
+          std::abort();
+          break;
+      }
+
   /*
   if (
       !exahype::solvers::Solver::FuseAllADERDGPhases &&

@@ -213,7 +213,13 @@ def allow_periodic(repo_dir):
        '      }\n',
        '    }\n',
        '  }\n',
-       '}\n\n']
+       '}\n',
+       '\n',
+       'void exahype::solvers::ADERDGSolver::FinishPeriodic() {\n',
+       '  SendPeriodic();\n',
+       '}\n',
+       '\n',
+       ]
 
     f = open(fname, "w")
     f.writelines(lines)
@@ -237,7 +243,10 @@ def allow_periodic(repo_dir):
                           '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
                           '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
                           '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
-                          '    double* const Q) = 0;\n\n']
+                          '    double* const Q) = 0;\n',
+                          '  void FinishPeriodic() final override;\n',
+                          '  virtual void SendPeriodic() = 0;\n',
+                          '\n']
             break;
 
     f = open(fname, "w")
@@ -259,6 +268,7 @@ def allow_periodic(repo_dir):
                '  virtual void AdjustPeriodic(\n',
                '    const int solverNumber,\n',
                '    CellInfo& cellInfo) = 0;\n',
+               '  virtual void FinishPeriodic() = 0;\n',
                '\n']
             break;
 
