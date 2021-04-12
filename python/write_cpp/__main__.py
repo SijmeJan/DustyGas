@@ -14,6 +14,7 @@ from boundary import write_outflow_boundary
 from plot import write_plotter_gas_velocity
 from plot import write_plotter_dust_velocity
 from plot import write_plotter_dust_density
+from periodic_exahype import allow_periodic
 
 def guess_mesh(domain_size, cell_size):
     dx = domain_size
@@ -217,5 +218,5 @@ if (use_periodic_boundaries == True):
     f.writelines(lines)
     f.close()
 
-    correction_boundary_hack(repo_dir, [offset_x, offset_y], [size_x, size_y],
-                             n_vars, order)
+    # Hack into Exahype to allow two extra mappings
+    allow_periodic(repo_dir)
