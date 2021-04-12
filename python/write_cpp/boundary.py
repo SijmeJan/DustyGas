@@ -738,11 +738,11 @@ def correction_boundary_hack(repo_dir, offset, size, n_vars, order):
                           '  void AdjustPeriodic(\n',
                           '    const int solverNumber,\n',
                           '    CellInfo& cellInfo) final override;\n',
-                          '  void PlotPeriodic(\n',
+                          '  virtual void PlotPeriodic(\n',
                           '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
                           '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
                           '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
-                          '    double* const Q);\n\n']
+                          '    double* const Q) = 0;\n\n']
             break;
 
     f = open(fname, "w")
@@ -764,11 +764,12 @@ def correction_boundary_hack(repo_dir, offset, size, n_vars, order):
                '  virtual void AdjustPeriodic(\n',
                '    const int solverNumber,\n',
                '    CellInfo& cellInfo) = 0;\n',
-               '  virtual void PlotPeriodic(\n',
-               '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
-               '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
-               '    const tarch::la::Vector<DIMENSIONS, int>&    pos,\n',
-               '    double* const Q) = 0;\n\n']
+               #'  virtual void PlotPeriodic(\n',
+               #'    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
+               #'    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
+               #'    const tarch::la::Vector<DIMENSIONS, int>&    pos,\n',
+               #'    double* const Q) = 0;\n',
+               '\n']
             break;
 
     f = open(fname, "w")
