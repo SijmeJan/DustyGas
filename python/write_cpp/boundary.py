@@ -705,6 +705,7 @@ def correction_boundary_hack(repo_dir, offset, size, n_vars, order):
        '      const int basisZ = (DIMENSIONS == 3 ? order  : 0 ) + 1;\n',
        '      kernels::index idx_u(basisZ, basisY, basisX, getNumberOfVariables());\n',
        '\n',
+       '      // Call the solver-defined PlotPeriodic function\n',
        '      dfor(i, order + 1) {\n',
        '        PlotPeriodic(\n',
        '        cellDescription.getOffset(),\n',
@@ -716,14 +717,71 @@ def correction_boundary_hack(repo_dir, offset, size, n_vars, order):
        '  }\n',
        '}\n\n']
 
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
 
-    # Strategy: replace function body of mapQuantities to fill the
-    # boundaryValues vector.
+
+
+
+    # Add function to ADERDGsolver.h
+    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/solvers/ADERDGSolver.h'
+    f = open(fname, "r")
+    lines = f.readlines()
+    f.close()
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('void updateOrRestrict(') != -1):
+            lines[i:i] = ['  void PlotPeriodic(\n',
+                          '    const int solverNumber,\n',
+                          '    CellInfo& cellInfo) final override;\n',
+                          '  void AdjustPeriodic(\n',
+                          '    const int solverNumber,\n',
+                          '    CellInfo& cellInfo) final override;\n',
+                          '  void PlotPeriodic(\n',
+                          '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
+                          '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
+                          '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
+                          '    double* const Q);\n\n']
+            break;
+
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
+
+    # Add functions to Solver.h
+    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/solvers/Solver.h'
+    f = open(fname, "r")
+    lines = f.readlines()
+    f.close()
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('* The nonfused update routine.') != -1):
+            lines[i-1:i-1] = ['  virtual void PlotPeriodic(\n',
+                          '    const int solverNumber,\n',
+                          '    CellInfo& cellInfo) = 0;\n',
+                          '  virtual void AdjustPeriodic(\n',
+                          '    const int solverNumber,\n',
+                          '    CellInfo& cellInfo) = 0;\n\n']
+            break;
+
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
+
+    return
+
+    # Add function to DustyGasSolver.cpp
+    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/solvers/ADERDGSolver.cpp'
+    f = open(fname, "r")
+    lines = f.readlines()
+    f.close()
 
     x_bound = [offset[0], offset[0] + size[0]]
     y_bound = [offset[1], offset[1] + size[1]]
 
-
+    # TODO: declare periodic array in header
+    # TODO: should this be in DustyGasSolver?
     boundary = ['void exahype::solvers::ADERDGSolver::PlotPeriodic(\n',
                 '  const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
                 '  const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
@@ -737,7 +795,6 @@ def correction_boundary_hack(repo_dir, offset, size, n_vars, order):
                 '  // The next ny entries correspond to the left boundary.\n',
                 '  // The next ny entries correspont to the right boundary.\n',
                 '\n',
-                '  assertion(outputQuantities==nullptr);\n\n',
                 '  // Hack: number of cells in x and y\n',
                 '  int n_cell_x = (int) round({}/sizeOfPatch[0]);\n'.format(size[0]),
                 '  int n_cell_y = (int) round({}/sizeOfPatch[1]);\n'.format(size[1]),
@@ -796,56 +853,6 @@ def correction_boundary_hack(repo_dir, offset, size, n_vars, order):
 
     lines[len(lines):len(lines)] = boundary
 
-    f = open(fname, "w")
-    f.writelines(lines)
-    f.close()
-
-    # Add function to ADERDGsolver.h
-    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/solvers/ADERDGSolver.h'
-    f = open(fname, "r")
-    lines = f.readlines()
-    f.close()
-
-    for i in range(0, len(lines)):
-        if (lines[i].find('void updateOrRestrict(') != -1):
-            lines[i:i] = ['  void PlotPeriodic(\n',
-                          '    const int solverNumber,\n',
-                          '    CellInfo& cellInfo) final override;\n',
-                          '  void AdjustPeriodic(\n',
-                          '    const int solverNumber,\n',
-                          '    CellInfo& cellInfo) final override;\n',
-                          '  void PlotPeriodic(\n',
-                          '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
-                          '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
-                          '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
-                          '    double* const Q);\n\n']
-            break;
-
-    f = open(fname, "w")
-    f.writelines(lines)
-    f.close()
-
-    # Add functions to Solver.h
-    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/solvers/Solver.h'
-    f = open(fname, "r")
-    lines = f.readlines()
-    f.close()
-
-    for i in range(0, len(lines)):
-        if (lines[i].find('* The nonfused update routine.') != -1):
-            lines[i-1:i-1] = ['  virtual void PlotPeriodic(\n',
-                          '    const int solverNumber,\n',
-                          '    CellInfo& cellInfo) = 0;\n',
-                          '  virtual void AdjustPeriodic(\n',
-                          '    const int solverNumber,\n',
-                          '    CellInfo& cellInfo) = 0;\n\n']
-            break;
-
-    f = open(fname, "w")
-    f.writelines(lines)
-    f.close()
-
-    return
     # ExaHyPE fuses the correction step with the 'adjustSolution' step, and the
     # prediction step with the plotting step. For periodic boundaries with
     # ADERDG, this is unwanted. One of the plotters 'plots' the periodic data
