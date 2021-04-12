@@ -143,6 +143,7 @@ void exahype::mappings::PlotPeriodic::endIteration(
           std::abort();
           break;
       }
+  }
 
   /*
   if (
