@@ -574,7 +574,7 @@ def write_abstract_class(n_vars, order, offset, size, output_dir, solver_name):
 
     lines[len(lines):len(lines)] = \
       ['\n\n',
-       'void {}::{}::PlotPeriodic(\n'.format(solver_name[:-6], 'Abstract'+solver_name),
+       'void {}::{}::PlotPeriodic(\n'.format(solver_name[:-6], solver_name),
        '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
        '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
        '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
