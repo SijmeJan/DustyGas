@@ -222,4 +222,7 @@ if (use_periodic_boundaries == True):
     allow_periodic(repo_dir)
 
     # Add PlotAdjust function to abstract solver class
-    write_abstract_class(output_dir, solver_name)
+    write_abstract_class(n_vars, order,
+                         [offset_x, offset_y],
+                         [size_x, size_y],
+                         output_dir, solver_name)

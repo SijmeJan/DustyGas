@@ -532,8 +532,8 @@ def write_solver_set_periodic_fv(lines, n_vars):
     add_function_body(lines, 'boundaryValues', periodic)
 
 
-def write_abstract_class(output_dir, solver_name):
-    fname = output_dir + 'Abstract' + solver_name + '.h'
+def write_abstract_class(n_vars, order, offset, size, output_dir, solver_name):
+    fname = output_dir + solver_name + '.h'
 
     f = open(fname, "r")
     lines = f.readlines()
@@ -547,14 +547,26 @@ def write_abstract_class(output_dir, solver_name):
                '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
                '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
                '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
-               '    double* const Q);\n']
+               '    double* const Q);\n\n',
+               '  //std::vector<double> *boundaryValues;\n',
+               '  //std::vector<double> boundaryValues_local;\n',
+               '  //double *global_dx;\n',
+               '  //int *global_n;\n']
+            break;
+
+    # Make sure to include vector
+    boundary = ['#include <vector>\n']
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('#include') != -1):
+            lines[i:i] = boundary
             break;
 
     f = open(fname, "w")
     f.writelines(lines)
     f.close()
 
-    fname = output_dir + 'Abstract' + solver_name + '.cpp'
+    fname = output_dir + solver_name + '.cpp'
 
     f = open(fname, "r")
     lines = f.readlines()
@@ -567,7 +579,57 @@ def write_abstract_class(output_dir, solver_name):
        '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
        '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
        '    double* const Q) {\n'
-       '  // TODO\n',
+       '/*\n',
+       '  // Fill a boundary array for setting periodic boundaries in 2D, non-AMR runs.\n',
+       '  // If mesh = nx times ny, the first nx entries correspond to the bottom boundary.\n',
+       '  // The second nx entries correspond to the top boundary.\n',
+       '  // The next ny entries correspond to the left boundary.\n',
+       '  // The next ny entries correspont to the right boundary.\n',
+       '\n',
+       '  // Hack: number of cells in x and y\n',
+       '  int n_cell_x = (int) round({}/sizeOfPatch[0]);\n'.format(size[0]),
+       '  int n_cell_y = (int) round({}/sizeOfPatch[1]);\n'.format(size[1]),
+       '\n',
+      '  // Make sure vector is of the correct size, and set elements to zero.\n',
+       '  // Note that this should happen only the first time this function is called.\n',
+       '  int n_bound_cells = 2*(n_cell_x + n_cell_y);\n',
+       '  int n_send_per_cell = {};\n'.format(n_vars*(order+1)*(order+1)),
+       '  if (boundaryValues_local.size() != n_send_per_cell*n_bound_cells) {\n',
+       '    boundaryValues_local.resize(n_send_per_cell*n_bound_cells);\n',
+       '    std::fill(boundaryValues_local.begin(), boundaryValues_local.end(), 0.0);\n',
+       '  }\n',
+       '\n',
+       '  // Number of cells to left and bottom\n',
+       '  int cell_x = (int) ((offsetOfPatch[0] + 0.5*sizeOfPatch[0])/sizeOfPatch[0]);\n',
+       '  int cell_y = (int) ((offsetOfPatch[1] + 0.5*sizeOfPatch[1])/sizeOfPatch[1]);\n',
+       '\n',
+       '  int indx = -1;\n',
+       '\n',
+       '  if (cell_y == 1) {\n',
+       '    indx = cell_x;\n',
+       '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
+       '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
+       '      boundaryValues_local[arr_index + n] = Q[n];\n',
+       '  }\n'
+       '  if (cell_y == global_n[1] - 2) {\n',
+       '    indx = n_cell_x + cell_x;\n',
+       '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
+       '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
+       '      boundaryValues_local[arr_index + n] = Q[n];\n',
+       '  }\n'
+       '  if (cell_x == 1) {\n',
+       '    indx = 2*n_cell_x + cell_y;\n',
+       '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
+       '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
+       '      boundaryValues_local[arr_index + n] = Q[n];\n',
+       '  }\n'
+       '  if (cell_x == global_n[0] - 2) {\n',
+       '    indx = 2*n_cell_x + n_cell_y + cell_y;\n',
+       '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
+       '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
+       '      boundaryValues_local[arr_index + n] = Q[n];\n',
+       '  }\n'
+       '*/\n',
        '}\n']
 
     f = open(fname, "w")
