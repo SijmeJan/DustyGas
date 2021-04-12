@@ -634,6 +634,7 @@ def write_abstract_class(n_vars, order, offset, size, output_dir, solver_name):
        '\n',
        '}\n\n',
        'void {}::{}::SendPeriodic() {{\n'.format(solver_name[:-6], solver_name),
+       '  std::cout << "SENDING PERIODIC" << std::endl;\n',
        '}\n\n']
 
     f = open(fname, "w")
