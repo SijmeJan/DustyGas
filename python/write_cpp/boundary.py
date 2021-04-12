@@ -549,7 +549,7 @@ def write_abstract_class(n_vars, order, offset, size, output_dir, solver_name):
                '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
                '    double* const Q);\n\n',
                '  //std::vector<double> *boundaryValues;\n',
-               '  //std::vector<double> boundaryValues_local;\n',
+               '  std::vector<double> boundaryValues_local;\n',
                '  //double *global_dx;\n',
                '  //int *global_n;\n']
             break;
@@ -579,7 +579,7 @@ def write_abstract_class(n_vars, order, offset, size, output_dir, solver_name):
        '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
        '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
        '    double* const Q) {\n'
-       '/*\n',
+       '\n',
        '  // Fill a boundary array for setting periodic boundaries in 2D, non-AMR runs.\n',
        '  // If mesh = nx times ny, the first nx entries correspond to the bottom boundary.\n',
        '  // The second nx entries correspond to the top boundary.\n',
@@ -629,7 +629,7 @@ def write_abstract_class(n_vars, order, offset, size, output_dir, solver_name):
        '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
        '      boundaryValues_local[arr_index + n] = Q[n];\n',
        '  }\n'
-       '*/\n',
+       '\n',
        '}\n']
 
     f = open(fname, "w")
