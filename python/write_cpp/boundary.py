@@ -757,12 +757,18 @@ def correction_boundary_hack(repo_dir, offset, size, n_vars, order):
 
     for i in range(0, len(lines)):
         if (lines[i].find('* The nonfused update routine.') != -1):
-            lines[i-1:i-1] = ['  virtual void PlotPeriodic(\n',
-                          '    const int solverNumber,\n',
-                          '    CellInfo& cellInfo) = 0;\n',
-                          '  virtual void AdjustPeriodic(\n',
-                          '    const int solverNumber,\n',
-                          '    CellInfo& cellInfo) = 0;\n\n']
+            lines[i-1:i-1] = \
+              ['  virtual void PlotPeriodic(\n',
+               '    const int solverNumber,\n',
+               '    CellInfo& cellInfo) = 0;\n',
+               '  virtual void AdjustPeriodic(\n',
+               '    const int solverNumber,\n',
+               '    CellInfo& cellInfo) = 0;\n',
+               '  virtual void PlotPeriodic(\n',
+               '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
+               '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
+               '    const tarch::la::Vector<DIMENSIONS, int>&    pos,\n',
+               '    double* const Q) = 0;\n\n']
             break;
 
     f = open(fname, "w")
