@@ -9,8 +9,8 @@ from source import write_source
 from initial import write_initial
 from boundary import write_boundary, write_boundary_h, write_solver_h
 from boundary import write_solver_set_periodic
-from boundary import correction_boundary_hack
 from boundary import write_outflow_boundary
+from boundary import write_abstract_class
 from plot import write_plotter_gas_velocity
 from plot import write_plotter_dust_velocity
 from plot import write_plotter_dust_density
@@ -220,3 +220,6 @@ if (use_periodic_boundaries == True):
 
     # Hack into Exahype to allow two extra mappings
     allow_periodic(repo_dir)
+
+    # Add PlotAdjust function to abstract solver class
+    write_abstract_class(output_dir, solver_name)
