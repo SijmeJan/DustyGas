@@ -154,7 +154,7 @@ void exahype::mappings::PlotPeriodic::enterCell(
       switch ( solver->getType() ) {
         case solvers::Solver::Type::ADERDG:
           std::cout << "PLOTTING PERIODIC IN CELL" << std::endl;
-          //static_cast<solvers::ADERDGSolver*>(solver)->PlotPeriodic(solverNumber, cellInfo);
+          static_cast<solvers::ADERDGSolver*>(solver)->PlotPeriodic(solverNumber, cellInfo);
           break;
           //case solvers::Solver::Type::LimitingADERDG:
           //static_cast<solvers::LimitingADERDGSolver*>(solver)->AdjustPeriodic(cellInfo);

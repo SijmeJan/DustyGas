@@ -127,7 +127,7 @@ void exahype::mappings::AdjustPeriodic::leaveCell(
 
       switch ( solver->getType() ) {
         case solvers::Solver::Type::ADERDG:
-          std::cout << "ADJUSTING SOLUTION IN CELL" << std::endl;
+          //std::cout << "ADJUSTING SOLUTION IN CELL" << std::endl;
           static_cast<solvers::ADERDGSolver*>(solver)->AdjustPeriodic(solverNumber, cellInfo);
           break;
           //case solvers::Solver::Type::LimitingADERDG:
