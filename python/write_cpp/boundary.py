@@ -207,7 +207,7 @@ def write_solver_h(lines):
 def write_solver_set_periodic(lines, n_vars, order):
     body = remove_function_body(lines, 'adjustPointSolution')
 
-    periodic = ['  if (t < 0.0) {\n',
+    periodic = ['  if (t > 0.0) {\n',
                 '    // Keep a counter of dofs visited\n',
                 '    int max_global_dof_index = global_n[0]*global_n[1]*{}*{};\n'.format(order + 1, order + 1),
                 '    if (global_dof_index >= max_global_dof_index)\n',
