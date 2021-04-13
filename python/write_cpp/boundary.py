@@ -542,7 +542,8 @@ def write_periodic_functions(n_vars, order, offset, size, output_dir, solver_nam
     remove_function_body(lines, '::PlotPeriodic')
 
     body = \
-      ['  // Fill a boundary array for setting periodic boundaries in 2D, non-AMR runs.\n',
+      ['  std::cout << "PLOT PERIODIC " << pos[0] << " " << pos[1] << sd::endl;\n',
+       '  // Fill a boundary array for setting periodic boundaries in 2D, non-AMR runs.\n',
        '  // If mesh = nx times ny, the first nx entries correspond to the bottom boundary.\n',
        '  // The second nx entries correspond to the top boundary.\n',
        '  // The next ny entries correspond to the left boundary.\n',
@@ -631,6 +632,49 @@ def write_periodic_functions(n_vars, order, offset, size, output_dir, solver_nam
        '#endif\n']
 
     add_function_body(lines, '::SendPeriodic', body)
+
+    remove_function_body(lines, '::AdjustPeriodic')
+
+    body = \
+      ['  std::cout << "ADJUSTPERIODIC " << pos[0] << " " << pos[1] << std::endl;\n',
+       '  // Hack: number of cells in x and y\n',
+       '  int n_cell_x = (int) round({}/sizeOfPatch[0]);\n'.format(size[0]),
+       '  int n_cell_y = (int) round({}/sizeOfPatch[1]);\n'.format(size[1]),
+       '\n',
+       '  // Number of cells to left and bottom\n',
+       '  int cell_x = (int) ((offsetOfPatch[0] + 0.5*sizeOfPatch[0])/sizeOfPatch[0]);\n',
+       '  int cell_y = (int) ((offsetOfPatch[1] + 0.5*sizeOfPatch[1])/sizeOfPatch[1]);\n',
+       '\n',
+       '  int n_send_per_cell = {};\n'.format(n_vars*(order+1)*(order+1)),
+       '  int indx = -1;\n',
+       '\n',
+       '  if (cell_y == n_cell_y - 1) {\n',
+       '    indx = cell_x;\n',
+       '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
+       '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
+       '      Q[n] = boundaryVector[arr_index + n];\n',
+       '  }\n'
+       '  if (cell_y == 0) {\n',
+       '    indx = n_cell_x + cell_x;\n',
+       '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
+       '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
+       '      Q[n] = boundaryVector[arr_index + n];\n',
+       '  }\n'
+       '  if (cell_x == n_cell_x - 1) {\n',
+       '    indx = 2*n_cell_x + cell_y;\n',
+       '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
+       '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
+       '      Q[n] = boundaryVector[arr_index + n];\n',
+       '  }\n'
+       '  if (cell_x == 0) {\n',
+       '    indx = 2*n_cell_x + n_cell_y + cell_y;\n',
+       '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
+       '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
+       '      Q[n] = boundaryVector[arr_index + n];\n',
+       '  }\n'
+      ]
+
+    add_function_body(lines, '::AdjustPeriodic', body)
 
     f = open(fname, "w")
     f.writelines(lines)

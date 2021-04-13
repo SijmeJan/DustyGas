@@ -92,7 +92,7 @@ for line in lines:
 # Unfortunately, vanilla ExaHyPE does not allow for periodic boundaries.
 # A hack that does not require modifying the ExaHyPE core is to make use
 # of a plotter that does not generate any output.
-use_periodic_boundaries = False
+use_periodic_boundaries = True
 
 # Find plotter dealing with periodic boundaries
 for i in range(0, len(lines)):
