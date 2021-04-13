@@ -647,6 +647,11 @@ def write_periodic_dummies(output_dir, solver_name):
         if (lines[-i].find('};') != -1):
             lines[-i:-i] = \
               ['\n',
+               '  void AdjustPeriodic(\n',
+               '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
+               '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
+               '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
+               '    double* Q) override;\n',
                '  void PlotPeriodic(\n',
                '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
                '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
@@ -680,6 +685,13 @@ def write_periodic_dummies(output_dir, solver_name):
 
     lines[len(lines):len(lines)] = \
       ['\n\n',
+       'void {}::{}::AdjustPeriodic(\n'.format(solver_name[:-6], solver_name),
+       '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
+       '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
+       '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
+       '    double* Q) {\n'
+       '  // Nop, since no periodic boundaries requested\n',
+       '}\n\n',
        'void {}::{}::PlotPeriodic(\n'.format(solver_name[:-6], solver_name),
        '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
        '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
