@@ -142,6 +142,10 @@ f = open(source_file, "w")
 f.writelines(lines)
 f.close()
 
+# Hack into Exahype to allow two extra mappings
+allow_periodic(repo_dir)
+
+# Write empty functions (no periodic boundaries by default)
 write_periodic_dummies(output_dir, solver_name)
 
 ################################
@@ -221,8 +225,6 @@ if (use_periodic_boundaries == True):
     #f.writelines(lines)
     #f.close()
 
-    # Hack into Exahype to allow two extra mappings
-    allow_periodic(repo_dir)
 
     # Add PlotAdjust function to abstract solver class
     #write_abstract_class(n_vars, order,
