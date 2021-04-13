@@ -542,7 +542,7 @@ def write_periodic_functions(n_vars, order, offset, size, output_dir, solver_nam
     remove_function_body(lines, '::PlotPeriodic')
 
     body = \
-      ['  std::cout << "PLOT PERIODIC " << pos[0] << " " << pos[1] << sd::endl;\n',
+      ['  std::cout << "PLOT PERIODIC " << pos[0] << " " << pos[1] << std::endl;\n',
        '  // Fill a boundary array for setting periodic boundaries in 2D, non-AMR runs.\n',
        '  // If mesh = nx times ny, the first nx entries correspond to the bottom boundary.\n',
        '  // The second nx entries correspond to the top boundary.\n',
