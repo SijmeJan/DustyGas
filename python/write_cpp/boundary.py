@@ -532,57 +532,17 @@ def write_solver_set_periodic_fv(lines, n_vars):
     add_function_body(lines, 'boundaryValues', periodic)
 
 
-def write_abstract_class(n_vars, order, offset, size, output_dir, solver_name):
-    fname = output_dir + solver_name + '.h'
-
-    f = open(fname, "r")
-    lines = f.readlines()
-    f.close()
-
-    for i in range(1, len(lines)):
-        if (lines[-i].find('};') != -1):
-            lines[-i:-i] = \
-              ['\n',
-               '  void PlotPeriodic(\n',
-               '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
-               '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
-               '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
-               '    double* const Q) override;\n',
-               '  void SendPeriodic() override;\n',
-               '\n',
-               '  std::vector<double> boundaryVector;\n',
-               '  std::vector<double> boundaryVector_local;\n',
-               '  //double *global_dx;\n',
-               '  //int *global_n;\n']
-            break;
-
-    # Make sure to include vector
-    boundary = ['#include <vector>\n']
-
-    for i in range(0, len(lines)):
-        if (lines[i].find('#include') != -1):
-            lines[i:i] = boundary
-            break;
-
-    f = open(fname, "w")
-    f.writelines(lines)
-    f.close()
-
+def write_periodic_functions(n_vars, order, offset, size, output_dir, solver_name):
     fname = output_dir + solver_name + '.cpp'
 
     f = open(fname, "r")
     lines = f.readlines()
     f.close()
 
-    lines[len(lines):len(lines)] = \
-      ['\n\n',
-       'void {}::{}::PlotPeriodic(\n'.format(solver_name[:-6], solver_name),
-       '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
-       '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
-       '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
-       '    double* const Q) {\n'
-       '\n',
-       '  // Fill a boundary array for setting periodic boundaries in 2D, non-AMR runs.\n',
+    remove_function_body(lines, '::PlotPeriodic')
+
+    body = \
+      ['  // Fill a boundary array for setting periodic boundaries in 2D, non-AMR runs.\n',
        '  // If mesh = nx times ny, the first nx entries correspond to the bottom boundary.\n',
        '  // The second nx entries correspond to the top boundary.\n',
        '  // The next ny entries correspond to the left boundary.\n',
@@ -630,11 +590,14 @@ def write_abstract_class(n_vars, order, offset, size, output_dir, solver_name):
        '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
        '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
        '      boundaryVector_local[arr_index + n] = Q[n];\n',
-       '  }\n'
-       '\n',
-       '}\n\n',
-       'void {}::{}::SendPeriodic() {{\n'.format(solver_name[:-6], solver_name),
-       '  std::cout << "SENDING PERIODIC" << std::endl;\n',
+       '  }\n']
+
+    add_function_body(lines, '::PlotPeriodic', body)
+
+    remove_function_body(lines, '::SendPeriodic')
+
+    body = \
+      ['  std::cout << "SENDING PERIODIC" << std::endl;\n',
        '#ifdef Parallel\n',
        '  // Should only happen the first time of call\n',
        '  if (boundaryVector.size() == 0) {\n',
@@ -665,8 +628,9 @@ def write_abstract_class(n_vars, order, offset, size, output_dir, solver_name):
        '                tarch::parallel::Node::getInstance().getCommunicator());\n',
        '#else\n',
        '  boundaryVector = boundaryVector_local;\n',
-       '#endif\n'
-       '}\n\n']
+       '#endif\n']
+
+    add_function_body(lines, '::SendPeriodic', body)
 
     f = open(fname, "w")
     f.writelines(lines)

@@ -10,7 +10,7 @@ from initial import write_initial
 from boundary import write_boundary, write_boundary_h, write_solver_h
 from boundary import write_solver_set_periodic
 from boundary import write_outflow_boundary
-from boundary import write_abstract_class
+from boundary import write_periodic_functions
 from boundary import write_periodic_dummies
 from plot import write_plotter_gas_velocity
 from plot import write_plotter_dust_velocity
@@ -92,7 +92,7 @@ for line in lines:
 # Unfortunately, vanilla ExaHyPE does not allow for periodic boundaries.
 # A hack that does not require modifying the ExaHyPE core is to make use
 # of a plotter that does not generate any output.
-use_periodic_boundaries = False
+use_periodic_boundaries = True
 
 # Find plotter dealing with periodic boundaries
 for i in range(0, len(lines)):
@@ -171,41 +171,41 @@ if (use_periodic_boundaries == True):
         print('If a periodic domain of size {}x{} is needed, change domain size in .exahype file to {}x{}'.format(size_x, size_y, size_x_want, size_y_want))
 
     # Edit solver header file to declare boundary array
-    source_file = output_dir + solver_name + '.h'
+    #source_file = output_dir + solver_name + '.h'
 
-    f = open(source_file, "r")
-    lines = f.readlines()
-    f.close()
+    #f = open(source_file, "r")
+    #lines = f.readlines()
+    #f.close()
 
-    write_solver_h(lines)
+    #write_solver_h(lines)
 
     #f = open(source_file, "w")
     #f.writelines(lines)
     #f.close()
 
     # Edit boundary cpp to fill boundary array
-    source_file = output_dir + boundary_name + '.cpp'
+    #source_file = output_dir + boundary_name + '.cpp'
 
-    f = open(source_file, "r")
-    lines = f.readlines()
-    f.close()
+    #f = open(source_file, "r")
+    #lines = f.readlines()
+    #f.close()
 
-    write_boundary(lines, n_vars, order,
-                   [offset_x, offset_y], [size_x, size_y],
-                   solver_name, boundary_name)
+    #write_boundary(lines, n_vars, order,
+    #               [offset_x, offset_y], [size_x, size_y],
+    #               solver_name, boundary_name)
 
     #f = open(source_file, "w")
     #f.writelines(lines)
     #f.close()
 
     # Edit boundary header to declare pointer to boundary array
-    source_file = output_dir + boundary_name + '.h'
+    #source_file = output_dir + boundary_name + '.h'
 
-    f = open(source_file, "r")
-    lines = f.readlines()
-    f.close()
+    #f = open(source_file, "r")
+    #lines = f.readlines()
+    #f.close()
 
-    write_boundary_h(lines)
+    #write_boundary_h(lines)
 
     #f = open(source_file, "w")
     #f.writelines(lines)
@@ -213,13 +213,13 @@ if (use_periodic_boundaries == True):
 
 
     # Edit solver cpp file to set periodic boundaries
-    source_file = output_dir + solver_name + '.cpp'
+    #source_file = output_dir + solver_name + '.cpp'
 
-    f = open(source_file, "r")
-    lines = f.readlines()
-    f.close()
+    #f = open(source_file, "r")
+    #lines = f.readlines()
+    #f.close()
 
-    write_solver_set_periodic(lines, n_vars, order)
+    #write_solver_set_periodic(lines, n_vars, order)
 
     #f = open(source_file, "w")
     #f.writelines(lines)
@@ -227,7 +227,7 @@ if (use_periodic_boundaries == True):
 
 
     # Add PlotAdjust function to abstract solver class
-    #write_abstract_class(n_vars, order,
-    #                     [offset_x, offset_y],
-    #                     [size_x, size_y],
-    #                     output_dir, solver_name)
+    write_periodic_functions(n_vars, order,
+                             [offset_x, offset_y],
+                             [size_x, size_y],
+                             output_dir, solver_name)
