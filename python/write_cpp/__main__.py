@@ -143,7 +143,7 @@ f.writelines(lines)
 f.close()
 
 # Hack into Exahype to allow two extra mappings
-allow_periodic(repo_dir)
+#allow_periodic(repo_dir)
 
 # Write empty functions (no periodic boundaries by default)
 write_periodic_dummies(output_dir, solver_name)

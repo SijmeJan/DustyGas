@@ -636,7 +636,7 @@ def write_periodic_functions(n_vars, order, offset, size, output_dir, solver_nam
     remove_function_body(lines, '::AdjustPeriodic')
 
     body = \
-      ['  std::cout << "ADJUSTPERIODIC " << pos[0] << " " << pos[1] << std::endl;\n',
+      ['  //std::cout << "ADJUSTPERIODIC " << pos[0] << " " << pos[1] << std::endl;\n',
        '  // Hack: number of cells in x and y\n',
        '  int n_cell_x = (int) round({}/sizeOfPatch[0]);\n'.format(size[0]),
        '  int n_cell_y = (int) round({}/sizeOfPatch[1]);\n'.format(size[1]),
@@ -651,24 +651,28 @@ def write_periodic_functions(n_vars, order, offset, size, output_dir, solver_nam
        '  if (cell_y == n_cell_y - 1) {\n',
        '    indx = cell_x;\n',
        '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
+       '    std::cout << "ADUSTING: " << cell_x << " " << cell_y << " " << indx << " " << arr_index << " " << boundaryVector.size() << std::endl;\n',
        '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
        '      Q[n] = boundaryVector[arr_index + n];\n',
        '  }\n'
        '  if (cell_y == 0) {\n',
        '    indx = n_cell_x + cell_x;\n',
        '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
+       '    std::cout << "ADUSTING: " << cell_x << " " << cell_y << " " << indx << " " << arr_index << " " << boundaryVector.size() << std::endl;\n',
        '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
        '      Q[n] = boundaryVector[arr_index + n];\n',
        '  }\n'
        '  if (cell_x == n_cell_x - 1) {\n',
        '    indx = 2*n_cell_x + cell_y;\n',
        '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
+       '    std::cout << "ADUSTING: " << cell_x << " " << cell_y << " " << indx << " " << arr_index << " " << boundaryVector.size() << std::endl;\n',
        '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
        '      Q[n] = boundaryVector[arr_index + n];\n',
        '  }\n'
        '  if (cell_x == 0) {\n',
        '    indx = 2*n_cell_x + n_cell_y + cell_y;\n',
        '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
+       '    std::cout << "ADUSTING: " << cell_x << " " << cell_y << " " << indx << " " << arr_index << " " << boundaryVector.size() << std::endl;\n',
        '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
        '      Q[n] = boundaryVector[arr_index + n];\n',
        '  }\n'
