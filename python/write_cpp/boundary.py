@@ -573,7 +573,7 @@ def write_periodic_functions(n_vars, order, offset, size, output_dir, solver_nam
        '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
        '      boundaryVector_local[arr_index + n] = Q[n];\n',
        '  }\n'
-       '  if (cell_y == global_n[1] - 2) {\n',
+       '  if (cell_y == n_cell_y - 2) {\n',
        '    indx = n_cell_x + cell_x;\n',
        '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
        '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
@@ -585,7 +585,7 @@ def write_periodic_functions(n_vars, order, offset, size, output_dir, solver_nam
        '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
        '      boundaryVector_local[arr_index + n] = Q[n];\n',
        '  }\n'
-       '  if (cell_x == global_n[0] - 2) {\n',
+       '  if (cell_x == n_cell_x - 2) {\n',
        '    indx = 2*n_cell_x + n_cell_y + cell_y;\n',
        '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
        '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
