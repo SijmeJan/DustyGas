@@ -1,3 +1,5 @@
+import os
+
 from common import replace_with_indent, remove_function_body, add_function_body, add_class_member
 
 def allow_periodic(repo_dir):
@@ -552,3 +554,11 @@ def allow_periodic(repo_dir):
     f = open(fname, "w")
     f.writelines(lines)
     f.close()
+
+if __name__ == "__main__":
+    # Full path to cpp files
+    repo_dir = os.path.dirname(os.path.abspath(__file__)) + '/../../'
+
+
+    # execute only if run as a script
+    allow_periodic(repo_dir)

@@ -28,9 +28,11 @@ def guess_mesh(domain_size, cell_size):
 
 # Needs single argument; exahype file
 parser = argparse.ArgumentParser(description='Write flux and eigenvalue cpp')
+parser.add_argument('--periodic', action="store_true", help="use periodic domain")
 parser.add_argument('infile',
                     help='ExaHyPE file')
 args = parser.parse_args()
+
 
 # Read exahype file
 f = open(args.infile, "r")
@@ -89,16 +91,22 @@ for line in lines:
     if (line.find('maximum-mesh-size') != -1):
         cell_size = float(line.lstrip().split()[-1])
 
-# Unfortunately, vanilla ExaHyPE does not allow for periodic boundaries.
-# A hack that does not require modifying the ExaHyPE core is to make use
-# of a plotter that does not generate any output.
-use_periodic_boundaries = True
+# Main repository directory
+repo_dir = os.path.dirname(os.path.abspath(__file__)) + '/../../'
 
-# Find plotter dealing with periodic boundaries
-for i in range(0, len(lines)):
-    if (lines[i].find('variables const = 0') != -1):
-        boundary_name = lines[i-1].lstrip().split()[-1]
-        use_periodic_boundaries = True
+# User signals they want periodic domain
+# Check if ExaHyPE is set up to do this
+if args.periodic:
+    fname = repo_dir + \
+      'ExaHyPE-Engine/ExaHyPE/exahype/mappings/PlotPeriodic.cpp'
+    if os.path.isfile(fname) != True:
+        print('ExaHyPE is not set up for periodic domains.')
+        print('Run allow_periodic.sh before creating the project.')
+        exit(1)
+
+# Unfortunately, vanilla ExaHyPE does not allow for periodic boundaries.
+# Check if periodic boundaries have been enabled?
+use_periodic_boundaries = True
 
 # Isothermal gas = 4 equations; each dust component adds 4
 if (n_vars % 4 != 0):
@@ -117,7 +125,6 @@ mu = 3.0          # dust/gas ratio
 n_dust = int(n_vars/4 - 1)
 
 # Full path to cpp files
-repo_dir = os.path.dirname(os.path.abspath(__file__)) + '/../../'
 output_dir = os.path.dirname(os.path.abspath(args.infile)) \
   + '/' + output_dir + '/'
 
@@ -143,9 +150,10 @@ f.writelines(lines)
 f.close()
 
 # Hack into Exahype to allow two extra mappings
-allow_periodic(repo_dir)
+#allow_periodic(repo_dir)
 
 # Write empty functions (no periodic boundaries by default)
+# Can only do this if periodic boundaries have been enabled
 write_periodic_dummies(output_dir, solver_name)
 
 ################################

@@ -1,45 +1,55 @@
-# Restore potentially modified files
-#cp backup/ExaHyPE/exahype/runners/Runner.cpp ExaHyPE-Engine/ExaHyPE/exahype/runners/
-#cp backup/ExaHyPE/exahype/solvers/Solver.h ExaHyPE-Engine/ExaHyPE/exahype/solvers/
-#cp backup/ExaHyPE/exahype/mappings/Prediction.cpp ExaHyPE-Engine/ExaHyPE/exahype/mappings/
-#cp backup/ExaHyPE/exahype/solvers/ADERDGSolver.cpp ExaHyPE-Engine/ExaHyPE/exahype/solvers/
+#!/bin/bash
 
-cp backup/ExaHyPE/exahype/records/RepositoryState.h ExaHyPE-Engine/ExaHyPE/exahype/records/
-cp backup/ExaHyPE/exahype/records/RepositoryState.cpp ExaHyPE-Engine/ExaHyPE/exahype/records/
-cp backup/ExaHyPE/exahype/repositories/Repository.h ExaHyPE-Engine/ExaHyPE/exahype/repositories/
-cp backup/ExaHyPE/exahype/repositories/RepositorySTDStack.h ExaHyPE-Engine/ExaHyPE/exahype/repositories/
-cp backup/ExaHyPE/exahype/repositories/RepositorySTDStack.cpp ExaHyPE-Engine/ExaHyPE/exahype/repositories/
-cp backup/ExaHyPE/exahype/runners/Runner.cpp ExaHyPE-Engine/ExaHyPE/exahype/runners/
-cp backup/ExaHyPE/exahype/solvers/ADERDGSolver.cpp ExaHyPE-Engine/ExaHyPE/exahype/solvers/
-cp backup/ExaHyPE/exahype/solvers/ADERDGSolver.h ExaHyPE-Engine/ExaHyPE/exahype/solvers/
-cp backup/ExaHyPE/exahype/solvers/Solver.h ExaHyPE-Engine/ExaHyPE/exahype/solvers/
+# Default: no periodic boundaries, only parameter is exahype file
+periodic=false
+exahype_file=$1
 
-cp cpp/adapters/* ExaHyPE-Engine/ExaHyPE/exahype/adapters/
-cp cpp/mappings/* ExaHyPE-Engine/ExaHyPE/exahype/mappings/
+# Check for flag -p indicating we want periodic boundaries
+while getopts ":p" opt; do
+  case ${opt} in
+    p )
+      # Check if mapping file exist, indicating that allow_periodic.sh was run
+      FILE=./ExaHyPE-Engine/ExaHyPE/exahype/mappings/PlotPeriodic.cpp
+      if [ -f "$FILE" ]; then
+          periodic=true
+      else
+          # Need to set up periodic boundaries
+          ./allow_periodic.sh
+          periodic=true
+      fi
+      echo "Using periodic boundaries" >& 2
+      # Second argument should be exahype file
+      exahype_file=$2
+      ;;
+    \? )
+      echo "Invalid option: -$OPTARG" >&2
+      echo "Usage: create_project [-d] exahype_file" >&2
+      exit 1
+      ;;
+  esac
+done
 
-# Update/generate .exahype file
 # Export COMPILER, DISTRIBUTEDMEM
 export COMPILER=GNU
 export DISTRIBUTEDMEM=MPI
 
 # Use Toolkit to generate source code
 echo Generating generic source code...
-ExaHyPE-Engine/Toolkit/toolkit.sh $@
+ExaHyPE-Engine/Toolkit/toolkit.sh $exahype_file
 
 # Write source code
-echo Modifying fluxes and eigenvalues...
-python python/write_cpp $@
+echo Writing specific solver files...
+python python/write_cpp --periodic $exahype_file
 
 # Get output directory from exahype file
-output_string=$(grep output-directory $@)
+output_string=$(grep output-directory $exahype_file)
 IFS=' ' read -ra ADDR <<< "$output_string"
 for i in "${ADDR[@]}"; do
   output_dir=$i
 done
 
-output_dir=$(dirname "$@")"/"$output_dir
+output_dir=$(dirname "$exahype_file")"/"$output_dir
 
 echo Starting Make...
 cd $output_dir
-make clean
 make
