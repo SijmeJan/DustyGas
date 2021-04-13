@@ -11,6 +11,7 @@ from boundary import write_boundary, write_boundary_h, write_solver_h
 from boundary import write_solver_set_periodic
 from boundary import write_outflow_boundary
 from boundary import write_abstract_class
+from boundary import write_periodic_dummies
 from plot import write_plotter_gas_velocity
 from plot import write_plotter_dust_velocity
 from plot import write_plotter_dust_density
@@ -141,6 +142,8 @@ f = open(source_file, "w")
 f.writelines(lines)
 f.close()
 
+write_periodic_dummies(output_dir, solver_name)
+
 ################################
 # Implement periodic boundaries
 ################################
@@ -172,9 +175,9 @@ if (use_periodic_boundaries == True):
 
     write_solver_h(lines)
 
-    f = open(source_file, "w")
-    f.writelines(lines)
-    f.close()
+    #f = open(source_file, "w")
+    #f.writelines(lines)
+    #f.close()
 
     # Edit boundary cpp to fill boundary array
     source_file = output_dir + boundary_name + '.cpp'
@@ -187,9 +190,9 @@ if (use_periodic_boundaries == True):
                    [offset_x, offset_y], [size_x, size_y],
                    solver_name, boundary_name)
 
-    f = open(source_file, "w")
-    f.writelines(lines)
-    f.close()
+    #f = open(source_file, "w")
+    #f.writelines(lines)
+    #f.close()
 
     # Edit boundary header to declare pointer to boundary array
     source_file = output_dir + boundary_name + '.h'
@@ -200,9 +203,9 @@ if (use_periodic_boundaries == True):
 
     write_boundary_h(lines)
 
-    f = open(source_file, "w")
-    f.writelines(lines)
-    f.close()
+    #f = open(source_file, "w")
+    #f.writelines(lines)
+    #f.close()
 
 
     # Edit solver cpp file to set periodic boundaries
@@ -214,15 +217,15 @@ if (use_periodic_boundaries == True):
 
     write_solver_set_periodic(lines, n_vars, order)
 
-    f = open(source_file, "w")
-    f.writelines(lines)
-    f.close()
+    #f = open(source_file, "w")
+    #f.writelines(lines)
+    #f.close()
 
     # Hack into Exahype to allow two extra mappings
     allow_periodic(repo_dir)
 
     # Add PlotAdjust function to abstract solver class
-    write_abstract_class(n_vars, order,
-                         [offset_x, offset_y],
-                         [size_x, size_y],
-                         output_dir, solver_name)
+    #write_abstract_class(n_vars, order,
+    #                     [offset_x, offset_y],
+    #                     [size_x, size_y],
+    #                     output_dir, solver_name)

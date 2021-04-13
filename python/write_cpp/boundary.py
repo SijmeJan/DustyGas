@@ -671,3 +671,62 @@ def write_abstract_class(n_vars, order, offset, size, output_dir, solver_name):
     f = open(fname, "w")
     f.writelines(lines)
     f.close()
+
+def write_periodic_dummies(output_dir, solver_name):
+    fname = output_dir + solver_name + '.h'
+
+    f = open(fname, "r")
+    lines = f.readlines()
+    f.close()
+
+    for i in range(1, len(lines)):
+        if (lines[-i].find('};') != -1):
+            lines[-i:-i] = \
+              ['\n',
+               '  void PlotPeriodic(\n',
+               '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
+               '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
+               '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
+               '    double* const Q) override;\n',
+               '  void SendPeriodic() override;\n',
+               '\n',
+               '  std::vector<double> boundaryVector;\n',
+               '  std::vector<double> boundaryVector_local;\n',
+               '  //double *global_dx;\n',
+               '  //int *global_n;\n']
+            break;
+
+    # Make sure to include vector
+    boundary = ['#include <vector>\n']
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('#include') != -1):
+            lines[i:i] = boundary
+            break;
+
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
+
+    fname = output_dir + solver_name + '.cpp'
+
+    f = open(fname, "r")
+    lines = f.readlines()
+    f.close()
+
+    lines[len(lines):len(lines)] = \
+      ['\n\n',
+       'void {}::{}::PlotPeriodic(\n'.format(solver_name[:-6], solver_name),
+       '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
+       '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
+       '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
+       '    double* const Q) {\n'
+       '  // Nop, since no periodic boundaries requested\n',
+       '}\n\n',
+       'void {}::{}::SendPeriodic() {{\n'.format(solver_name[:-6], solver_name),
+       '  // Nop, since no periodic boundaries requested\n',
+       '}\n\n']
+
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
