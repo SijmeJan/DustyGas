@@ -4,18 +4,28 @@
 enable_periodic=true
 
 # Check for flag -d, in which case we disable periodic boundaries
-while getopts ":d" opt; do
-  case ${opt} in
-    d )
-      echo "Disabling periodic boundaries" >& 2
-      enable_periodic=false
-      ;;
-    \? )
-      echo "Invalid option: -$OPTARG" >&2
-      echo "Usage: allow_periodic [-d]" >&2
-      exit 1
-      ;;
-  esac
+while getopts ":dh" opt; do
+    case ${opt} in
+        h )
+            echo "Modify ExaHyPE core to allow periodic boundaries."
+            echo
+            echo "Usage:"
+            echo "    allow_periodic [-d]"
+            echo
+            echo "Options:"
+            echo "    -d    Disable periodic boundaries; switch back to vanilla ExaHyPE"
+            exit 0
+            ;;
+        d )
+            echo "Disabling periodic boundaries" >& 2
+            enable_periodic=false
+            ;;
+        \? )
+            echo "Invalid option: -$OPTARG" >&2
+            echo "Usage: allow_periodic [-d]" >&2
+            exit 1
+            ;;
+    esac
 done
 
 # Restore files from backup
