@@ -7,7 +7,7 @@ exahype-project DustyGas
     dimension const = 2
     width = 0.0146607657167524, 0.0146607657167524
     offset = 0.0, 0.0
-    end-time = 1.0
+    end-time = 10.0
   end computational-domain
 
   distributed-memory
