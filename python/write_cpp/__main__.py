@@ -2,20 +2,13 @@ import argparse
 import os
 from scipy.optimize import fsolve
 
-from common import replace_with_indent
 from eigenvalues import write_eigenvalues
 from flux import write_flux
 from source import write_source
 from initial import write_initial
-from boundary import write_boundary, write_boundary_h, write_solver_h
-from boundary import write_solver_set_periodic
 from boundary import write_outflow_boundary
 from boundary import write_periodic_functions
 from boundary import write_periodic_dummies
-from plot import write_plotter_gas_velocity
-from plot import write_plotter_dust_velocity
-from plot import write_plotter_dust_density
-from periodic_exahype import allow_periodic
 
 def guess_mesh(domain_size, cell_size):
     dx = domain_size
@@ -32,7 +25,6 @@ parser.add_argument('--periodic', action="store_true", help="use periodic domain
 parser.add_argument('infile',
                     help='ExaHyPE file')
 args = parser.parse_args()
-
 
 # Read exahype file
 f = open(args.infile, "r")
@@ -94,19 +86,19 @@ for line in lines:
 # Main repository directory
 repo_dir = os.path.dirname(os.path.abspath(__file__)) + '/../../'
 
-# User signals they want periodic domain
-# Check if ExaHyPE is set up to do this
+# Check if ExaHyPE is set up to do periodic domains
+allow_periodic = False
+fname = repo_dir + \
+  'ExaHyPE-Engine/ExaHyPE/exahype/mappings/PlotPeriodic.cpp'
+if os.path.isfile(fname) == True:
+    allow_periodic = True
+
+# If we want a periodic domain, make sure it is set up
 if args.periodic:
-    fname = repo_dir + \
-      'ExaHyPE-Engine/ExaHyPE/exahype/mappings/PlotPeriodic.cpp'
-    if os.path.isfile(fname) != True:
+    if allow_periodic == False:
         print('ExaHyPE is not set up for periodic domains.')
         print('Run allow_periodic.sh before creating the project.')
         exit(1)
-
-# Unfortunately, vanilla ExaHyPE does not allow for periodic boundaries.
-# Check if periodic boundaries have been enabled?
-use_periodic_boundaries = True
 
 # Isothermal gas = 4 equations; each dust component adds 4
 if (n_vars % 4 != 0):
@@ -149,18 +141,16 @@ f = open(source_file, "w")
 f.writelines(lines)
 f.close()
 
-# Hack into Exahype to allow two extra mappings
-#allow_periodic(repo_dir)
-
 # Write empty functions (no periodic boundaries by default)
 # Can only do this if periodic boundaries have been enabled
-write_periodic_dummies(output_dir, solver_name)
+if allow_periodic == True:
+    write_periodic_dummies(output_dir, solver_name)
 
 ################################
 # Implement periodic boundaries
 ################################
-if (use_periodic_boundaries == True):
-    print("Implementing periodic boundaries...")
+if args.periodic:
+    print("Implementing periodic boundaries in solver...")
 
     if (solver_type == 'ADER-DG'):
         nx = guess_mesh(size_x, cell_size)
@@ -178,64 +168,11 @@ if (use_periodic_boundaries == True):
         print('NOTE: periodic domain size will be {}x{}'.format(size_x-2*dx, size_y-2*dy))
         print('If a periodic domain of size {}x{} is needed, change domain size in .exahype file to {}x{}'.format(size_x, size_y, size_x_want, size_y_want))
 
-    # Edit solver header file to declare boundary array
-    #source_file = output_dir + solver_name + '.h'
-
-    #f = open(source_file, "r")
-    #lines = f.readlines()
-    #f.close()
-
-    #write_solver_h(lines)
-
-    #f = open(source_file, "w")
-    #f.writelines(lines)
-    #f.close()
-
-    # Edit boundary cpp to fill boundary array
-    #source_file = output_dir + boundary_name + '.cpp'
-
-    #f = open(source_file, "r")
-    #lines = f.readlines()
-    #f.close()
-
-    #write_boundary(lines, n_vars, order,
-    #               [offset_x, offset_y], [size_x, size_y],
-    #               solver_name, boundary_name)
-
-    #f = open(source_file, "w")
-    #f.writelines(lines)
-    #f.close()
-
-    # Edit boundary header to declare pointer to boundary array
-    #source_file = output_dir + boundary_name + '.h'
-
-    #f = open(source_file, "r")
-    #lines = f.readlines()
-    #f.close()
-
-    #write_boundary_h(lines)
-
-    #f = open(source_file, "w")
-    #f.writelines(lines)
-    #f.close()
-
-
-    # Edit solver cpp file to set periodic boundaries
-    #source_file = output_dir + solver_name + '.cpp'
-
-    #f = open(source_file, "r")
-    #lines = f.readlines()
-    #f.close()
-
-    #write_solver_set_periodic(lines, n_vars, order)
-
-    #f = open(source_file, "w")
-    #f.writelines(lines)
-    #f.close()
-
-
-    # Add PlotAdjust function to abstract solver class
-    write_periodic_functions(n_vars, order,
-                             [offset_x, offset_y],
-                             [size_x, size_y],
-                             output_dir, solver_name)
+        # Add PlotAdjust function to abstract solver class
+        write_periodic_functions(n_vars, order,
+                                 [offset_x, offset_y],
+                                 [size_x, size_y],
+                                 output_dir, solver_name)
+    else:
+        print("Periodic boundary conditions for {} not implemented!".format(solver_type))
+        exit(1)
