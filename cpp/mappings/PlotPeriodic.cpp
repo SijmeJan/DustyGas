@@ -90,7 +90,7 @@ tarch::logging::Log exahype::mappings::PlotPeriodic::_log(
     "exahype::mappings::PlotPeriodic");
 
 exahype::mappings::PlotPeriodic::PlotPeriodic() {
-  std::cout << "PlotPeriodic Mapping constructor" << std::endl;
+  //std::cout << "PlotPeriodic Mapping constructor" << std::endl;
 }
 
 exahype::mappings::PlotPeriodic::~PlotPeriodic() {

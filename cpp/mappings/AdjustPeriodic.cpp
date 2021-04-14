@@ -291,7 +291,7 @@ void exahype::mappings::AdjustPeriodic::mergeWithWorker(
 
 exahype::mappings::AdjustPeriodic::AdjustPeriodic() {
   // do nothing
-  std::cout << "AdjustPeriodic Mapping Constructor" << std::endl;
+  //std::cout << "AdjustPeriodic Mapping Constructor" << std::endl;
 }
 
 
