@@ -64,6 +64,9 @@ done
 
 output_dir=$(dirname "$exahype_file")"/"$output_dir
 
+# Copy log setup
+cp $(dirname "$exahype_file")"/exahype.log-filter" $output_dir
+
 echo Starting Make...
 cd $output_dir
 make
