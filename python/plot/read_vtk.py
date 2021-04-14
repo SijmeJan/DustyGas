@@ -43,7 +43,7 @@ class SnapShot():
 #plt.plot(s.x[sel,1], s.Q[sel,3], marker='o', linestyle='None', color='green')
 
 
-n = 10
+n = 100
 e = np.zeros((n))
 f = np.zeros((n))
 
