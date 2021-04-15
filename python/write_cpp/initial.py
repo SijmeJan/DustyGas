@@ -36,9 +36,7 @@ class GasDensityWaveIC(InitialConditions):
 
 class DustyGasIC(InitialConditions):
     def __init__(self, Kx, Kz, amp, mu, Stokes, n_dust, eta):
-        #omega = np.sqrt(Kx*Kx + 1.0)
-
-        if n_dust < 1:
+         if n_dust < 1:
             raise RuntimeError('Cannot initiate Dusty Gas with less than one dust fluid')
         tau = Stokes[0]
         denom = '((1 + {})*(1 + {}) + {}*{})'.format(mu, mu, tau, tau)
@@ -108,7 +106,7 @@ def write_initial(lines, n_dust, mu, Stokes, eta, solver_type):
     # LinearA test
     ic = DustyGasIC(Kx=30.0/0.05,
                     Kz=30/0.05,
-                    amp=0.001,
+                    amp=0.0,
                     mu=mu,
                     Stokes=Stokes,
                     n_dust=n_dust,

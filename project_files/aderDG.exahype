@@ -28,7 +28,7 @@ exahype-project DustyGas
     language const = C
 
     plot vtk::Cartesian::cells::ascii State
-     variables const = 4
+     variables const = 8
      time = 0.0
      repeat = 1.0e-1
      output = ./state
