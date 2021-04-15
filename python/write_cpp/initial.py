@@ -36,7 +36,7 @@ class GasDensityWaveIC(InitialConditions):
 
 class DustyGasIC(InitialConditions):
     def __init__(self, Kx, Kz, amp, mu, Stokes, n_dust, eta):
-         if n_dust < 1:
+        if n_dust < 1:
             raise RuntimeError('Cannot initiate Dusty Gas with less than one dust fluid')
         tau = Stokes[0]
         denom = '((1 + {})*(1 + {}) + {}*{})'.format(mu, mu, tau, tau)
