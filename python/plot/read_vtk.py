@@ -33,14 +33,14 @@ class SnapShot():
 
 filename = '../../data/state-100-rank-0.vtk'
 s = SnapShot(filename)
-#s.remove_ghost(3)
+s.remove_ghost(1)
 
-cs = plt.tricontourf(s.x[:,0], s.x[:,1], s.Q[:,1], 100)
-plt.colorbar(cs)
+#cs = plt.tricontourf(s.x[:,0], s.x[:,1], s.Q[:,1], 100)
+#plt.colorbar(cs)
 
-#sel = np.asarray(s.x[:,0] == np.min(s.x[:,0])).nonzero()
-#plt.plot(s.x[sel,1], s.Q[sel,1], marker='o', linestyle='None', color='blue')
-#plt.plot(s.x[sel,1], s.Q[sel,3], marker='o', linestyle='None', color='green')
+sel = np.asarray(s.x[:,1] == np.min(s.x[:,1])).nonzero()
+plt.plot(s.x[sel,0], s.Q[sel,1], marker='o', linestyle='None', color='blue')
+plt.plot(s.x[sel,0], s.Q[sel,2], marker='o', linestyle='None', color='green')
 
 
 #n = 100
@@ -54,8 +54,8 @@ plt.colorbar(cs)
 #    f[i] = np.max(s.Q[:,3]/s.Q[:,0])
 
 #plt.yscale('log')
-#plt.plot(e)
-#plt.plot(f)
+#plt.plot(np.abs(e))
+#plt.plot(np.abs(f))
 
 #plt.plot(0.0001*np.exp(0.42*np.arange(0,n)))
 

@@ -107,7 +107,7 @@ if (n_vars % 4 != 0):
 
 # Parameters
 c = 1.0           # gas sound speed
-eta = 0.0         # eta/c
+eta = 0.05        # eta/c
 
 q = 1.5           # non-dimensional shear rate
 Stokes = [0.1]    # list of Stokes numbers
