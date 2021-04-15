@@ -10,11 +10,11 @@ def write_initial(lines, n_dust, mu, Stokes, eta, solver_type):
 
     #Kx = 30.0/eta
     #Kz = 30.0/eta
-    Kx = 0.0/0.05
+    Kx = 30.0/0.05
     Kz = 0.0
     omega = np.sqrt(Kx*Kx + 1.0)
 
-    amp = 0.1
+    amp = 0.001
     tau = Stokes[0]
     denom = '((1 + {})*(1 + {}) + {}*{})'.format(mu, mu, tau, tau)
 
