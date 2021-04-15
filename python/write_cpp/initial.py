@@ -70,6 +70,15 @@ class DustyGasIC(InitialConditions):
                  0.1639549 - 0.0233277*1j,
                  0.1305628 + 0.0640574*1j]
 
+        eigen = [+0.0000074637 + 0.0000070677*1j,
+                 −0.0563787907 + 0.0120535455*1j,
+                 +0.0563784989 − 0.0120536242*1j,
+                 +0.0445570113 + 0.0197224299*1j,
+                 1.0,
+                 −0.0466198076 + 0.0124333223*1j,
+                 +0.0546507401 − 0.0077776652*1j,
+                 +0.0435211557 + 0.0213517453*1j]
+
         for n in range(0, 4 + 4*n_dust):
             initial.extend(['    Q[{}] += a*({}*c + {}*s);\n'.format(n, np.real(eigen[n]), -np.imag(eigen[n]))])
 
@@ -106,7 +115,7 @@ def write_initial(lines, n_dust, mu, Stokes, eta, solver_type):
     # LinearA test
     ic = DustyGasIC(Kx=30.0/0.05,
                     Kz=30/0.05,
-                    amp=0.0,
+                    amp=0.001,
                     mu=mu,
                     Stokes=Stokes,
                     n_dust=n_dust,

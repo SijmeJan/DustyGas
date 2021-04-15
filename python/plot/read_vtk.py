@@ -40,32 +40,30 @@ class SnapShot():
 
 #sel = np.asarray(s.x[:,1] == np.min(s.x[:,1])).nonzero()
 #plt.plot(s.x[sel,0], s.Q[sel,1], marker='o', linestyle='None', color='blue')
-#plt.plot(s.x[sel,0], s.Q[sel,1], marker='o', linestyle='None', color='blue')
+#plt.plot(s.x[sel,0], s.Q[sel,3], marker='o', linestyle='None', color='blue')
 #plt.plot(s.x[sel,0], s.Q[sel,2], marker='o', linestyle='None', color='green')
 
 
 n = 100
 e = np.zeros((n))
-direcs = ['../../data/order2', '../../data/order3']
-#f = np.zeros((n))
+#direcs = ['../../data/order2', '../../data/order3']
+direcs = ['../../data']
+
 t = np.linspace(0, 10, n)
 
 plt.xlabel(r'$\Omega t$')
-plt.ylabel(r'$\int \rho_{\rm d} v_{z,{\rm d}}^2$')
-plt.title('Monodisperse linA')
+#plt.ylabel(r'$\int \rho_{\rm d} v_{z,{\rm d}}^2$')
+#plt.title('Monodisperse linA')
 
 for direc in direcs:
     for i in range(0, n):
         s = SnapShot(direc + '/state-{}-rank-0.vtk'.format(i))
-        e[i] = np.sum(s.Q[:,6]*s.Q[:,6]/s.Q[:,4])/len(s.Q[:,4])
-        #e[i] = np.max(s.Q[:,1]/s.Q[:,0])
-        #f[i] = np.max(s.Q[:,3]/s.Q[:,0])
+        #e[i] = np.sum(s.Q[:,6]*s.Q[:,6]/s.Q[:,4])/len(s.Q[:,4])
+        e[i] = np.mean(s.Q[:,7]/s.Q[:,0])
 
-    plt.yscale('log')
+    #plt.yscale('log')
     plt.plot(t, np.abs(e))
-    #plt.plot(np.abs(f))
 
-plt.plot(t, 0.0000000001*np.exp(0.42*2*t))
-
+#plt.plot(t, 0.0000000001*np.exp(0.42*2*t))
 
 plt.show()
