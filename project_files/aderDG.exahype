@@ -18,7 +18,7 @@ exahype-project DustyGas
   end distributed-memory
 
   solver ADER-DG DustyGasSolver
-    variables const = 8
+    variables const = 20
     order const = 2
     maximum-mesh-size = 5e-3
     time-stepping = global
@@ -28,7 +28,7 @@ exahype-project DustyGas
     language const = C
 
     plot vtk::Cartesian::cells::ascii State
-     variables const = 8
+     variables const = 20
      time = 0.0
      repeat = 1.0e-1
      output = ./state

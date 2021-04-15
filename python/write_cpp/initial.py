@@ -1,4 +1,5 @@
 import numpy as np
+
 from common import replace_with_indent, remove_function_body
 
 class InitialConditions():
@@ -34,7 +35,7 @@ class GasDensityWaveIC(InitialConditions):
            '  }\n']
 
 
-class DustyGasIC(InitialConditions):
+class MonoDustyGasIC(InitialConditions):
     def __init__(self, Kx, Kz, amp, mu, Stokes, n_dust, eta):
         if n_dust < 1:
             raise RuntimeError('Cannot initiate Dusty Gas with less than one dust fluid')
@@ -61,15 +62,6 @@ class DustyGasIC(InitialConditions):
                  '    Q[{}] = -(1-{}*{}/{})/(1+{});\n'.format(4*n + 7, tau, tau, denom, mu)])
 
         # Add eigenvector
-        eigen = [0.0000224 + 0.0000212*1j,
-                 -0.1691398 + 0.0361553*1j,
-                 0.1691389 - 0.0361555*1j,
-                 0.1336704 + 0.0591695*1j,
-                 1.0,
-                 -0.1398623 + 0.0372951*1j,
-                 0.1639549 - 0.0233277*1j,
-                 0.1305628 + 0.0640574*1j]
-
         eigen = [+0.0000074637 + 0.0000070677*1j,
                  -0.0563787907 + 0.0120535455*1j,
                  +0.0563784989 - 0.0120536242*1j,
@@ -105,7 +97,67 @@ class DustyGasIC(InitialConditions):
 
         self.initial = initial
 
-def write_initial(lines, n_dust, mu, Stokes, eta, solver_type):
+class PolyDustyGasIC(InitialConditions):
+    def __init__(self, Kx, Kz, amp, mu, Stokes, n_dust, eta, sigma):
+        if n_dust < 2:
+            raise RuntimeError('Cannot initiate polydispers Dusty Gas with less than two dust fluids')
+
+        J0 = sigma.Jint(0, mu)
+        J1 = sigma.Jint(1, mu)
+
+        denom = (1 + J0)*(1 + J0) + J1*J1
+
+        initial = \
+          ['  if (t == 0.0) {\n',
+           '    double a = {};\n'.format(amp),
+           '    double c = cos(x[0]*{} + x[1]*{});\n'.format(Kx, Kz),
+           '    double s = sin(x[0]*{} + x[1]*{});\n'.format(Kx, Kz),
+           '\n',
+           '    // Gas\n',
+           '    Q[0] = 1.0;\n',
+           '    Q[1] = {};\n'.format(2*J1/denom),
+           '    Q[2] = 0.0;\n',
+           '    Q[3] = {};\n'.format(-(1 + J0)/denom)]
+
+        # Dust density and *velocities*
+        for n in range(0, n_dust):
+            initial.extend(\
+                ['    // Dust, Stokes = {}\n'.format(Stokes[n]),
+                 '    Q[{}] = {};\n'.format(4*n + 4, mu*sigma.sigma(Stokes[n])),
+                 '    Q[{}] = {};\n'.format(4*n + 5, 2*(J1 - Stokes[n]*(1 + J0))/denom/(1 + Stokes[n]*Stokes[n])),
+                 '    Q[{}] = 0.0;\n'.format(4*n + 6),
+                 '    Q[{}] = {};\n'.format(4*n + 7, -(1 + J0 + Stokes[n]*J1)/denom/(1 + Stokes[n]*Stokes[n]))])
+
+
+        #for n in range(0, 4 + 4*n_dust):
+        #    initial.extend(['    Q[{}] += a*({}*c + {}*s);\n'.format(n, np.real(eigen[n]), -np.imag(eigen[n]))])
+
+        # Change into momenta
+        initial.extend(['    // Change to momenta\n',
+                        '    Q[1] *= Q[0];\n',
+                        '    Q[2] *= Q[0];\n',
+                        '    Q[3] *= Q[0];\n'])
+        for n in range(0, n_dust):
+            initial.extend(['    Q[{}] *= Q[{}];\n'.format(4*n + 5, 4*n + 4),
+                            '    Q[{}] *= Q[{}];\n'.format(4*n + 6, 4*n + 4),
+                            '    Q[{}] *= Q[{}];\n'.format(4*n + 7, 4*n + 4)])
+
+        if (eta != 1.0):
+            # Adjust velocities in terms of eta
+            initial.extend(['    // Velocities in units of eta\n',
+                            '    Q[1] *= {};\n'.format(eta),
+                            '    Q[2] *= {};\n'.format(eta),
+                            '    Q[3] *= {};\n'.format(eta)])
+            for n in range(0, n_dust):
+                initial.extend(['    Q[{}] *= {};\n'.format(4*n + 5, eta),
+                                '    Q[{}] *= {};\n'.format(4*n + 6, eta),
+                                '    Q[{}] *= {};\n'.format(4*n + 7, eta)])
+
+        initial.extend(['  }\n'])
+
+        self.initial = initial
+
+def write_initial(lines, n_dust, mu, Stokes, eta, solver_type, sigma=None):
     # Epicyclic oscillation
     #ic = GasDensityWaveIC(Kx=0.0, amp=0.1)
 
@@ -113,13 +165,24 @@ def write_initial(lines, n_dust, mu, Stokes, eta, solver_type):
     #ic = GasDensityWaveIC(Kx=30.0/0.05, amp=0.001)
 
     # LinearA test
-    ic = DustyGasIC(Kx=30.0/0.05,
-                    Kz=30/0.05,
-                    amp=0.001,
-                    mu=mu,
-                    Stokes=Stokes,
-                    n_dust=n_dust,
-                    eta=eta)
+    #ic = MonoDustyGasIC(Kx=30.0/0.05,
+    #                    Kz=30/0.05,
+    #                    amp=0.0,
+    #                    mu=mu,
+    #                    Stokes=Stokes,
+    #                    n_dust=n_dust,
+    #                    eta=eta)
+
+    # Polydisperse
+    ic = PolyDustyGasIC(Kx=30.0/0.05,
+                        Kz=30/0.05,
+                        amp=0.001,
+                        mu=mu,
+                        Stokes=Stokes,
+                        n_dust=n_dust,
+                        eta=eta,
+                        sigma=sigma)
+
     ic.write(lines, solver_type)
 
     return

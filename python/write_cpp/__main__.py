@@ -1,6 +1,8 @@
 import argparse
 import os
+import numpy as np
 from scipy.optimize import fsolve
+from scipy.special import roots_legendre
 
 from eigenvalues import write_eigenvalues
 from flux import write_flux
@@ -9,6 +11,7 @@ from initial import write_initial
 from boundary import write_outflow_boundary
 from boundary import write_periodic_functions
 from boundary import write_periodic_dummies
+from size_density import SizeDensity
 
 def guess_mesh(domain_size, cell_size):
     dx = domain_size
@@ -120,6 +123,22 @@ n_dust = int(n_vars/4 - 1)
 output_dir = os.path.dirname(os.path.abspath(args.infile)) \
   + '/' + output_dir + '/'
 
+weights = [1.0]
+Stokes_range = [0.0001, 0.1]
+sigma=None
+if n_dust > 1:
+    x, w = roots_legendre(n_dust)
+    lk = 0.5*(x + 1)
+    wk = 0.5*w
+
+    s_range = np.log(np.asarray(Stokes_range))
+
+    Stokes = np.exp(s_range[0] + (s_range[1] - s_range[0])*lk)
+    weights = (s_range[1] - s_range[0])*wk
+
+    # MRN size density
+    sigma = SizeDensity(0.5, Stokes_range)
+
 #####################################
 # Start by modifying the solver file
 #####################################
@@ -132,8 +151,8 @@ f.close()
 # Modify eigenvalues, fluxes, sources and initial conditions
 write_eigenvalues(lines, n_dust, c, solver_type)
 write_flux(lines, n_dust, c)
-write_source(lines, n_dust, q, Stokes, eta)
-write_initial(lines, n_dust, mu, Stokes, eta, solver_type)
+write_source(lines, n_dust, q, Stokes, weights, eta)
+write_initial(lines, n_dust, mu, Stokes, eta, solver_type, sigma=sigma)
 write_outflow_boundary(lines, n_vars)
 
 # Write to file
