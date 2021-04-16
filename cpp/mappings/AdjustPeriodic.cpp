@@ -133,9 +133,9 @@ void exahype::mappings::AdjustPeriodic::leaveCell(
           //case solvers::Solver::Type::LimitingADERDG:
           //static_cast<solvers::LimitingADERDGSolver*>(solver)->AdjustPeriodic(cellInfo);
           //break;
-          //case solvers::Solver::Type::FiniteVolumes:
-          //static_cast<solvers::FiniteVolumesSolver*>(solver)->AdjustPeriodic(cellInfo);
-          //break;
+        case solvers::Solver::Type::FiniteVolumes:
+          static_cast<solvers::FiniteVolumesSolver*>(solver)->AdjustPeriodic(solverNumber, cellInfo);
+          break;
         default:
           assertionMsg(false,"Unrecognised solver type: "<<solvers::Solver::toString(solver->getType()));
           logError("mergeWithBoundaryDataIfNotDoneYet(...)","Unrecognised solver type: "<<solvers::Solver::toString(solver->getType()));
