@@ -153,7 +153,7 @@ write_eigenvalues(lines, n_dust, c, solver_type)
 write_flux(lines, n_dust, c)
 write_source(lines, n_dust, q, Stokes, weights, eta)
 write_initial(lines, n_dust, mu, Stokes, eta, solver_type, sigma=sigma)
-write_outflow_boundary(lines, n_vars)
+write_outflow_boundary(lines, n_vars, solver_type)
 
 # Write to file
 f = open(source_file, "w")

@@ -1,6 +1,6 @@
 from common import replace_with_indent, remove_function_body, add_function_body, add_class_member
 
-def write_outflow_boundary(lines, n_vars):
+def write_outflow_boundary(lines, n_vars, solver):
     # Remove current function body
     remove_function_body(lines, 'boundaryValues')
 
@@ -8,8 +8,9 @@ def write_outflow_boundary(lines, n_vars):
 
     for n in range(0, n_vars):
         periodic.extend(['  stateOut[{}] = stateIn[{}];\n'.format(n, n)])
-    for n in range(0, n_vars):
-        periodic.extend(['  fluxOut[{}] = fluxIn[{}];\n'.format(n, n)])
+    if (solver == 'ADER-DG'):
+        for n in range(0, n_vars):
+            periodic.extend(['  fluxOut[{}] = fluxIn[{}];\n'.format(n, n)])
 
     add_function_body(lines, 'boundaryValues', periodic)
 
