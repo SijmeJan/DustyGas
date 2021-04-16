@@ -43,9 +43,15 @@ while getopts ":ph" opt; do
     esac
 done
 
-# Export COMPILER, DISTRIBUTEDMEM
-export COMPILER=GNU
-export DISTRIBUTEDMEM=MPI
+# find suitable python on the path
+has() { type $@ &>/dev/null; } # a way to check if command is available
+if has python3; then PYTHON3="python3";
+elif python --version | grep -qi "python 3"; then PYTHON3="python"
+else echo "$0: Python3 required for running the ExaHyPE toolkit" >&2; exit -1; fi
+
+# Use GNU compiler
+COMPILER=GNU
+#export DISTRIBUTEDMEM=MPI
 
 # Use Toolkit to generate source code
 echo Generating generic source code...
@@ -55,9 +61,9 @@ ExaHyPE-Engine/Toolkit/toolkit.sh $exahype_file
 echo Writing specific solver files...
 if $periodic
 then
-   python python/write_cpp --periodic $exahype_file
+   $PYTHON3 python/write_cpp --periodic $exahype_file
 else
-   python python/write_cpp $exahype_file
+   $PYTHON3 python/write_cpp $exahype_file
 fi
 
 # Get output directory from exahype file

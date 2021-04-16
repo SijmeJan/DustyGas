@@ -9,14 +9,14 @@ exahype-project DustyGas
     offset = 0.0, 0.0
     end-time = 10.0
   end computational-domain
-
+/*
   distributed-memory
     identifier               = static_load_balancing
     configure                = {greedy-regular,FCFS,ranks-per-node:1}
     buffer-size              = 64
     timeout                  = 120
   end distributed-memory
-
+*/
   solver Finite-Volumes DustyGasSolver
     variables const = 8
     patch-size const = 10
