@@ -53,7 +53,12 @@ ExaHyPE-Engine/Toolkit/toolkit.sh $exahype_file
 
 # Write source code
 echo Writing specific solver files...
-python python/write_cpp --periodic $exahype_file
+if $periodic
+then
+   python python/write_cpp --periodic $exahype_file
+else
+   python python/write_cpp $exahype_file
+fi
 
 # Get output directory from exahype file
 output_string=$(grep output-directory $exahype_file)
