@@ -305,7 +305,7 @@ def allow_periodic(repo_dir):
        '\n',
        '      kernels::idx3 idx(_nodesPerCoordinateAxis+2*_ghostLayerWidth,\n',
        '                        _nodesPerCoordinateAxis+2*_ghostLayerWidth,\n',
-       '                        _numberOfVariables+_numerOfParameters);\n',
+       '                        _numberOfVariables+_numberOfParameters);\n',
 
        '      for (int i = _ghostLayerWidth; i < _nodesPerCoordinateAxis + _ghostLayerWidth; i++) {\n',
        '        for (int j = _ghostLayerWidth; j < _nodesPerCoordinateAxis + _ghostLayerWidth; j++) {\n',
@@ -333,7 +333,7 @@ def allow_periodic(repo_dir):
        '\n',
        '      kernels::idx3 idx(_nodesPerCoordinateAxis+2*_ghostLayerWidth,\n',
        '                        _nodesPerCoordinateAxis+2*_ghostLayerWidth,\n',
-       '                        _numberOfVariables+_numerOfParameters);\n',
+       '                        _numberOfVariables+_numberOfParameters);\n',
 
        '      for (int i = _ghostLayerWidth; i < _nodesPerCoordinateAxis + _ghostLayerWidth; i++) {\n',
        '        for (int j = _ghostLayerWidth; j < _nodesPerCoordinateAxis + _ghostLayerWidth; j++) {\n',
