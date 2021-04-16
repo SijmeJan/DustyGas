@@ -6,11 +6,14 @@ def write_outflow_boundary(lines, n_vars, solver):
 
     periodic = ['  // Outflow boundaries, unimportant if periodic\n']
 
-    for n in range(0, n_vars):
-        periodic.extend(['  stateOut[{}] = stateIn[{}];\n'.format(n, n)])
     if (solver == 'ADER-DG'):
         for n in range(0, n_vars):
+            periodic.extend(['  stateOut[{}] = stateIn[{}];\n'.format(n, n)])
+        for n in range(0, n_vars):
             periodic.extend(['  fluxOut[{}] = fluxIn[{}];\n'.format(n, n)])
+    if (solver == 'Finite-Volumes'):
+        for n in range(0, n_vars):
+            periodic.extend(['  stateOutside[{}] = stateInside[{}];\n'.format(n, n)])
 
     add_function_body(lines, 'boundaryValues', periodic)
 
