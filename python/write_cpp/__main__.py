@@ -192,6 +192,28 @@ if args.periodic:
                                  [offset_x, offset_y],
                                  [size_x, size_y],
                                  output_dir, solver_name)
+    elif (solver_type == 'Finite-Volumes'):
+        nx = guess_mesh(size_x, cell_size)
+        ny = guess_mesh(size_y, cell_size)
+
+        dx = size_x/nx
+        dy = size_y/ny
+
+        f = lambda x: x - 2*x/guess_mesh(x, cell_size) - size_x
+        size_x_want = fsolve(f, size_x)[0]
+        f = lambda x: x - 2*x/guess_mesh(x, cell_size) - size_y
+        size_y_want = fsolve(f, size_y)[0]
+
+        print('Estimated mesh size: {}x{}'.format(nx, ny))
+        print('NOTE: periodic domain size will be {}x{}'.format(size_x-2*dx, size_y-2*dy))
+        print('If a periodic domain of size {}x{} is needed, change domain size in .exahype file to {}x{}'.format(size_x, size_y, size_x_want, size_y_want))
+
+        # Add PlotAdjust function to abstract solver class
+        write_periodic_functions(n_vars, patch_size,
+                                 [offset_x, offset_y],
+                                 [size_x, size_y],
+                                 output_dir, solver_name)
+
     else:
         print("Periodic boundary conditions for {} not implemented!".format(solver_type))
         exit(1)

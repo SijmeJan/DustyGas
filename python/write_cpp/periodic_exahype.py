@@ -170,7 +170,9 @@ def allow_periodic(repo_dir):
     # be defined in the user abstract class.
     ##########################################################################
 
-    # Add function to ADERDGsolver.cpp
+    #################################
+    # First deal with ADER-DG solver
+    #################################
     fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/solvers/ADERDGSolver.cpp'
     f = open(fname, "r")
     lines = f.readlines()
@@ -181,14 +183,6 @@ def allow_periodic(repo_dir):
        'void exahype::solvers::ADERDGSolver::AdjustPeriodic(\n',
        '  const int                                          solverNumber,\n',
        '  CellInfo&                                          cellInfo) {\n',
-       '  /*\n',
-       '  const int element = cellInfo.indexOfADERDGCellDescription(solverNumber);\n',
-       '  if ( element != NotFound ) {\n',
-       '    CellDescription& cellDescription = cellInfo._ADERDGCellDescriptions[element];\n',
-       '    if ( cellDescription.getType()==CellDescription::Type::Leaf )\n',
-       '      adjustSolutionAfterUpdate(cellDescription);\n',
-       '  }\n',
-       '  */\n',
        '  const int element = cellInfo.indexOfADERDGCellDescription(solverNumber);\n',
        '  if ( element != NotFound ) {\n',
        '    CellDescription& cellDescription = cellInfo._ADERDGCellDescriptions[element];\n',
@@ -252,7 +246,7 @@ def allow_periodic(repo_dir):
     f.writelines(lines)
     f.close()
 
-    # Add function to ADERDGsolver.h
+    # Add functions to ADERDGsolver.h
     fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/solvers/ADERDGSolver.h'
     f = open(fname, "r")
     lines = f.readlines()
@@ -284,6 +278,122 @@ def allow_periodic(repo_dir):
     f = open(fname, "w")
     f.writelines(lines)
     f.close()
+
+
+
+
+
+    #################################
+    # Next: FV solver
+    #################################
+    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/solvers/FiniteVolumesSolver.cpp'
+    f = open(fname, "r")
+    lines = f.readlines()
+    f.close()
+
+    lines[len(lines):len(lines)] = \
+      ['\n',
+       'void exahype::solvers::FiniteVolumesSolver::AdjustPeriodic(\n',
+       '  const int                                          solverNumber,\n',
+       '  CellInfo&                                          cellInfo) {\n',
+       '  const int element = cellInfo.indexOfFiniteVolumesCellDescription(solverNumber);\n',
+       '  if ( element != NotFound ) {\n',
+       '    CellDescription& cellDescription = cellInfo._FiniteVolumesCellDescriptions[element];\n',
+       '    if ( cellDescription.getType()==CellDescription::Type::Leaf ) {\n',
+       '      double* solverSolution =\n',
+       '        static_cast<double*>(cellDescription.getSolution());\n',
+       '\n',
+       '      kernels::idx3 idx(_nodesPerCoordinateAxis+2*_ghostLayerWidth,\n',
+       '                        _nodesPerCoordinateAxis+2*_ghostLayerWidth,\n',
+       '                        _numberOfVariables+_numerOfParameters);\n',
+
+       '      for (int i = _ghostLayerWidth; i < _nodesPerCoordinateAxis + _ghostLayerWidth; i++) {\n',
+       '        for (int j = _ghostLayerWidth; j < _nodesPerCoordinateAxis + _ghostLayerWidth; j++) {\n',
+       '          tarch::la::Vector<DIMENSIONS, int> pos(i, j);\n',
+       '          AdjustPeriodic(\n',
+       '            cellDescription.getOffset(),\n',
+       '            cellDescription.getSize(),\n',
+       '            pos,\n',
+       '            solverSolution + idx(j, i, 0));\n',
+       '        }\n',
+       '      }\n',
+       '    }\n',
+       '  }\n',
+       '}\n',
+       '\n',
+       'void exahype::solvers::FiniteVolumesSolver::PlotPeriodic(\n',
+       '  const int                                          solverNumber,\n',
+       '  CellInfo&                                          cellInfo) {\n',
+       '  const int element = cellInfo.indexOfFiniteVolumesCellDescription(solverNumber);\n',
+       '  if ( element != NotFound ) {\n',
+       '    CellDescription& cellDescription = cellInfo._FiniteVolumesCellDescriptions[element];\n',
+       '    if ( cellDescription.getType()==CellDescription::Type::Leaf ) {\n',
+       '      double* solverSolution =\n',
+       '        static_cast<double*>(cellDescription.getSolution());\n',
+       '\n',
+       '      kernels::idx3 idx(_nodesPerCoordinateAxis+2*_ghostLayerWidth,\n',
+       '                        _nodesPerCoordinateAxis+2*_ghostLayerWidth,\n',
+       '                        _numberOfVariables+_numerOfParameters);\n',
+
+       '      for (int i = _ghostLayerWidth; i < _nodesPerCoordinateAxis + _ghostLayerWidth; i++) {\n',
+       '        for (int j = _ghostLayerWidth; j < _nodesPerCoordinateAxis + _ghostLayerWidth; j++) {\n',
+       '          tarch::la::Vector<DIMENSIONS, int> pos(i, j);\n',
+       '          // Call the solver-defined PlotPeriodic function\n',
+       '          PlotPeriodic(\n',
+       '            cellDescription.getOffset(),\n',
+       '            cellDescription.getSize(),\n',
+       '            pos,\n',
+       '            solverSolution + idx(j, i, 0));\n',
+       '        }\n',
+       '      }\n',
+       '    }\n',
+       '  }\n',
+       '}\n',
+       '\n',
+       'void exahype::solvers::FiniteVolumesSolver::FinishPeriodic() {\n',
+       '  SendPeriodic();\n',
+       '}\n',
+       '\n',
+       ]
+
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
+
+    # Add functions to FiniteVolumesSolver.h
+    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/solvers/FiniteVolumesSolver.h'
+    f = open(fname, "r")
+    lines = f.readlines()
+    f.close()
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('void updateOrRestrict(') != -1):
+            lines[i:i] = ['  void PlotPeriodic(\n',
+                          '    const int solverNumber,\n',
+                          '    CellInfo& cellInfo) final override;\n',
+                          '  void AdjustPeriodic(\n',
+                          '    const int solverNumber,\n',
+                          '    CellInfo& cellInfo) final override;\n',
+                          '  virtual void PlotPeriodic(\n',
+                          '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
+                          '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
+                          '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
+                          '    double* const Q) = 0;\n',
+                          '  virtual void AdjustPeriodic(\n',
+                          '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
+                          '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
+                          '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
+                          '    double* Q) = 0;\n',
+                          '  void FinishPeriodic() final override;\n',
+                          '  virtual void SendPeriodic() = 0;\n',
+                          '\n']
+            break;
+
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
+
+
 
     # Add functions to Solver.h
     fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/solvers/Solver.h'
