@@ -309,7 +309,7 @@ def allow_periodic(repo_dir):
 
        '      for (int i = _ghostLayerWidth; i < _nodesPerCoordinateAxis + _ghostLayerWidth; i++) {\n',
        '        for (int j = _ghostLayerWidth; j < _nodesPerCoordinateAxis + _ghostLayerWidth; j++) {\n',
-       '          tarch::la::Vector<DIMENSIONS, int> pos(i, j);\n',
+       '          tarch::la::Vector<DIMENSIONS, int> pos(i - _ghostLayerWidth, j - _ghostLayerWidth);\n',
        '          AdjustPeriodic(\n',
        '            cellDescription.getOffset(),\n',
        '            cellDescription.getSize(),\n',
@@ -337,7 +337,7 @@ def allow_periodic(repo_dir):
 
        '      for (int i = _ghostLayerWidth; i < _nodesPerCoordinateAxis + _ghostLayerWidth; i++) {\n',
        '        for (int j = _ghostLayerWidth; j < _nodesPerCoordinateAxis + _ghostLayerWidth; j++) {\n',
-       '          tarch::la::Vector<DIMENSIONS, int> pos(i, j);\n',
+       '          tarch::la::Vector<DIMENSIONS, int> pos(i - _ghostLayerWidth, j - _ghostLayerWidth);\n',
        '          // Call the solver-defined PlotPeriodic function\n',
        '          PlotPeriodic(\n',
        '            cellDescription.getOffset(),\n',
