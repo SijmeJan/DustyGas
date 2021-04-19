@@ -220,7 +220,7 @@ def write_periodic_dummies(output_dir, solver_name):
     f.writelines(lines)
     f.close()
 
-    fname = base_filename + '.cpp'
+    fname = output_dir + solver_name + '.cpp'
 
     f = open(fname, "r")
     lines = f.readlines()
