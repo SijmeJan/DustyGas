@@ -37,6 +37,8 @@ cp backup/ExaHyPE/exahype/repositories/RepositorySTDStack.cpp ExaHyPE-Engine/Exa
 cp backup/ExaHyPE/exahype/runners/Runner.cpp ExaHyPE-Engine/ExaHyPE/exahype/runners/
 cp backup/ExaHyPE/exahype/solvers/ADERDGSolver.cpp ExaHyPE-Engine/ExaHyPE/exahype/solvers/
 cp backup/ExaHyPE/exahype/solvers/ADERDGSolver.h ExaHyPE-Engine/ExaHyPE/exahype/solvers/
+cp backup/ExaHyPE/exahype/solvers/LimitingADERDGSolver.cpp ExaHyPE-Engine/ExaHyPE/exahype/solvers/
+cp backup/ExaHyPE/exahype/solvers/LimitingADERDGSolver.h ExaHyPE-Engine/ExaHyPE/exahype/solvers/
 cp backup/ExaHyPE/exahype/solvers/FiniteVolumesSolver.cpp ExaHyPE-Engine/ExaHyPE/exahype/solvers/
 cp backup/ExaHyPE/exahype/solvers/FiniteVolumesSolver.h ExaHyPE-Engine/ExaHyPE/exahype/solvers/
 cp backup/ExaHyPE/exahype/solvers/Solver.h ExaHyPE-Engine/ExaHyPE/exahype/solvers/

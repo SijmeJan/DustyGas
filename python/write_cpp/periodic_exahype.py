@@ -395,6 +395,69 @@ def allow_periodic(repo_dir):
 
 
 
+
+    #################################
+    # Finally: limiting schem
+    #################################
+    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/solvers/LimitingADERDGSolver.cpp'
+    f = open(fname, "r")
+    lines = f.readlines()
+    f.close()
+
+    lines[len(lines):len(lines)] = \
+      ['\n',
+       'void exahype::solvers::LimitingADERDGSolver::AdjustPeriodic(\n',
+       '  const int                                          solverNumber,\n',
+       '  CellInfo&                                          cellInfo) {\n',
+       '  _solver.AdjustPeriodic(solverNumber, cellInfo);\n',
+       '  const int limiterElement = cellInfo.indexOfFiniteVolumesCellDescription(solverNumber);\n',
+       '\n',
+       '  // Delete any limiter patch\n',
+       '  if (limiterElement != Solver::NotFound) {\n',
+       '    SolverPatch& solverPatch = cellInfo._FiniteVolumesCellDescriptions[element];\n',
+       '    deallocateLimiterPatch(solverPatch, cellInfo);\n',
+       '  }\n',
+       '}\n',
+       '\n',
+       'void exahype::solvers::LimitingADERDGSolver::PlotPeriodic(\n',
+       '  const int                                          solverNumber,\n',
+       '  CellInfo&                                          cellInfo) {\n',
+       '  _solver.PlotPeriodic(solverNumber, cellInfo);\n',
+       '}\n',
+       '\n',
+       'void exahype::solvers::LimitingADERDGSolver::FinishPeriodic() {\n',
+       '  _solver.FinishPeriodic();\n',
+       '}\n',
+       '\n',
+       ]
+
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
+
+    # Add functions to LimitingADERDGsolver.h
+    fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/solvers/LimitingADERDGSolver.h'
+    f = open(fname, "r")
+    lines = f.readlines()
+    f.close()
+
+    for i in range(0, len(lines)):
+        if (lines[i].find('void updateOrRestrict(') != -1):
+            lines[i:i] = ['  void PlotPeriodic(\n',
+                          '    const int solverNumber,\n',
+                          '    CellInfo& cellInfo) final override;\n',
+                          '  void AdjustPeriodic(\n',
+                          '    const int solverNumber,\n',
+                          '    CellInfo& cellInfo) final override;\n',
+                          '  void FinishPeriodic() final override;\n',
+                          '\n']
+            break;
+
+    f = open(fname, "w")
+    f.writelines(lines)
+    f.close()
+
+
     # Add functions to Solver.h
     fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/solvers/Solver.h'
     f = open(fname, "r")

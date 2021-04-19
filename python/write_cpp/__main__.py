@@ -142,28 +142,38 @@ if n_dust > 1:
 #####################################
 # Start by modifying the solver file
 #####################################
-source_file = output_dir + solver_name + '.cpp'
+base_filenames = [output_dir + solver_name]
+solver_types = [solver_type]
 
-f = open(source_file, "r")
-lines = f.readlines()
-f.close()
+# For a limiting scheme, need to modify both solvers
+if (solver_type == 'Limiting-ADER-DG'):
+    base_filenames = [output_dir + solver_name + '_FV',
+                      output_dir + solver_name + '_ADERDG']
+    solver_types = ['Finite-Volumes', 'ADER-DG']
 
-# Modify eigenvalues, fluxes, sources and initial conditions
-write_eigenvalues(lines, n_dust, c, solver_type)
-write_flux(lines, n_dust, c)
-write_source(lines, n_dust, q, Stokes, weights, eta)
-write_initial(lines, n_dust, mu, Stokes, eta, solver_type, sigma=sigma)
-write_outflow_boundary(lines, n_vars, solver_type)
+for base_filename, solver_type in zip(base_filenames, solver_types):
+    source_file = base_filename + '.cpp'
 
-# Write to file
-f = open(source_file, "w")
-f.writelines(lines)
-f.close()
+    f = open(source_file, "r")
+    lines = f.readlines()
+    f.close()
 
-# Write empty functions (no periodic boundaries by default)
-# Can only do this if periodic boundaries have been enabled
-if allow_periodic == True:
-    write_periodic_dummies(output_dir, solver_name)
+    # Modify eigenvalues, fluxes, sources and initial conditions
+    write_eigenvalues(lines, n_dust, c, solver_type)
+    write_flux(lines, n_dust, c)
+    write_source(lines, n_dust, q, Stokes, weights, eta)
+    write_initial(lines, n_dust, mu, Stokes, eta, solver_type, sigma=sigma)
+    write_outflow_boundary(lines, n_vars, solver_type)
+
+    # Write to file
+    f = open(source_file, "w")
+    f.writelines(lines)
+    f.close()
+
+    # Write empty functions (no periodic boundaries by default)
+    # Can only do this if periodic boundaries have been enabled
+    if allow_periodic == True:
+        write_periodic_dummies(base_filename, solver_name)
 
 ################################
 # Implement periodic boundaries
@@ -171,49 +181,38 @@ if allow_periodic == True:
 if args.periodic:
     print("Implementing periodic boundaries in solver...")
 
+    nx = guess_mesh(size_x, cell_size)
+    ny = guess_mesh(size_y, cell_size)
+
+    dx = size_x/nx
+    dy = size_y/ny
+
+    f = lambda x: x - 2*x/guess_mesh(x, cell_size) - size_x
+    size_x_want = fsolve(f, size_x)[0]
+    f = lambda x: x - 2*x/guess_mesh(x, cell_size) - size_y
+    size_y_want = fsolve(f, size_y)[0]
+
+    print('Estimated mesh size: {}x{}'.format(nx, ny))
+    print('NOTE: periodic domain size will be {}x{}'.format(size_x-2*dx, size_y-2*dy))
+    print('If a periodic domain of size {}x{} is needed, change domain size in .exahype file to {}x{}'.format(size_x, size_y, size_x_want, size_y_want))
+
+    # Add Plot/Adjust periodic functions to solver class
     if (solver_type == 'ADER-DG'):
-        nx = guess_mesh(size_x, cell_size)
-        ny = guess_mesh(size_y, cell_size)
-
-        dx = size_x/nx
-        dy = size_y/ny
-
-        f = lambda x: x - 2*x/guess_mesh(x, cell_size) - size_x
-        size_x_want = fsolve(f, size_x)[0]
-        f = lambda x: x - 2*x/guess_mesh(x, cell_size) - size_y
-        size_y_want = fsolve(f, size_y)[0]
-
-        print('Estimated mesh size: {}x{}'.format(nx, ny))
-        print('NOTE: periodic domain size will be {}x{}'.format(size_x-2*dx, size_y-2*dy))
-        print('If a periodic domain of size {}x{} is needed, change domain size in .exahype file to {}x{}'.format(size_x, size_y, size_x_want, size_y_want))
-
-        # Add PlotAdjust function to abstract solver class
         write_periodic_functions(n_vars, order,
                                  [offset_x, offset_y],
                                  [size_x, size_y],
                                  output_dir, solver_name)
     elif (solver_type == 'Finite-Volumes'):
-        nx = guess_mesh(size_x, cell_size)
-        ny = guess_mesh(size_y, cell_size)
-
-        dx = size_x/nx
-        dy = size_y/ny
-
-        f = lambda x: x - 2*x/guess_mesh(x, cell_size) - size_x
-        size_x_want = fsolve(f, size_x)[0]
-        f = lambda x: x - 2*x/guess_mesh(x, cell_size) - size_y
-        size_y_want = fsolve(f, size_y)[0]
-
-        print('Estimated mesh size: {}x{}'.format(nx, ny))
-        print('NOTE: periodic domain size will be {}x{}'.format(size_x-2*dx, size_y-2*dy))
-        print('If a periodic domain of size {}x{} is needed, change domain size in .exahype file to {}x{}'.format(size_x, size_y, size_x_want, size_y_want))
-
-        # Add PlotAdjust function to abstract solver class
         write_periodic_functions(n_vars, patch_size,
                                  [offset_x, offset_y],
                                  [size_x, size_y],
                                  output_dir, solver_name)
-
+    elif (solver_type == 'Limiting-ADER-DG'):
+        # Modify the ADER-DG part, FV part not used
+        write_periodic_functions(n_vars, order,
+                                 [offset_x, offset_y],
+                                 [size_x, size_y],
+                                 output_dir, solver_name + '_ADERDG' )
     else:
         print("Periodic boundary conditions for {} not implemented!".format(solver_type))
         exit(1)

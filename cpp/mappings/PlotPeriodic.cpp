@@ -131,9 +131,9 @@ void exahype::mappings::PlotPeriodic::endIteration(
         case solvers::Solver::Type::ADERDG:
           static_cast<solvers::ADERDGSolver*>(solver)->FinishPeriodic();
           break;
-          //case solvers::Solver::Type::LimitingADERDG:
-          //static_cast<solvers::LimitingADERDGSolver*>(solver)->AdjustPeriodic(cellInfo);
-          //break;
+        case solvers::Solver::Type::LimitingADERDG:
+          static_cast<solvers::LimitingADERDGSolver*>(solver)->FinishPeriodic(cellInfo);
+          break;
         case solvers::Solver::Type::FiniteVolumes:
           static_cast<solvers::FiniteVolumesSolver*>(solver)->FinishPeriodic();
           break;
@@ -178,9 +178,9 @@ void exahype::mappings::PlotPeriodic::enterCell(
         case solvers::Solver::Type::ADERDG:
           static_cast<solvers::ADERDGSolver*>(solver)->PlotPeriodic(solverNumber, cellInfo);
           break;
-          //case solvers::Solver::Type::LimitingADERDG:
-          //static_cast<solvers::LimitingADERDGSolver*>(solver)->AdjustPeriodic(cellInfo);
-          //break;
+        case solvers::Solver::Type::LimitingADERDG:
+          static_cast<solvers::LimitingADERDGSolver*>(solver)->PlotPeriodic(solverNumber, cellInfo);
+          break;
         case solvers::Solver::Type::FiniteVolumes:
           static_cast<solvers::FiniteVolumesSolver*>(solver)->PlotPeriodic(solverNumber, cellInfo);
           break;
