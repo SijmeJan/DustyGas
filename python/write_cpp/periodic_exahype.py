@@ -397,7 +397,7 @@ def allow_periodic(repo_dir):
 
 
     #################################
-    # Finally: limiting schem
+    # Finally: limiting scheme
     #################################
     fname = repo_dir + 'ExaHyPE-Engine/ExaHyPE/exahype/solvers/LimitingADERDGSolver.cpp'
     f = open(fname, "r")
@@ -409,24 +409,24 @@ def allow_periodic(repo_dir):
        'void exahype::solvers::LimitingADERDGSolver::AdjustPeriodic(\n',
        '  const int                                          solverNumber,\n',
        '  CellInfo&                                          cellInfo) {\n',
-       '  //_solver.AdjustPeriodic(solverNumber, cellInfo);\n',
-       '  //const int limiterElement = cellInfo.indexOfFiniteVolumesCellDescription(solverNumber);\n',
+       '  _solver.AdjustPeriodic(solverNumber, cellInfo);\n',
+       '  const int limiterElement = cellInfo.indexOfFiniteVolumesCellDescription(solverNumber);\n',
        '\n',
        '  // Delete any limiter patch\n',
-       '  //if (limiterElement != Solver::NotFound) {\n',
-       '    //SolverPatch& solverPatch = cellInfo._FiniteVolumesCellDescriptions[element];\n',
-       '    //deallocateLimiterPatch(solverPatch, cellInfo);\n',
-       '  //}\n',
+       '  if (limiterElement != Solver::NotFound) {\n',
+       '    SolverPatch& solverPatch = cellInfo._FiniteVolumesCellDescriptions[element];\n',
+       '    deallocateLimiterPatch(solverPatch, cellInfo);\n',
+       '  }\n',
        '}\n',
        '\n',
        'void exahype::solvers::LimitingADERDGSolver::PlotPeriodic(\n',
        '  const int                                          solverNumber,\n',
        '  CellInfo&                                          cellInfo) {\n',
-       '  //_solver.PlotPeriodic(solverNumber, cellInfo);\n',
+       '  _solver.PlotPeriodic(solverNumber, cellInfo);\n',
        '}\n',
        '\n',
        'void exahype::solvers::LimitingADERDGSolver::FinishPeriodic() {\n',
-       '  //_solver.FinishPeriodic();\n',
+       '  _solver.FinishPeriodic();\n',
        '}\n',
        '\n',
        ]
