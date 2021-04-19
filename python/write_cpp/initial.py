@@ -159,19 +159,19 @@ class PolyDustyGasIC(InitialConditions):
 
 def write_initial(lines, n_dust, mu, Stokes, eta, solver_type, sigma=None):
     # Epicyclic oscillation
-    #ic = GasDensityWaveIC(Kx=0.0, amp=0.1)
+    ic = GasDensityWaveIC(Kx=0.0, amp=0.1)
 
     # 1D gas density wave
     #ic = GasDensityWaveIC(Kx=30.0/0.05, amp=0.001)
 
     # LinearA test
-    ic = MonoDustyGasIC(Kx=30.0/0.05,
-                        Kz=30/0.05,
-                        amp=0.001,
-                        mu=mu,
-                        Stokes=Stokes,
-                        n_dust=n_dust,
-                        eta=eta)
+    #ic = MonoDustyGasIC(Kx=30.0/0.05,
+    #                    Kz=30/0.05,
+    #                    amp=0.001,
+    #                    mu=mu,
+    #                    Stokes=Stokes,
+    #                    n_dust=n_dust,
+    #                    eta=eta)
 
     # Polydisperse
     #ic = PolyDustyGasIC(Kx=30.0/0.05,

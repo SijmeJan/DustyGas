@@ -18,7 +18,7 @@ exahype-project DustyGas
   end distributed-memory
 */
   solver Limiting-ADER-DG DustyGasSolver
-    variables const = 8
+    variables const = 4
     order const = 2
     maximum-mesh-size = 5e-3
     time-stepping = global
@@ -30,12 +30,12 @@ exahype-project DustyGas
     limiter-type const = musclhancock
     limiter-optimisation const = generic
     limiter-language const = C
-    dmp-observables = 8
+    dmp-observables = 4
     dmp-relaxation-parameter = 1e-4
     dmp-difference-scaling = 1e-3
 
     plot vtk::Cartesian::cells::ascii State
-     variables const = 8
+     variables const = 4
      time = 0.0
      repeat = 1.0e-1
      output = ./state
