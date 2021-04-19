@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Exit when error occurs
+set -e
+
 # By default, enable periodic boundaries
 enable_periodic=true
 
