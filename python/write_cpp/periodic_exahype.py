@@ -414,7 +414,7 @@ def allow_periodic(repo_dir):
        '\n',
        '  // Delete any limiter patch\n',
        '  if (limiterElement != Solver::NotFound) {\n',
-       '    SolverPatch& solverPatch = cellInfo._FiniteVolumesCellDescriptions[element];\n',
+       '    SolverPatch& solverPatch = cellInfo._FiniteVolumesCellDescriptions[limiterElement];\n',
        '    deallocateLimiterPatch(solverPatch, cellInfo);\n',
        '  }\n',
        '}\n',
