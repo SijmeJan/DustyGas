@@ -414,7 +414,7 @@ def allow_periodic(repo_dir):
        '  if ( solverElement != Solver::NotFound ) {\n',
        '    SolverPatch& solverPatch = cellInfo._ADERDGCellDescriptions[solverElement];\n',
        '    deallocateLimiterPatch(solverPatch, cellInfo);\n',
-       '  }\n'.
+       '  }\n',
        '  //const int limiterElement = cellInfo.indexOfFiniteVolumesCellDescription(solverNumber);\n',
        '\n',
        '  // Delete any limiter patch\n',
