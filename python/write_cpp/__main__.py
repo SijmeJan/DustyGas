@@ -142,19 +142,16 @@ if n_dust > 1:
 #####################################
 # Start by modifying the solver file
 #####################################
-base_filenames = [output_dir + solver_name]
 solver_types = [solver_type]
-solver_names = [solver_name]
+solver_extension = ['']
 
 # For a limiting scheme, need to modify both solvers
 if (solver_type == 'Limiting-ADER-DG'):
-    base_filenames = [output_dir + solver_name + '_FV',
-                      output_dir + solver_name + '_ADERDG']
     solver_types = ['Finite-Volumes', 'ADER-DG']
-    solver_names = [solver_name + '_FV', solver_name + '_ADERDG']
+    solver_extension = ['_FV', '_ADERDG']
 
-for solver_name, solver_type in zip(solver_names, solver_types):
-    source_file = output_dir + solver_name + '.cpp'
+for solver_ext, solver_type in zip(solver_extension, solver_types):
+    source_file = output_dir + solver_name + solver_ext + '.cpp'
 
     f = open(source_file, "r")
     lines = f.readlines()
@@ -175,7 +172,7 @@ for solver_name, solver_type in zip(solver_names, solver_types):
     # Write empty functions (no periodic boundaries by default)
     # Can only do this if periodic boundaries have been enabled
     if allow_periodic == True:
-        write_periodic_dummies(output_dir, solver_name)
+        write_periodic_dummies(output_dir, solver_name, solver_ext)
 
 ################################
 # Implement periodic boundaries

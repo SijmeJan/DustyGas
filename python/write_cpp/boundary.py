@@ -174,8 +174,11 @@ def write_periodic_functions(n_vars, order, offset, size, output_dir, solver_nam
     f.writelines(lines)
     f.close()
 
-def write_periodic_dummies(output_dir, solver_name):
-    fname = output_dir + solver_name + '.h'
+def write_periodic_dummies(output_dir, solver_name, solver_ext):
+    # solver_name = DustyGasSolver
+    # solver_ext = _FV, _ADERDG
+
+    fname = output_dir + solver_name + solver_ext + '.h'
 
     f = open(fname, "r")
     lines = f.readlines()
@@ -220,7 +223,7 @@ def write_periodic_dummies(output_dir, solver_name):
     f.writelines(lines)
     f.close()
 
-    fname = output_dir + solver_name + '.cpp'
+    fname = output_dir + solver_name + solver_ext + '.cpp'
 
     f = open(fname, "r")
     lines = f.readlines()
@@ -228,21 +231,24 @@ def write_periodic_dummies(output_dir, solver_name):
 
     lines[len(lines):len(lines)] = \
       ['\n\n',
-       'void {}::{}::AdjustPeriodic(\n'.format(solver_name[:-6], solver_name),
+       'void {}::{}::AdjustPeriodic(\n'.format(solver_name[:-6],
+                                               solver_name + solver_ext),
        '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
        '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
        '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
        '    double* Q) {\n'
        '  // Nop, since no periodic boundaries requested\n',
        '}\n\n',
-       'void {}::{}::PlotPeriodic(\n'.format(solver_name[:-6], solver_name),
+       'void {}::{}::PlotPeriodic(\n'.format(solver_name[:-6],
+                                             solver_name + solver_ext),
        '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
        '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
        '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
        '    double* const Q) {\n'
        '  // Nop, since no periodic boundaries requested\n',
        '}\n\n',
-       'void {}::{}::SendPeriodic() {{\n'.format(solver_name[:-6], solver_name),
+       'void {}::{}::SendPeriodic() {{\n'.format(solver_name[:-6],
+                                                 solver_name + solver_ext),
        '  // Nop, since no periodic boundaries requested\n',
        '}\n\n']
 
