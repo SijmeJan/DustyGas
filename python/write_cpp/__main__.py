@@ -144,15 +144,17 @@ if n_dust > 1:
 #####################################
 base_filenames = [output_dir + solver_name]
 solver_types = [solver_type]
+solver_names = [solver_name]
 
 # For a limiting scheme, need to modify both solvers
 if (solver_type == 'Limiting-ADER-DG'):
     base_filenames = [output_dir + solver_name + '_FV',
                       output_dir + solver_name + '_ADERDG']
     solver_types = ['Finite-Volumes', 'ADER-DG']
+    solver_names = [solver_name + '_FV', solver_name + '_ADERDG']
 
-for base_filename, solver_type in zip(base_filenames, solver_types):
-    source_file = base_filename + '.cpp'
+for solver_name, solver_type in zip(solver_names, solver_types):
+    source_file = output_dir + solver_name + '.cpp'
 
     f = open(source_file, "r")
     lines = f.readlines()
