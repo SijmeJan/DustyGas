@@ -175,7 +175,7 @@ for solver_name, solver_type in zip(solver_names, solver_types):
     # Write empty functions (no periodic boundaries by default)
     # Can only do this if periodic boundaries have been enabled
     if allow_periodic == True:
-        write_periodic_dummies(base_filename, solver_name)
+        write_periodic_dummies(output_dir, solver_name)
 
 ################################
 # Implement periodic boundaries

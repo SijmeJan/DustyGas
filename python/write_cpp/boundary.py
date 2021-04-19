@@ -174,8 +174,8 @@ def write_periodic_functions(n_vars, order, offset, size, output_dir, solver_nam
     f.writelines(lines)
     f.close()
 
-def write_periodic_dummies(base_filename, solver_name):
-    fname = base_filename + '.h'
+def write_periodic_dummies(output_dir, solver_name):
+    fname = output_dir + solver_name + '.h'
 
     f = open(fname, "r")
     lines = f.readlines()
