@@ -50,7 +50,7 @@ elif python --version | grep -qi "python 3"; then PYTHON3="python"
 else echo "$0: Python3 required for running the ExaHyPE toolkit" >&2; exit -1; fi
 
 # Use GNU compiler
-COMPILER=GNU
+export COMPILER=GNU
 #export DISTRIBUTEDMEM=MPI
 
 # Use Toolkit to generate source code
