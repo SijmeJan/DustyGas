@@ -132,7 +132,7 @@ void exahype::mappings::PlotPeriodic::endIteration(
           static_cast<solvers::ADERDGSolver*>(solver)->FinishPeriodic();
           break;
         case solvers::Solver::Type::LimitingADERDG:
-          static_cast<solvers::LimitingADERDGSolver*>(solver)->FinishPeriodic(cellInfo);
+          static_cast<solvers::LimitingADERDGSolver*>(solver)->FinishPeriodic();
           break;
         case solvers::Solver::Type::FiniteVolumes:
           static_cast<solvers::FiniteVolumesSolver*>(solver)->FinishPeriodic();
