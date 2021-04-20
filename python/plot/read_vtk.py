@@ -31,27 +31,27 @@ class SnapShot():
         self.Q = self.Q[sel]
         self.x = self.x[sel]
 
-filename = '../../data/state-10.vtk'
+filename = '../../data/state-1.vtk'
 s = SnapShot(filename)
-s.remove_ghost(10)
+#s.remove_ghost(10)
 
-#cs = plt.tricontourf(s.x[:,0], s.x[:,1], s.Q[:,1], 100)
-#plt.colorbar(cs)
+cs = plt.tricontourf(s.x[:,0], s.x[:,1], s.Q[:,1], 100)
+plt.colorbar(cs)
 
-#plt.show()
+plt.show()
 
-#exit(0)
+exit(0)
 
-sel = np.asarray(s.x[:,1] == np.min(s.x[:,1])).nonzero()
-plt.plot(s.x[sel,0], s.Q[sel,1], marker='o', linestyle='None', color='blue')
+#sel = np.asarray(s.x[:,1] == np.min(s.x[:,1])).nonzero()
+#plt.plot(s.x[sel,0], s.Q[sel,1], marker='o', linestyle='None', color='blue')
 #plt.plot(s.x[sel,0], s.Q[sel,3], marker='o', linestyle='None', color='blue')
 #plt.plot(s.x[sel,0], s.Q[sel,2], marker='o', linestyle='None', color='green')
 
 
-plt.show()
-exit(0)
+#plt.show()
+#exit(0)
 
-n = 856
+n = 181
 e = np.zeros((n))
 #direcs = ['../../data/order2', '../../data/order3']
 direcs = ['../../data']

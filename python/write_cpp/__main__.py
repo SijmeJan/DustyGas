@@ -150,19 +150,19 @@ if (solver_type == 'Limiting-ADER-DG'):
     solver_types = ['Finite-Volumes', 'ADER-DG']
     solver_extension = ['_FV', '_ADERDG']
 
-for solver_ext, solver_type in zip(solver_extension, solver_types):
-    source_file = output_dir + solver_name + solver_ext + '.cpp'
+for s_ext, s_type in zip(solver_extension, solver_types):
+    source_file = output_dir + solver_name + s_ext + '.cpp'
 
     f = open(source_file, "r")
     lines = f.readlines()
     f.close()
 
     # Modify eigenvalues, fluxes, sources and initial conditions
-    write_eigenvalues(lines, n_dust, c, solver_type)
+    write_eigenvalues(lines, n_dust, c, s_type)
     write_flux(lines, n_dust, c)
     write_source(lines, n_dust, q, Stokes, weights, eta)
-    write_initial(lines, n_dust, mu, Stokes, eta, solver_type, sigma=sigma)
-    write_outflow_boundary(lines, n_vars, solver_type)
+    write_initial(lines, n_dust, mu, Stokes, eta, s_type, sigma=sigma)
+    write_outflow_boundary(lines, n_vars, s_type)
 
     # Write to file
     f = open(source_file, "w")
@@ -172,13 +172,13 @@ for solver_ext, solver_type in zip(solver_extension, solver_types):
     # Write empty functions (no periodic boundaries by default)
     # Can only do this if periodic boundaries have been enabled
     if allow_periodic == True:
-        write_periodic_dummies(output_dir, solver_name, solver_ext)
+        write_periodic_dummies(output_dir, solver_name, s_ext)
 
 ################################
 # Implement periodic boundaries
 ################################
 if args.periodic:
-    print("Implementing periodic boundaries in solver...")
+    print("Implementing periodic boundaries in solver...", solver_type)
 
     nx = guess_mesh(size_x, cell_size)
     ny = guess_mesh(size_y, cell_size)
