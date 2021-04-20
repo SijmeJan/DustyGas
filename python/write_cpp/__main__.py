@@ -180,19 +180,23 @@ for s_ext, s_type in zip(solver_extension, solver_types):
 if args.periodic:
     print("Implementing periodic boundaries in solver...", solver_type)
 
+    n_ghost = 1
+    if solver_type == 'Limiting-ADER-DG':
+        n_ghost = 2
+
     nx = guess_mesh(size_x, cell_size)
     ny = guess_mesh(size_y, cell_size)
 
     dx = size_x/nx
     dy = size_y/ny
 
-    f = lambda x: x - 2*x/guess_mesh(x, cell_size) - size_x
+    f = lambda x: x - 2*n_ghost*x/guess_mesh(x, cell_size) - size_x
     size_x_want = fsolve(f, size_x)[0]
-    f = lambda x: x - 2*x/guess_mesh(x, cell_size) - size_y
+    f = lambda x: x - 2*n_ghost*x/guess_mesh(x, cell_size) - size_y
     size_y_want = fsolve(f, size_y)[0]
 
     print('Estimated mesh size: {}x{}'.format(nx, ny))
-    print('NOTE: periodic domain size will be {}x{}'.format(size_x-2*dx, size_y-2*dy))
+    print('NOTE: periodic domain size will be {}x{}'.format(size_x-2*n_ghost*dx, size_y-2*n_ghost*dy))
     print('If a periodic domain of size {}x{} is needed, change domain size in .exahype file to {}x{}'.format(size_x, size_y, size_x_want, size_y_want))
 
     # Add Plot/Adjust periodic functions to solver class
@@ -200,18 +204,18 @@ if args.periodic:
         write_periodic_functions(n_vars, order,
                                  [offset_x, offset_y],
                                  [size_x, size_y],
-                                 output_dir, solver_name)
+                                 output_dir, solver_name, n_ghost)
     elif (solver_type == 'Finite-Volumes'):
         write_periodic_functions(n_vars, patch_size,
                                  [offset_x, offset_y],
                                  [size_x, size_y],
-                                 output_dir, solver_name)
+                                 output_dir, solver_name, n_ghost)
     elif (solver_type == 'Limiting-ADER-DG'):
         # Modify the ADER-DG part, FV part not used
         write_periodic_functions(n_vars, order,
                                  [offset_x, offset_y],
                                  [size_x, size_y],
-                                 output_dir, solver_name + '_ADERDG' )
+                                 output_dir, solver_name + '_ADERDG', n_ghost)
     else:
         print("Periodic boundary conditions for {} not implemented!".format(solver_type))
         exit(1)

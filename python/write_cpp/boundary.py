@@ -17,7 +17,7 @@ def write_outflow_boundary(lines, n_vars, solver):
 
     add_function_body(lines, 'boundaryValues', periodic)
 
-def write_periodic_functions(n_vars, order, offset, size, output_dir, solver_name):
+def write_periodic_functions(n_vars, order, offset, size, output_dir, solver_name, n_ghost):
     fname = output_dir + solver_name + '.cpp'
 
     f = open(fname, "r")
@@ -43,9 +43,9 @@ def write_periodic_functions(n_vars, order, offset, size, output_dir, solver_nam
        '  int n_cell_x = (int) round({}/sizeOfPatch[0]);\n'.format(size[0]),
        '  int n_cell_y = (int) round({}/sizeOfPatch[1]);\n'.format(size[1]),
        '\n',
-      '  // Make sure vector is of the correct size, and set elements to zero.\n',
+       '  // Make sure vector is of the correct size, and set elements to zero.\n',
        '  // Note that this should happen only the first time this function is called.\n',
-       '  int n_bound_cells = 2*(n_cell_x + n_cell_y);\n',
+       '  int n_bound_cells = 2*{}*(n_cell_x + n_cell_y);\n'.format(n_ghost),
        '  int n_send_per_cell = {};\n'.format(n_vars*(order+1)*(order+1)),
        '  if (boundaryVector_local.size() != n_send_per_cell*n_bound_cells) {\n',
        '    boundaryVector_local.resize(n_send_per_cell*n_bound_cells);\n',
@@ -58,29 +58,31 @@ def write_periodic_functions(n_vars, order, offset, size, output_dir, solver_nam
        '\n',
        '  int indx = -1;\n',
        '\n',
-       '  if (cell_y == 1) {\n',
-       '    indx = cell_x;\n',
-       '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
-       '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
-       '      boundaryVector_local[arr_index + n] = Q[n];\n',
-       '  }\n'
-       '  if (cell_y == n_cell_y - 2) {\n',
-       '    indx = n_cell_x + cell_x;\n',
-       '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
-       '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
-       '      boundaryVector_local[arr_index + n] = Q[n];\n',
-       '  }\n'
-       '  if (cell_x == 1) {\n',
-       '    indx = 2*n_cell_x + cell_y;\n',
-       '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
-       '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
-       '      boundaryVector_local[arr_index + n] = Q[n];\n',
-       '  }\n'
-       '  if (cell_x == n_cell_x - 2) {\n',
-       '    indx = 2*n_cell_x + n_cell_y + cell_y;\n',
-       '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
-       '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
-       '      boundaryVector_local[arr_index + n] = Q[n];\n',
+       '  for (int ng = 1; ng < {}; ng++) {{\n'.format(n_ghost + 1),
+       '    if (cell_y == ng) {\n',
+       '      indx = cell_x;\n',
+       '      int arr_index = 2*(n_cell_x + n_cell_y)*n_send_per_cell*(ng - 1) + n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
+       '      for (int n = 0; n < {}; n++)\n'.format(n_vars),
+       '        boundaryVector_local[arr_index + n] = Q[n];\n',
+       '    }\n'
+       '    if (cell_y == n_cell_y - ng - 1) {\n',
+       '      indx = n_cell_x + cell_x;\n',
+       '      int arr_index = 2*(n_cell_x + n_cell_y)*n_send_per_cell*(ng - 1) + n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
+       '      for (int n = 0; n < {}; n++)\n'.format(n_vars),
+       '        boundaryVector_local[arr_index + n] = Q[n];\n',
+       '    }\n'
+       '    if (cell_x == ng) {\n',
+       '      indx = 2*n_cell_x + cell_y;\n',
+       '      int arr_index = 2*(n_cell_x + n_cell_y)*n_send_per_cell*(ng - 1) + n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
+       '      for (int n = 0; n < {}; n++)\n'.format(n_vars),
+       '        boundaryVector_local[arr_index + n] = Q[n];\n',
+       '    }\n'
+       '    if (cell_x == n_cell_x - ng - 1) {\n',
+       '      indx = 2*n_cell_x + n_cell_y + cell_y;\n',
+       '      int arr_index = 2*(n_cell_x + n_cell_y)*n_send_per_cell*(ng - 1) + n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
+       '      for (int n = 0; n < {}; n++)\n'.format(n_vars),
+       '        boundaryVector_local[arr_index + n] = Q[n];\n',
+       '    }\n',
        '  }\n']
 
     add_function_body(lines, '::PlotPeriodic', body)
@@ -138,31 +140,28 @@ def write_periodic_functions(n_vars, order, offset, size, output_dir, solver_nam
        '  int n_send_per_cell = {};\n'.format(n_vars*(order+1)*(order+1)),
        '  int indx = -1;\n',
        '\n',
-       '  if (cell_y == n_cell_y - 1) {\n',
+       '  for (int ng = 1; ng < {}; ng++) {{\n'.format(n_ghost + 1),
+       '  if (cell_y == n_cell_y - {} + ng - 1) {{\n'.format(n_ghost),
        '    indx = cell_x;\n',
-       '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
-       '    //std::cout << "ADUSTING: " << cell_x << " " << cell_y << " " << indx << " " << arr_index << " " << boundaryVector.size() << std::endl;\n',
+       '    int arr_index = 2*(n_cell_x + n_cell_y)*n_send_per_cell*(ng - 1) + n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
        '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
        '      Q[n] = boundaryVector[arr_index + n];\n',
-       '  }\n'
-       '  if (cell_y == 0) {\n',
+       '  }\n',
+       '  if (cell_y == {} - ng) {{\n'.format(n_ghost),
        '    indx = n_cell_x + cell_x;\n',
-       '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
-       '    //std::cout << "ADUSTING: " << cell_x << " " << cell_y << " " << indx << " " << arr_index << " " << boundaryVector.size() << std::endl;\n',
+       '    int arr_index = 2*(n_cell_x + n_cell_y)*n_send_per_cell*(ng - 1) + n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
        '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
        '      Q[n] = boundaryVector[arr_index + n];\n',
-       '  }\n'
-       '  if (cell_x == n_cell_x - 1) {\n',
+       '  }\n',
+       '  if (cell_x == n_cell_x - {} + ng - 1) {{\n'.format(n_ghost),
        '    indx = 2*n_cell_x + cell_y;\n',
-       '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
-       '    //std::cout << "ADUSTING: " << cell_x << " " << cell_y << " " << indx << " " << arr_index << " " << boundaryVector.size() << std::endl;\n',
+       '    int arr_index = 2*(n_cell_x + n_cell_y)*n_send_per_cell*(ng - 1) + n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
        '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
        '      Q[n] = boundaryVector[arr_index + n];\n',
-       '  }\n'
-       '  if (cell_x == 0) {\n',
+       '  }\n',
+       '  if (cell_x == {} - ng) {{\n'.format(n_ghost),
        '    indx = 2*n_cell_x + n_cell_y + cell_y;\n',
-       '    int arr_index = n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
-       '    //std::cout << "ADUSTING: " << cell_x << " " << cell_y << " " << indx << " " << arr_index << " " << boundaryVector.size() << std::endl;\n',
+       '    int arr_index = 2*(n_cell_x + n_cell_y)*n_send_per_cell*(ng - 1) + n_send_per_cell*indx + ({}*pos[1] + pos[0])*{};\n'.format(order + 1, n_vars),
        '    for (int n = 0; n < {}; n++)\n'.format(n_vars),
        '      Q[n] = boundaryVector[arr_index + n];\n',
        '  }\n'

@@ -64,7 +64,7 @@ plt.xlabel(r'$\Omega t$')
 
 for direc in direcs:
     for i in range(0, n):
-        s = SnapShot(direc + '/state-{}-rank-0.vtk'.format(i))
+        s = SnapShot(direc + '/state-{}.vtk'.format(i))
         #e[i] = np.sum(s.Q[:,6]*s.Q[:,6]/s.Q[:,4])/len(s.Q[:,4])
         e[i] = np.mean(s.Q[:,1]/s.Q[:,0])
 
