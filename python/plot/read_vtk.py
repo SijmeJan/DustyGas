@@ -59,18 +59,18 @@ direcs = ['../../data']
 t = np.linspace(0, 0.1*n, n)
 
 plt.xlabel(r'$\Omega t$')
-#plt.ylabel(r'$\int \rho_{\rm d} v_{z,{\rm d}}^2$')
-#plt.title('Monodisperse linA')
+plt.ylabel(r'$\int \rho_{\rm d} v_{z,{\rm d}}^2$')
+plt.title('Monodisperse linA')
 
 for direc in direcs:
     for i in range(0, n):
         s = SnapShot(direc + '/state-{}.vtk'.format(i))
-        #e[i] = np.sum(s.Q[:,6]*s.Q[:,6]/s.Q[:,4])/len(s.Q[:,4])
-        e[i] = np.mean(s.Q[:,1]/s.Q[:,0])
+        e[i] = np.sum(s.Q[:,6]*s.Q[:,6]/s.Q[:,4])/len(s.Q[:,4])
+        #e[i] = np.mean(s.Q[:,1]/s.Q[:,0])
 
-    #plt.yscale('log')
+    plt.yscale('log')
     plt.plot(t, e)
 
-#plt.plot(t, 0.0000000001*np.exp(0.42*2*t))
+plt.plot(t, 0.0000000001*np.exp(0.42*2*t))
 
 plt.show()
