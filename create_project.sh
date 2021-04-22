@@ -21,10 +21,12 @@ while getopts ":ph" opt; do
             exit 0
             ;;
         p )
-            # Check if mapping file exist
+            # User indicated periodic boundaries; need to check if the
+            # necessary modifications have been made. We do this by checking
+            # if the PlotPeriodic mapping file exists.
             FILE=./ExaHyPE-Engine/ExaHyPE/exahype/mappings/PlotPeriodic.cpp
             if [ -f "$FILE" ]; then
-                # Mapping file exists, all is fine
+                # Mapping file exists, all is assumed to be fine
                 periodic=true
             else
                 # Need to set up periodic boundaries
