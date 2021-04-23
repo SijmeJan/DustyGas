@@ -12,6 +12,7 @@ from boundary import write_outflow_boundary
 from boundary import write_periodic_functions
 from boundary import write_periodic_dummies
 from size_density import SizeDensity
+from exahype_parameters import ExaHyPE_parameters
 
 def guess_mesh(domain_size, cell_size):
     dx = domain_size
@@ -30,61 +31,7 @@ parser.add_argument('infile',
 args = parser.parse_args()
 
 # Read exahype file
-f = open(args.infile, "r")
-lines = f.readlines()
-f.close()
-
-# Remove comments between /* and */
-start_comment = []
-end_comment = []
-for i in range(0, len(lines)):
-    if (lines[i].find('/*') != -1):
-        start_comment.append(i)
-    if (lines[i].find('*/') != -1):
-        end_comment.append(i)
-for n in range(len(start_comment)-1, -1, -1):
-    for i in range(0, end_comment[n] - start_comment[n] + 1):
-        lines.pop(start_comment[n])
-
-# Parameters to be read from exahype file
-n_vars = 0
-patch_size = 0
-order = None
-output_dir = None
-project_name = None
-solver_name = None
-solver_type = None
-boundary_name = None
-found_nvar = False
-offset_x = None
-offset_y = None
-size_x = None
-size_y = None
-cell_size = None
-
-for line in lines:
-    if (line.find('exahype-project ') != -1):
-        project_name = line.lstrip().split()[-1]
-    if (line.find('solver ') != -1):
-        solver_name = line.lstrip().split()[-1]
-        solver_type = line.lstrip().split()[-2]
-    if (line.find('variables const') != -1 and found_nvar == False):
-        n_vars = int(line.lstrip().split()[-1])
-        found_nvar = True
-    if (line.find('output-directory') != -1):
-        output_dir = line.lstrip().split()[-1]
-    if (line.find('width') != -1):
-        size_x = float(line.lstrip().split()[-2][:-1])
-        size_y = float(line.lstrip().split()[-1])
-    if (line.find('offset') != -1):
-        offset_x = float(line.lstrip().split()[-2][:-1])
-        offset_y = float(line.lstrip().split()[-1])
-    if (line.find('patch-size const') != -1):
-        patch_size = int(line.lstrip().split()[-1])
-    if (line.find('order const') != -1):
-        order = int(line.lstrip().split()[-1])
-    if (line.find('maximum-mesh-size') != -1):
-        cell_size = float(line.lstrip().split()[-1])
+project = ExaHyPE_parameters(args.infile)
 
 # Main repository directory
 repo_dir = os.path.dirname(os.path.abspath(__file__)) + '/../../'
@@ -104,7 +51,7 @@ if args.periodic:
         exit(1)
 
 # Isothermal gas = 4 equations; each dust component adds 4
-if (n_vars % 4 != 0):
+if (project.n_vars % 4 != 0):
     print("Error: number of variables has to be divisible by 4!")
     exit(1)
 
@@ -117,11 +64,11 @@ Stokes = [0.1]    # list of Stokes numbers
 mu = 3.0          # dust/gas ratio
 
 # Number of dust components
-n_dust = int(n_vars/4 - 1)
+n_dust = int(project.n_vars/4 - 1)
 
 # Full path to cpp files
 output_dir = os.path.dirname(os.path.abspath(args.infile)) \
-  + '/' + output_dir + '/'
+  + '/' + project.output_dir + '/'
 
 weights = [1.0]
 Stokes_range = [0.0001, 0.1]
@@ -142,16 +89,16 @@ if n_dust > 1:
 #####################################
 # Start by modifying the solver file
 #####################################
-solver_types = [solver_type]
+solver_types = [project.solver_type]
 solver_extension = ['']
 
 # For a limiting scheme, need to modify both solvers
-if (solver_type == 'Limiting-ADER-DG'):
+if (project.solver_type == 'Limiting-ADER-DG'):
     solver_types = ['Finite-Volumes', 'ADER-DG']
     solver_extension = ['_FV', '_ADERDG']
 
 for s_ext, s_type in zip(solver_extension, solver_types):
-    source_file = output_dir + solver_name + s_ext + '.cpp'
+    source_file = output_dir + project.solver_name + s_ext + '.cpp'
 
     f = open(source_file, "r")
     lines = f.readlines()
@@ -162,7 +109,7 @@ for s_ext, s_type in zip(solver_extension, solver_types):
     write_flux(lines, n_dust, c)
     write_source(lines, n_dust, q, Stokes, weights, eta)
     write_initial(lines, n_dust, mu, Stokes, eta, s_type, sigma=sigma)
-    write_outflow_boundary(lines, n_vars, s_type)
+    write_outflow_boundary(lines, project.n_vars, s_type)
 
     # Write to file
     f = open(source_file, "w")
@@ -172,50 +119,68 @@ for s_ext, s_type in zip(solver_extension, solver_types):
     # Write empty functions (no periodic boundaries by default)
     # Can only do this if periodic boundaries have been enabled
     if allow_periodic == True:
-        write_periodic_dummies(output_dir, solver_name, s_ext)
+        write_periodic_dummies(output_dir, project.solver_name, s_ext)
 
 ################################
 # Implement periodic boundaries
 ################################
 if args.periodic:
-    print("Implementing periodic boundaries in solver...", solver_type)
+    print("Implementing periodic boundaries in solver...",
+          project.solver_type)
 
     n_ghost = 1
-    if solver_type == 'Limiting-ADER-DG':
+    if project.solver_type == 'Limiting-ADER-DG':
         n_ghost = 2
 
-    nx = guess_mesh(size_x, cell_size)
-    ny = guess_mesh(size_y, cell_size)
+    # Determine mesh number of cells in x and y
+    #nx = guess_mesh(project.size_x, project.cell_size)
+    #ny = guess_mesh(project.size_y, project.cell_size)
 
-    dx = size_x/nx
-    dy = size_y/ny
+    # Resolution in x and y
+    #dx = project.size_x/nx
+    #dy = project.size_y/ny
 
-    f = lambda x: x - 2*n_ghost*x/guess_mesh(x, cell_size) - size_x
-    size_x_want = fsolve(f, size_x)[0]
-    f = lambda x: x - 2*n_ghost*x/guess_mesh(x, cell_size) - size_y
-    size_y_want = fsolve(f, size_y)[0]
+    # We want a domain that is periodic with project.size_x.
+    # New size found from: size_x = project.size_x + 2*n_ghost*dx
+    #f = lambda x: (x - 2*n_ghost*x/guess_mesh(x, project.cell_size) -
+    #               project.size_x)
+    #size_x_want = fsolve(f, project.size_x)[0]
+    #f = lambda x: (x - 2*n_ghost*x/guess_mesh(x, project.cell_size) -
+    #               project.size_y)
+    #size_y_want = fsolve(f, project.size_y)[0]
 
-    print('Estimated mesh size: {}x{}'.format(nx, ny))
-    print('NOTE: periodic domain size will be {}x{}'.format(size_x-2*n_ghost*dx, size_y-2*n_ghost*dy))
-    print('If a periodic domain of size {}x{} is needed, change domain size in .exahype file to {}x{}'.format(size_x, size_y, size_x_want, size_y_want))
+    #print('Estimated mesh size: {}x{}'.format(nx, ny))
+    #print('Alternative mesh size: {}x{}'.format(guess_mesh(size_x_want, project.cell_size), guess_mesh(size_y_want, project.cell_size)))
+
+    #print('NOTE: periodic domain size will be {}x{}'.format(project.size_x-2*n_ghost*dx, project.size_y-2*n_ghost*dy))
+    #print('If a periodic domain of size {}x{} is needed, change domain size in .exahype file to {}x{}'.format(project.size_x, project.size_y, size_x_want, size_y_want))
 
     # Add Plot/Adjust periodic functions to solver class
-    if (solver_type == 'ADER-DG'):
-        write_periodic_functions(n_vars, order,
-                                 [offset_x, offset_y],
-                                 [size_x, size_y],
-                                 output_dir, solver_name, n_ghost)
-    elif (solver_type == 'Finite-Volumes'):
-        write_periodic_functions(n_vars, patch_size,
-                                 [offset_x, offset_y],
-                                 [size_x, size_y],
-                                 output_dir, solver_name, n_ghost)
-    elif (solver_type == 'Limiting-ADER-DG'):
+    if (project.solver_type == 'ADER-DG'):
+        write_periodic_functions(project.n_vars,
+                                 project.order,
+                                 [project.offset_x, project.offset_y],
+                                 [project.size_x, project.size_y],
+                                 output_dir,
+                                 project.solver_name,
+                                 n_ghost)
+    elif (project.solver_type == 'Finite-Volumes'):
+        write_periodic_functions(project.n_vars,
+                                 project.patch_size,
+                                 [project.offset_x, project.offset_y],
+                                 [project.size_x, project.size_y],
+                                 output_dir,
+                                 project.solver_name,
+                                 n_ghost)
+    elif (project.solver_type == 'Limiting-ADER-DG'):
         # Modify the ADER-DG part, FV part not used
-        write_periodic_functions(n_vars, order,
-                                 [offset_x, offset_y],
-                                 [size_x, size_y],
-                                 output_dir, solver_name + '_ADERDG', n_ghost)
+        write_periodic_functions(project.n_vars,
+                                 project.order,
+                                 [project.offset_x, project.offset_y],
+                                 [project.size_x, project.size_y],
+                                 output_dir,
+                                 project.solver_name + '_ADERDG',
+                                 n_ghost)
     else:
         print("Periodic boundary conditions for {} not implemented!".format(solver_type))
         exit(1)

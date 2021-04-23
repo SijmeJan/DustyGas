@@ -45,11 +45,35 @@ while getopts ":ph" opt; do
     esac
 done
 
-# find suitable python on the path
+# Find suitable python on the path
 has() { type $@ &>/dev/null; } # a way to check if command is available
 if has python3; then PYTHON3="python3";
 elif python --version | grep -qi "python 3"; then PYTHON3="python"
 else echo "$0: Python3 required for running the ExaHyPE toolkit" >&2; exit -1; fi
+
+# Get output directory from exahype file, where we want to put the executable.
+# Note: this directory is relative to the ExaHyPE directory!
+output_string=$(grep output-directory $exahype_file)
+IFS=' ' read -ra ADDR <<< "$output_string"
+for i in "${ADDR[@]}"; do
+  output_dir=$i
+done
+output_dir=$(dirname "$exahype_file")"/"$output_dir
+
+# Copy log setup to output directory
+cp $(dirname "$exahype_file")"/exahype.log-filter" $output_dir
+
+# Copy exahype file into output directory
+cp $exahype_file $output_dir"/"
+onlyfile="$(basename $exahype_file)"
+# From now on, work with copied file
+exahype_file=$output_dir"/"$onlyfile
+
+# Adjust domain size to allow for ghost cells
+if $periodic
+then
+    $PYTHON3 python/write_cpp/adjust_boundaries.py $exahype_file
+fi
 
 # Use GNU compiler
 export COMPILER=GNU
@@ -57,6 +81,7 @@ export COMPILER=GNU
 
 # Use Toolkit to generate source code
 echo Generating generic source code...
+#ExaHyPE-Engine/Toolkit/toolkit.sh $output_dir"/"$exahype_file
 ExaHyPE-Engine/Toolkit/toolkit.sh $exahype_file
 
 # Write source code
@@ -67,18 +92,6 @@ then
 else
    $PYTHON3 python/write_cpp $exahype_file
 fi
-
-# Get output directory from exahype file
-output_string=$(grep output-directory $exahype_file)
-IFS=' ' read -ra ADDR <<< "$output_string"
-for i in "${ADDR[@]}"; do
-  output_dir=$i
-done
-
-output_dir=$(dirname "$exahype_file")"/"$output_dir
-
-# Copy log setup
-cp $(dirname "$exahype_file")"/exahype.log-filter" $output_dir
 
 echo Starting Make...
 cd $output_dir
