@@ -34,7 +34,7 @@ class SnapShot():
 order = 2
 n_ghost = 2
 
-filename = '../../data/state-10-rank-0.vtk'
+filename = '../../data/state-5.vtk'
 s = SnapShot(filename)
 s.remove_ghost(order*n_ghost)
 
