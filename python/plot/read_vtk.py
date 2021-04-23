@@ -34,16 +34,16 @@ class SnapShot():
 order = 2
 n_ghost = 2
 
-filename = '../../data/state-5.vtk'
-s = SnapShot(filename)
-s.remove_ghost(order*n_ghost)
+#filename = '../../data/state-75.vtk'
+#s = SnapShot(filename)
+#s.remove_ghost(order*n_ghost)
 
-cs = plt.tricontourf(s.x[:,0], s.x[:,1], s.Q[:,4], 100)
-plt.colorbar(cs)
+#cs = plt.tricontourf(s.x[:,0], s.x[:,1], s.Q[:,4], 100)
+#plt.colorbar(cs)
 
-plt.show()
+#plt.show()
 
-exit(0)
+#exit(0)
 
 #sel = np.asarray(s.x[:,1] == np.min(s.x[:,1])).nonzero()
 #plt.plot(s.x[sel,0], s.Q[sel,4], marker='o', linestyle='None', color='blue')
@@ -68,7 +68,9 @@ plt.title('Monodisperse linA')
 
 for direc in direcs:
     for i in range(0, n):
-        s = SnapShot(direc + '/state-{}-rank-0.vtk'.format(i))
+        s = SnapShot(direc + '/state-{}.vtk'.format(i))
+        s.remove_ghost(order*n_ghost)
+
         e[i] = np.sum(s.Q[:,6]*s.Q[:,6]/s.Q[:,4])/len(s.Q[:,4])
         #e[i] = np.mean(s.Q[:,1]/s.Q[:,0])
 

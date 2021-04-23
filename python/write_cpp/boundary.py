@@ -165,7 +165,10 @@ def write_periodic_functions(n_vars, order, offset, size, output_dir, solver_nam
        '      for (int n = 0; n < {}; n++)\n'.format(n_vars),
        '        Q[n] = boundaryVector[arr_index + n];\n',
        '    }\n',
-       '  }\n'
+       '  }\n\n'
+       '  // Return 1 if state adjusted, zero otherwise\n',
+       '  if (indx == -1) return 0;\n',
+       '  return 1;\n'
       ]
 
     add_function_body(lines, '::AdjustPeriodic', body)
@@ -193,7 +196,7 @@ def write_periodic_dummies(output_dir, solver_name, solver_ext):
         if (lines[-i].find('};') != -1):
             lines[-i:-i] = \
               ['\n',
-               '  void AdjustPeriodic(\n',
+               '  int AdjustPeriodic(\n',
                '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
                '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
                '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
@@ -231,7 +234,7 @@ def write_periodic_dummies(output_dir, solver_name, solver_ext):
 
     lines[len(lines):len(lines)] = \
       ['\n\n',
-       'void {}::{}::AdjustPeriodic(\n'.format(solver_name[:-6],
+       'int {}::{}::AdjustPeriodic(\n'.format(solver_name[:-6],
                                                solver_name + solver_ext),
        '    const tarch::la::Vector<DIMENSIONS, double>& offsetOfPatch,\n',
        '    const tarch::la::Vector<DIMENSIONS, double>& sizeOfPatch,\n',
