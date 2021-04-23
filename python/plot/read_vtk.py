@@ -31,21 +31,25 @@ class SnapShot():
         self.Q = self.Q[sel]
         self.x = self.x[sel]
 
-#filename = '../../data/state-10.vtk'
-#s = SnapShot(filename)
-#s.remove_ghost(10)
+order = 2
+n_ghost = 2
 
-#cs = plt.tricontourf(s.x[:,0], s.x[:,1], s.Q[:,1], 100)
-#plt.colorbar(cs)
+filename = '../../data/state-10-rank-0.vtk'
+s = SnapShot(filename)
+s.remove_ghost(order*n_ghost)
 
-#plt.show()
+cs = plt.tricontourf(s.x[:,0], s.x[:,1], s.Q[:,4], 100)
+plt.colorbar(cs)
 
-#exit(0)
+plt.show()
+
+exit(0)
 
 #sel = np.asarray(s.x[:,1] == np.min(s.x[:,1])).nonzero()
-#plt.plot(s.x[sel,0], s.Q[sel,1], marker='o', linestyle='None', color='blue')
+#plt.plot(s.x[sel,0], s.Q[sel,4], marker='o', linestyle='None', color='blue')
 #plt.plot(s.x[sel,0], s.Q[sel,3], marker='o', linestyle='None', color='blue')
 #plt.plot(s.x[sel,0], s.Q[sel,2], marker='o', linestyle='None', color='green')
+#plt.plot(s.x[sel,0] + 0.010471975511966, s.Q[sel,4], marker='x', linestyle='None', color='green')
 
 
 #plt.show()
@@ -64,7 +68,7 @@ plt.title('Monodisperse linA')
 
 for direc in direcs:
     for i in range(0, n):
-        s = SnapShot(direc + '/state-{}.vtk'.format(i))
+        s = SnapShot(direc + '/state-{}-rank-0.vtk'.format(i))
         e[i] = np.sum(s.Q[:,6]*s.Q[:,6]/s.Q[:,4])/len(s.Q[:,4])
         #e[i] = np.mean(s.Q[:,1]/s.Q[:,0])
 
