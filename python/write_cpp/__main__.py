@@ -11,6 +11,7 @@ from initial import write_initial
 from boundary import write_outflow_boundary
 from boundary import write_periodic_functions
 from boundary import write_periodic_dummies
+from physical import write_physical
 from size_density import SizeDensity
 from exahype_parameters import ExaHyPE_parameters
 
@@ -70,14 +71,18 @@ n_dust = int(project.n_vars/4 - 1)
 output_dir = os.path.dirname(os.path.abspath(args.infile)) \
   + '/' + project.output_dir + '/'
 
+# If we are doing a size continuum...
 weights = [1.0]
 Stokes_range = [0.0001, 0.1]
 sigma=None
 if n_dust > 1:
+    # Get nodes and weights for Gauss-Legendre
     x, w = roots_legendre(n_dust)
+    # Adjust for integrals from 0 to 1
     lk = 0.5*(x + 1)
     wk = 0.5*w
 
+    # Work with log(St)
     s_range = np.log(np.asarray(Stokes_range))
 
     Stokes = np.exp(s_range[0] + (s_range[1] - s_range[0])*lk)
@@ -121,6 +126,11 @@ for s_ext, s_type in zip(solver_extension, solver_types):
     if allow_periodic == True:
         write_periodic_dummies(output_dir, project.solver_name, s_ext)
 
+# For a limiting scheme, need to specify whether DG solution is physical
+if (project.solver_type == 'Limiting-ADER-DG'):
+    write_physical(output_dir, project.solver_name, n_dust)
+
+
 ################################
 # Implement periodic boundaries
 ################################
@@ -131,29 +141,6 @@ if args.periodic:
     n_ghost = 1
     if project.solver_type == 'Limiting-ADER-DG':
         n_ghost = 2
-
-    # Determine mesh number of cells in x and y
-    #nx = guess_mesh(project.size_x, project.cell_size)
-    #ny = guess_mesh(project.size_y, project.cell_size)
-
-    # Resolution in x and y
-    #dx = project.size_x/nx
-    #dy = project.size_y/ny
-
-    # We want a domain that is periodic with project.size_x.
-    # New size found from: size_x = project.size_x + 2*n_ghost*dx
-    #f = lambda x: (x - 2*n_ghost*x/guess_mesh(x, project.cell_size) -
-    #               project.size_x)
-    #size_x_want = fsolve(f, project.size_x)[0]
-    #f = lambda x: (x - 2*n_ghost*x/guess_mesh(x, project.cell_size) -
-    #               project.size_y)
-    #size_y_want = fsolve(f, project.size_y)[0]
-
-    #print('Estimated mesh size: {}x{}'.format(nx, ny))
-    #print('Alternative mesh size: {}x{}'.format(guess_mesh(size_x_want, project.cell_size), guess_mesh(size_y_want, project.cell_size)))
-
-    #print('NOTE: periodic domain size will be {}x{}'.format(project.size_x-2*n_ghost*dx, project.size_y-2*n_ghost*dy))
-    #print('If a periodic domain of size {}x{} is needed, change domain size in .exahype file to {}x{}'.format(project.size_x, project.size_y, size_x_want, size_y_want))
 
     # Add Plot/Adjust periodic functions to solver class
     if (project.solver_type == 'ADER-DG'):

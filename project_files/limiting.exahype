@@ -6,11 +6,8 @@ exahype-project DustyGas
   computational-domain
     dimension const = 2
     width = 0.010471975511966, 0.010471975511966
-    /*
-    width = 0.02443460952792067, 0.02443460952792067
-    */
     offset = 0.0, 0.0
-    end-time = 20.0
+    end-time = 50.0
   end computational-domain
 /*
   distributed-memory
@@ -23,14 +20,14 @@ exahype-project DustyGas
   solver Limiting-ADER-DG DustyGasSolver
     variables const = 8
     order const = 2
-    maximum-mesh-size = 5e-3
+    maximum-mesh-size = 1e-3
     time-stepping = global
     type const = nonlinear
     terms const = flux, source
     optimisation const = generic
     language const = C
 
-    limiter-type const = musclhancock
+    limiter-type const = godunov
     limiter-optimisation const = generic
     limiter-language const = C
     dmp-observables = 8

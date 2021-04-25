@@ -34,16 +34,16 @@ class SnapShot():
 order = 2
 n_ghost = 2
 
-#filename = '../../data/state-75.vtk'
-#s = SnapShot(filename)
-#s.remove_ghost(order*n_ghost)
+filename = '../../data/order2_limited/state-204.vtk'
+s = SnapShot(filename)
+s.remove_ghost(order*n_ghost)
 
-#cs = plt.tricontourf(s.x[:,0], s.x[:,1], s.Q[:,4], 100)
-#plt.colorbar(cs)
+cs = plt.tricontourf(s.x[:,0], s.x[:,1], s.Q[:,4], 100)
+plt.colorbar(cs)
 
-#plt.show()
+plt.show()
 
-#exit(0)
+exit(0)
 
 #sel = np.asarray(s.x[:,1] == np.min(s.x[:,1])).nonzero()
 #plt.plot(s.x[sel,0], s.Q[sel,4], marker='o', linestyle='None', color='blue')
@@ -55,7 +55,7 @@ n_ghost = 2
 #plt.show()
 #exit(0)
 
-n = 200
+n = 216
 e = np.zeros((n))
 #direcs = ['../../data/order2', '../../data/order3']
 direcs = ['../../data']

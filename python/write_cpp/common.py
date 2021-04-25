@@ -13,6 +13,17 @@ def remove_function_body(lines, func_name):
         if (lines[i].find(func_name + '(') != -1):
             while (lines[i].find('{') == -1):
                 i = i + 1
+
+            # Deal with case of single line function definition: { return 0; }
+            before_curly = lines[i].split("{",1)[0]
+            after_curly = lines[i].split("{",1)[1]
+            if len(after_curly) > 0:
+                lines[i] = before_curly + '{\n'
+                if after_curly.find("}") != -1:
+                    after_curly = after_curly.split("}",1)[0] + '\n'
+                    lines[i+1:i+1] = ['}\n']
+                lines[i+1:i+1] = [after_curly]
+
             open_brackets = 1
             while (open_brackets > 0):
                 if (lines[i+1].find('{') != -1):
