@@ -128,9 +128,11 @@ class PolyDustyGasIC(InitialConditions):
                  '    Q[{}] = 0.0;\n'.format(4*n + 6),
                  '    Q[{}] = {};\n'.format(4*n + 7, -(1 + J0 + Stokes[n]*J1)/denom/(1 + Stokes[n]*Stokes[n]))])
 
-
-        #for n in range(0, 4 + 4*n_dust):
-        #    initial.extend(['    Q[{}] += a*({}*c + {}*s);\n'.format(n, np.real(eigen[n]), -np.imag(eigen[n]))])
+        # Add perturbations (random)
+        initial.extend('    // Add perturbations\n')
+        rng = np.random.default_rng(12345)
+        for n in range(0, 4 + 4*n_dust):
+            initial.extend(['    Q[{}] += a*({}*c + {}*s);\n'.format(n, rng.random() - 0.5, rng.random() - 0.5)])
 
         # Change into momenta
         initial.extend(['    // Change to momenta\n',
@@ -165,23 +167,23 @@ def write_initial(lines, n_dust, mu, Stokes, eta, solver_type, sigma=None):
     #ic = GasDensityWaveIC(Kx=30.0/0.05, amp=0.001)
 
     # LinearA test
-    ic = MonoDustyGasIC(Kx=30.0/0.05,
-                        Kz=30/0.05,
-                        amp=0.001,
-                        mu=mu,
-                        Stokes=Stokes,
-                        n_dust=n_dust,
-                        eta=eta)
-
-    # Polydisperse
-    #ic = PolyDustyGasIC(Kx=30.0/0.05,
+    #ic = MonoDustyGasIC(Kx=30.0/0.05,
     #                    Kz=30/0.05,
     #                    amp=0.001,
     #                    mu=mu,
     #                    Stokes=Stokes,
     #                    n_dust=n_dust,
-    #                    eta=eta,
-    #                    sigma=sigma)
+    #                    eta=eta)
+
+    # Polydisperse
+    ic = PolyDustyGasIC(Kx=30.0/0.05,
+                        Kz=30/0.05,
+                        amp=0.001,
+                        mu=mu,
+                        Stokes=Stokes,
+                        n_dust=n_dust,
+                        eta=eta,
+                        sigma=sigma)
 
     ic.write(lines, solver_type)
 

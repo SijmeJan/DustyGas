@@ -15,15 +15,6 @@ from physical import write_physical
 from size_density import SizeDensity
 from exahype_parameters import ExaHyPE_parameters
 
-def guess_mesh(domain_size, cell_size):
-    dx = domain_size
-    nx = 1
-    while (dx > cell_size):
-        nx = 3*nx + 4
-        dx = domain_size/nx
-
-    return nx
-
 # Needs single argument; exahype file
 parser = argparse.ArgumentParser(description='Write flux and eigenvalue cpp')
 parser.add_argument('--periodic', action="store_true", help="use periodic domain")
@@ -67,7 +58,7 @@ mu = 3.0          # dust/gas ratio
 # Number of dust components
 n_dust = int(project.n_vars/4 - 1)
 
-# Full path to cpp files
+# Full path to solver cpp files to write
 output_dir = os.path.dirname(os.path.abspath(args.infile)) \
   + '/' + project.output_dir + '/'
 

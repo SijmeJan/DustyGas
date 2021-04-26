@@ -34,7 +34,7 @@ class SnapShot():
 order = 2
 n_ghost = 2
 
-filename = '../../data/order2_limited/state-204.vtk'
+filename = '../../data/state-220.vtk'
 s = SnapShot(filename)
 s.remove_ghost(order*n_ghost)
 
@@ -55,10 +55,10 @@ exit(0)
 #plt.show()
 #exit(0)
 
-n = 216
+n = 204
 e = np.zeros((n))
 #direcs = ['../../data/order2', '../../data/order3']
-direcs = ['../../data']
+direcs = ['../../data', '../../data/order2_limited_godunov']
 
 t = np.linspace(0, 0.1*n, n)
 
