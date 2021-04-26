@@ -2,6 +2,7 @@ import numpy as np
 from vtk import vtkUnstructuredGridReader, vtkCellCenters
 from vtk.util.numpy_support import vtk_to_numpy, numpy_to_vtk
 from matplotlib import pyplot as plt
+from scipy.special import roots_legendre
 
 class SnapShot():
     def __init__(self, filename):
@@ -34,16 +35,16 @@ class SnapShot():
 order = 2
 n_ghost = 1
 
-filename = '../../data/state-0.vtk'
-s = SnapShot(filename)
-s.remove_ghost(order*n_ghost)
+#filename = '../../data/state-0.vtk'
+#s = SnapShot(filename)
+#s.remove_ghost(order*n_ghost)
 
-cs = plt.tricontourf(s.x[:,0], s.x[:,1], s.Q[:,4], 100)
-plt.colorbar(cs)
+#cs = plt.tricontourf(s.x[:,0], s.x[:,1], s.Q[:,4], 100)
+#plt.colorbar(cs)
 
-plt.show()
+#plt.show()
 
-exit(0)
+#exit(0)
 
 #sel = np.asarray(s.x[:,1] == np.min(s.x[:,1])).nonzero()
 #plt.plot(s.x[sel,0], s.Q[sel,4], marker='o', linestyle='None', color='blue')
@@ -51,20 +52,38 @@ exit(0)
 #plt.plot(s.x[sel,0], s.Q[sel,2], marker='o', linestyle='None', color='green')
 #plt.plot(s.x[sel,0] + 0.010471975511966, s.Q[sel,4], marker='x', linestyle='None', color='green')
 
+#n_dust = len(s.Q[0,:])/4 - 1
+
+#if n_dust > 1:
+#    Stokes_range = [0.0001, 0.1]
+    # Get nodes and weights for Gauss-Legendre
+#    x, w = roots_legendre(n_dust)
+    # Adjust for integrals from 0 to 1
+#    lk = 0.5*(x + 1)
+
+    # Work with log(St)
+#    s_range = np.log(np.asarray(Stokes_range))
+
+#    Stokes = np.exp(s_range[0] + (s_range[1] - s_range[0])*lk)
+
+#    plt.xscale('log')
+#    plt.yscale('log')
+
+#    plt.plot(Stokes, s.Q[0, 4:-1:4])
 
 #plt.show()
 #exit(0)
 
-n = 204
+n = 200
 e = np.zeros((n))
 #direcs = ['../../data/order2', '../../data/order3']
-direcs = ['../../data', '../../data/order2_limited_godunov']
+direcs = ['../../data']
 
 t = np.linspace(0, 0.1*n, n)
 
 plt.xlabel(r'$\Omega t$')
 plt.ylabel(r'$\int \rho_{\rm d} v_{z,{\rm d}}^2$')
-plt.title('Monodisperse linA')
+#plt.title('Monodisperse linA')
 
 for direc in direcs:
     for i in range(0, n):
@@ -77,6 +96,6 @@ for direc in direcs:
     plt.yscale('log')
     plt.plot(t, e)
 
-plt.plot(t, 0.0000000001*np.exp(0.42*2*t))
+#plt.plot(t, 0.0000000001*np.exp(0.42*2*t))
 
 plt.show()
