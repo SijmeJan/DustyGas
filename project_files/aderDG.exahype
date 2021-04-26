@@ -1,7 +1,7 @@
 exahype-project DustyGas
   peano-kernel-path const = ./Peano
   exahype-path const = ./ExaHyPE
-  output-directory const = ../data
+  output-directory const = ../data_sizedist
 
   computational-domain
     dimension const = 2
