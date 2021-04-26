@@ -32,9 +32,9 @@ class SnapShot():
         self.x = self.x[sel]
 
 order = 2
-n_ghost = 2
+n_ghost = 1
 
-filename = '../../data/state-220.vtk'
+filename = '../../data/state-0.vtk'
 s = SnapShot(filename)
 s.remove_ghost(order*n_ghost)
 
