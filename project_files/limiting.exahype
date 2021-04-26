@@ -27,7 +27,7 @@ exahype-project DustyGas
     optimisation const = generic
     language const = C
 
-    limiter-type const = godunov
+    limiter-type const = musclhancock
     limiter-optimisation const = generic
     limiter-language const = C
     dmp-observables = 8
