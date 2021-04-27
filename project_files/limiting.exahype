@@ -5,7 +5,10 @@ exahype-project DustyGas
 
   computational-domain
     dimension const = 2
+    width = 0.20943951023932, 0.20943951023932
+    /*
     width = 0.010471975511966, 0.010471975511966
+    */
     offset = 0.0, 0.0
     end-time = 50.0
   end computational-domain

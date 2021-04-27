@@ -1,6 +1,33 @@
-from common import replace_with_indent
+from common import replace_with_indent, remove_function_body, add_function_body
 
 def write_source(lines, n_dust, q, Stokes, weights, eta):
+    remove_function_body(lines, 'algebraicSource')
+
+    source = [\
+      '  // Gas source terms\n',
+      '  S[0] = 0.0;\n',
+      '  S[1] = 2*Q[0]*{} + 2*Q[3];\n'.format(eta),
+      '  S[2] = 0.0;\n',
+      '  S[3] = {}*Q[1];\n'.format(q - 2)]
+
+    for n in range(0, n_dust):
+        source.extend([\
+          '  // Source terms for St = {}\n'.format(Stokes[n]),
+          '  S[{}] = 0.0;\n'.format(4*n + 4),
+          '  S[{}] = 2*Q[{}] - (Q[{}] - Q[{}]*Q[1]/Q[0])/{};\n'.format(4*n + 5, 4*n + 7, 4*n + 5, 4*n + 4, Stokes[n]),
+          '  S[{}] = - (Q[{}] - Q[{}]*Q[2]/Q[0])/{};\n'.format(4*n + 6, 4*n + 6, 4*n + 4, Stokes[n]),
+          '  S[{}] = {}*Q[{}] - (Q[{}] - Q[{}]*Q[3]/Q[0])/{};\n'.format(4*n + 7, q - 2, 4*n + 5, 4*n + 7, 4*n + 4, Stokes[n])])
+
+    for n in range(0, n_dust):
+        source.extend([\
+          '  // Gas backreaction for St = {}\n'.format(Stokes[n]),
+          '  S[1] += {}*(Q[{}] -Q[{}]*Q[1]/Q[0])/{};\n'.format(weights[n], 4*n + 5, 4*n + 4, Stokes[n]),
+          '  S[2] += {}*(Q[{}] -Q[{}]*Q[2]/Q[0])/{};\n'.format(weights[n], 4*n + 6, 4*n + 4, Stokes[n]),
+          '  S[3] += {}*(Q[{}] -Q[{}]*Q[3]/Q[0])/{};\n'.format(weights[n], 4*n + 7, 4*n + 4, Stokes[n])])
+
+    add_function_body(lines, 'algebraicSource', source)
+
+    return
 
     for i in range(0, len(lines)):
         # Source x: eta + Coriolis

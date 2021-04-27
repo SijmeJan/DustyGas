@@ -167,8 +167,8 @@ def write_initial(lines, n_dust, mu, Stokes, eta, solver_type, sigma=None):
     #ic = GasDensityWaveIC(Kx=30.0/0.05, amp=0.001)
 
     # LinearA test
-    ic = MonoDustyGasIC(Kx=30.0/0.05,
-                        Kz=30/0.05,
+    ic = MonoDustyGasIC(Kx=30.0/eta,
+                        Kz=30.0/eta,
                         amp=0.001,
                         mu=mu,
                         Stokes=Stokes,
@@ -176,8 +176,8 @@ def write_initial(lines, n_dust, mu, Stokes, eta, solver_type, sigma=None):
                         eta=eta)
 
     # Polydisperse
-    #ic = PolyDustyGasIC(Kx=100.0/0.05,
-    #                    Kz=100/0.05,
+    #ic = PolyDustyGasIC(Kx=100.0/eta,
+    #                    Kz=100/eta,
     #                    amp=0.001,
     #                    mu=mu,
     #                    Stokes=Stokes,
