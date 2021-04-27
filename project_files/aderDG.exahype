@@ -5,9 +5,12 @@ exahype-project DustyGas
 
   computational-domain
     dimension const = 2
-    width = 0.00314159265359, 0.00314159265359
+    width = 0.20943951023932, 0.20943951023932
+    /*
+    width = 0.062831853071796, 0.062831853071796
+    */
     offset = 0.0, 0.0
-    end-time = 20.0
+    end-time = 50.0
   end computational-domain
 /*
   distributed-memory
@@ -20,7 +23,7 @@ exahype-project DustyGas
   solver ADER-DG DustyGasSolver
     variables const = 20
     order const = 2
-    maximum-mesh-size = 1e-3
+    maximum-mesh-size = 2e-2
     time-stepping = global
     type const = nonlinear
     terms const = flux, source

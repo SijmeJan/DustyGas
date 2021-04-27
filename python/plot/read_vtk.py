@@ -59,7 +59,7 @@ class Project():
 
     def time(self, dt):
         n_file = len(self.vtk_files)
-        return np.linspace(0, dt*n_file, n_file)
+        return dt*np.arange(0, n_file)
 
     def contour(self, n, ax, comp=4):
         if self.file_exists(n):
@@ -87,80 +87,3 @@ class Project():
             e[n] = func(self.vars(s))
 
         return ax.plot(t, e)
-
-#order = 2
-#n_ghost = 2
-
-#p = Project('../../data/order2_limited_muscl_DMP-4-3',
-#            order=2, n_ghost=2)
-
-#fig = plt.figure()
-#ax = fig.add_subplot(1, 1, 1)
-
-#ax.set_yscale('log')
-
-# Energy associated with z motions
-#f = lambda x: np.sum(x[6]*x[6]/x[4])/len(x[4])
-#p.time_evol(f, 0.1, ax)
-
-#cs = p.contour(260, ax)
-#plt.colorbar(cs)
-
-#plt.show()
-
-#exit(0)
-
-#sel = np.asarray(s.x[:,1] == np.min(s.x[:,1])).nonzero()
-#plt.plot(s.x[sel,0], s.Q[sel,4], marker='o', linestyle='None', color='blue')
-#plt.plot(s.x[sel,0], s.Q[sel,3], marker='o', linestyle='None', color='blue')
-#plt.plot(s.x[sel,0], s.Q[sel,2], marker='o', linestyle='None', color='green')
-#plt.plot(s.x[sel,0] + 0.010471975511966, s.Q[sel,4], marker='x', linestyle='None', color='green')
-
-#n_dust = len(s.Q[0,:])/4 - 1
-
-#if n_dust > 1:
-#    Stokes_range = [0.0001, 0.1]
-    # Get nodes and weights for Gauss-Legendre
-#    x, w = roots_legendre(n_dust)
-    # Adjust for integrals from 0 to 1
-#    lk = 0.5*(x + 1)
-
-    # Work with log(St)
-#    s_range = np.log(np.asarray(Stokes_range))
-
-#    Stokes = np.exp(s_range[0] + (s_range[1] - s_range[0])*lk)
-
-#    plt.xscale('log')
-#    plt.yscale('log')
-
-#    plt.plot(Stokes, s.Q[0, 4:-1:4])
-
-#plt.show()
-#exit(0)
-
-#n = 108
-#e = np.zeros((n))
-#direcs = ['../../data/order2', '../../data/order3']
-#direcs = ['../../data/order2_limited_muscl_DMP-6-10',
-#          '../../data/order2_limited_godunov_DMP-6-10']
-
-#t = np.linspace(0, 0.1*n, n)
-
-#plt.xlabel(r'$\Omega t$')
-#plt.ylabel(r'$\int \rho_{\rm d} v_{z,{\rm d}}^2$')
-#plt.title('Monodisperse linA')
-
-#for direc in direcs:
-#    for i in range(0, n):
-#        s = SnapShot(direc + '/state-{}.vtk'.format(i))
-#        s.remove_ghost(order*n_ghost)
-
-#        e[i] = np.sum(s.Q[:,6]*s.Q[:,6]/s.Q[:,4])/len(s.Q[:,4])
-        #e[i] = np.mean(s.Q[:,1]/s.Q[:,0])
-
-#    plt.yscale('log')
-#    plt.plot(t, e)
-
-#plt.plot(t, 0.0000000001*np.exp(0.42*2*t))
-
-#plt.show()

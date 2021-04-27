@@ -64,7 +64,7 @@ output_dir = os.path.dirname(os.path.abspath(args.infile)) \
 
 # If we are doing a size continuum...
 weights = [1.0]
-Stokes_range = [0.0001, 0.1]
+Stokes_range = [0.0999, 0.1]
 sigma=None
 if n_dust > 1:
     # Get nodes and weights for Gauss-Legendre
