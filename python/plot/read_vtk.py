@@ -67,8 +67,10 @@ class Project():
             s.remove_ghost(self.order*self.n_ghost)
 
             f = None
+
             if comp % 4 == 0:
                 f = s.Q[:,comp]
+                print(f)
             else:
                 f = s.Q[:,comp]/s.Q[:,comp - comp % 4]
             return ax.tricontourf(s.x[:,0], s.x[:,1], f, 100)

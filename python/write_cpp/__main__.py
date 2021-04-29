@@ -1,6 +1,8 @@
 import argparse
 import os
 import numpy as np
+import configparser
+
 from scipy.optimize import fsolve
 from scipy.special import roots_legendre
 
@@ -47,13 +49,27 @@ if (project.n_vars % 4 != 0):
     print("Error: number of variables has to be divisible by 4!")
     exit(1)
 
-# Parameters
-c = 1.0/0.05      # gas sound speed
-eta = 1.0         # eta/c
+# Read dust/gas parameters from input file
+ini_file = args.infile.split('.exahype')[0] + '.ini'
+# Parse INI file
+config = configparser.ConfigParser()
+config.read(ini_file)
 
-q = 1.5           # non-dimensional shear rate
-Stokes = [0.1]    # list of Stokes numbers
-mu = 3.0          # dust/gas ratio
+Kx = float(config['DOMAIN']['Kx'])
+Kz = float(config['DOMAIN']['Kz'])
+c = float(config['GAS']['c'])
+eta = 1.0
+q = float(config['GAS']['q'])
+Stokes = [float(config['DUST']['Stokes'])]
+mu = float(config['DUST']['mu'])
+
+# Parameters
+#c = 1.0/0.05      # gas sound speed
+#eta = 1.0         # eta/c
+
+#q = 1.5           # non-dimensional shear rate
+#Stokes = [0.1]    # list of Stokes numbers
+#mu = 3.0          # dust/gas ratio
 
 # Number of dust components
 n_dust = int(project.n_vars/4 - 1)
@@ -104,7 +120,8 @@ for s_ext, s_type in zip(solver_extension, solver_types):
     write_eigenvalues(lines, n_dust, c, s_type)
     write_flux(lines, n_dust, c)
     write_source(lines, n_dust, q, Stokes, weights, eta)
-    write_initial(lines, n_dust, mu, Stokes, eta, s_type, sigma=sigma)
+    write_initial(lines, n_dust, mu, Stokes, eta, s_type, Kx, Kz,
+                  sigma=sigma)
     write_outflow_boundary(lines, project.n_vars, s_type)
 
     # Write to file
