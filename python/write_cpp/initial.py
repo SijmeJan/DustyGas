@@ -26,7 +26,7 @@ class GasExplosionIC(InitialConditions):
            '    Q[1] = 0.0;\n',
            '    Q[2] = 0.0;\n',
            '    Q[3] = 0.0;\n',
-           '    if (sqrt((x[0] - {})*(x[0] - {}) + (x[1] - {})*(x[1] - {})) < {})\n'.format(centre[0], centre[1], size),
+           '    if (sqrt((x[0] - {})*(x[0] - {}) + (x[1] - {})*(x[1] - {})) < {})\n'.format(centre[0], centre[0], centre[1], centre[1], size),
            '      Q[0] = {};\n'.format(1 + amp),
            '  }\n']
 
