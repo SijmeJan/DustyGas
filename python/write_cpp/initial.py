@@ -179,7 +179,7 @@ def write_initial(lines, n_dust, mu, Stokes, eta, solver_type,
     # 1D gas density wave
     #ic = GasDensityWaveIC(Kx=Kx, amp=0.001)
 
-    ic = GasExplosionIC([np.pi/Kx, np.pi/Kz], 0.1*2*np.pi/Kx, 1.0)
+    ic = GasExplosionIC([np.pi/Kx, np.pi/Kz], 0.25*2*np.pi/Kx, 1.0)
 
     # LinearA test
     #ic = MonoDustyGasIC(Kx=Kx,
