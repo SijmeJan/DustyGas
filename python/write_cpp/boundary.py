@@ -241,6 +241,7 @@ def write_periodic_dummies(output_dir, solver_name, solver_ext):
        '    const tarch::la::Vector<DIMENSIONS, int>& pos,\n',
        '    double* Q) {\n'
        '  // Nop, since no periodic boundaries requested\n',
+       '  return 0;\n',
        '}\n\n',
        'void {}::{}::PlotPeriodic(\n'.format(solver_name[:-6],
                                              solver_name + solver_ext),
