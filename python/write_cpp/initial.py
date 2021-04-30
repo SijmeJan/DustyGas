@@ -26,8 +26,10 @@ class GasExplosionIC(InitialConditions):
            '    Q[1] = 0.0;\n',
            '    Q[2] = 0.0;\n',
            '    Q[3] = 0.0;\n',
-           '    if (sqrt((x[0] - {})*(x[0] - {}) + (x[1] - {})*(x[1] - {})) < {})\n'.format(centre[0], centre[0], centre[1], centre[1], size),
-           '      Q[0] = {};\n'.format(1 + amp),
+#           '    if (sqrt((x[0] - {})*(x[0] - {}) + (x[1] - {})*(x[1] - {})) < {})\n'.format(centre[0], centre[0], centre[1], centre[1], size),
+#           '      Q[0] = {};\n'.format(1 + amp),
+           '    if (std::abs(x[0] - centre[0]) < size)\n',
+           '      Q[0] = {};\n'.format(1+amp),
            '  }\n']
 
 class GasDensityWaveIC(InitialConditions):
@@ -179,7 +181,7 @@ def write_initial(lines, n_dust, mu, Stokes, eta, solver_type,
     # 1D gas density wave
     #ic = GasDensityWaveIC(Kx=Kx, amp=0.001)
 
-    ic = GasExplosionIC([np.pi/Kx, np.pi/Kz], 0.25*2*np.pi/Kx, 1.0)
+    ic = GasExplosionIC([1.5*np.pi/Kx, np.pi/Kz], 0.25*np.pi/Kx, 1.0)
 
     # LinearA test
     #ic = MonoDustyGasIC(Kx=Kx,
