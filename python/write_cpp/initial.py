@@ -18,6 +18,18 @@ class InitialConditions():
                 lines[i+1:i+1] = self.initial
                 break;
 
+class GasExplosionIC(InitialConditions):
+    def __init__(self, centre, size, amp):
+        self.initial = \
+          ['  if (t == 0.0) {\n',
+           '    Q[0] = 1.0;\n',
+           '    Q[1] = 0.0;\n',
+           '    Q[2] = 0.0;\n',
+           '    Q[3] = 0.0;\n',
+           '    if (sqrt((x[0] - {})**2 + (x[1] - {})**2) < {})\n'.format(centre[0], centre[1], size),
+           '      Q[0] = {};\n'.format(1 + amp),
+           '  }\n']
+
 class GasDensityWaveIC(InitialConditions):
     def __init__(self, Kx, amp):
         omega = np.sqrt(Kx*Kx + 1.0)
@@ -61,7 +73,7 @@ class MonoDustyGasIC(InitialConditions):
                  '    Q[{}] = 0.0;\n'.format(4*n + 6),
                  '    Q[{}] = -(1-{}*{}/{})/(1+{});\n'.format(4*n + 7, tau, tau, denom, mu)])
 
-        # Add eigenvector
+        # Add eigenvector (linearA)
         eigen = [+0.0000074637 + 0.0000070677*1j,
                  -0.0563787907 + 0.0120535455*1j,
                  +0.0563784989 - 0.0120536242*1j,
@@ -165,16 +177,18 @@ def write_initial(lines, n_dust, mu, Stokes, eta, solver_type,
     #ic = GasDensityWaveIC(Kx=0.0, amp=0.1)
 
     # 1D gas density wave
-    #ic = GasDensityWaveIC(Kx=30.0/0.05, amp=0.001)
+    #ic = GasDensityWaveIC(Kx=Kx, amp=0.001)
+
+    ic = GasExplosionIC([np.pi/Kx, np.pi/Kz], 0.25*2*np.pi/Kx, 1.0)
 
     # LinearA test
-    ic = MonoDustyGasIC(Kx=Kx,
-                        Kz=Kz,
-                        amp=0.001,
-                        mu=mu,
-                        Stokes=Stokes,
-                        n_dust=n_dust,
-                        eta=eta)
+    #ic = MonoDustyGasIC(Kx=Kx,
+    #                    Kz=Kz,
+    #                    amp=0.001,
+    #                    mu=mu,
+    #                    Stokes=Stokes,
+    #                    n_dust=n_dust,
+    #                    eta=eta)
 
     # Polydisperse
     #ic = PolyDustyGasIC(Kx=Kx,

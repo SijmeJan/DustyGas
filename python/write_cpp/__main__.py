@@ -63,14 +63,6 @@ q = float(config['GAS']['q'])
 Stokes = [float(config['DUST']['Stokes'])]
 mu = float(config['DUST']['mu'])
 
-# Parameters
-#c = 1.0/0.05      # gas sound speed
-#eta = 1.0         # eta/c
-
-#q = 1.5           # non-dimensional shear rate
-#Stokes = [0.1]    # list of Stokes numbers
-#mu = 3.0          # dust/gas ratio
-
 # Number of dust components
 n_dust = int(project.n_vars/4 - 1)
 

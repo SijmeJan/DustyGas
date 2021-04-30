@@ -74,19 +74,12 @@ output_dir=$(dirname "$exahype_file")"/"$output_dir
 # Copy log setup to output directory
 cp $(dirname "$exahype_file")"/exahype.log-filter" $output_dir
 
-# Adjust domain size to allow for ghost cells
-#if $periodic
-#then
-#    $PYTHON3 python/write_cpp/adjust_boundaries.py $exahype_file
-#fi
-
 # Use GNU compiler
 export COMPILER=GNU
 #export DISTRIBUTEDMEM=MPI
 
 # Use Toolkit to generate source code
 echo Generating generic source code...
-#ExaHyPE-Engine/Toolkit/toolkit.sh $output_dir"/"$exahype_file
 ExaHyPE-Engine/Toolkit/toolkit.sh $exahype_file
 
 # Write source code
@@ -100,9 +93,6 @@ fi
 
 # Move exahype file into output directory
 mv $exahype_file $output_dir"/"
-onlyfile="$(basename $exahype_file)"
-# From now on, work with copied file
-#exahype_file=$output_dir"/"$onlyfile
 
 echo Starting Make...
 cd $output_dir
