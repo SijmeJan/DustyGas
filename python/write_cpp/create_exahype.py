@@ -132,7 +132,7 @@ if solver_type == 'Limiting-ADER-DG':
 
 exahype_body[-1:-1] = [\
   '\n',
-  '    plot vtk::Legendre::vertices::ascii State\n',
+  '    plot vtk::Cartesian::cells::ascii State\n',
   '      variables const = {}\n'.format(n_vars),
   '      time = 0.0\n',
   '      repeat = {}\n'.format(save_dt),

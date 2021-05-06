@@ -8,6 +8,8 @@ from scipy.special import roots_legendre
 
 class SnapShot():
     def __init__(self, filename):
+        print('Reading {}'.format(filename))
+
         reader = vtkUnstructuredGridReader()
         reader.SetFileName(filename)
         reader.ReadAllVectorsOn()
