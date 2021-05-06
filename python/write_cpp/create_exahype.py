@@ -42,8 +42,7 @@ def periodic_domain_size(domain_size, n_ghost, cell_size):
 # Needs single argument; INI file
 parser = argparse.ArgumentParser(description='Create ExaHyPE file from DustyGas INI')
 parser.add_argument('--periodic', action="store_true", help="use periodic domain")
-parser.add_argument('infile',
-                    help='INI file')
+parser.add_argument('infile', help='INI file')
 args = parser.parse_args()
 
 # Output file: same name, different extension

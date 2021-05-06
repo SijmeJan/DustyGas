@@ -28,6 +28,7 @@ class SnapShot():
     def remove_ghost(self, order):
         x_sort = np.sort(np.unique(self.x[:,0]))
         y_sort = np.sort(np.unique(self.x[:,1]))
+        #print('Number of cells: ', len(x_sort), len(y_sort))
 
         sel = np.asarray((self.x[:,0] > x_sort[order-1])*(self.x[:,0] < x_sort[-order])*(self.x[:,1] > y_sort[order-1])*(self.x[:,1] < y_sort[-order])).nonzero()
 
@@ -89,3 +90,18 @@ class Project():
             e[n] = func(self.vars(s))
 
         return ax.plot(t, e)
+
+    def slice(self, n, ax, direction=0, comp=4):
+        if self.file_exists(n):
+            s = SnapShot(self.direc + '/' + self.file_name(n))
+            s.remove_ghost(self.order*self.n_ghost)
+
+            f = None
+
+            if comp % 4 == 0:
+                f = s.Q[:,comp]
+            else:
+                f = s.Q[:,comp]/s.Q[:,comp - comp % 4]
+            return ax.plot(s.x[:,direction], f, marker='o',linestyle='None')
+        else:
+            print('File {} not found!'.format(self.file_name(n)))
