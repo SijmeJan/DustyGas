@@ -114,15 +114,16 @@ exahype_body[-1:-1] = [\
   '    variables const = {}\n'.format(n_vars)]
 if solver_type == 'Finite-Volumes':
     exahype_body[-1:-1] = [\
-      '    patch-size const = {}\n'.format(2*order + 1)]
+      '    patch-size const = {}\n'.format(2*order + 1),
+      '    type const = godunov\n']
 else:
     exahype_body[-1:-1] = [\
-      '    order const = {}\n'.format(order)]
+      '    order const = {}\n'.format(order),
+      '    type const = nonlinear\n']
 
 exahype_body[-1:-1] = [\
   '    maximum-mesh-size = {}\n'.format(mesh_size),
   '    time-stepping = global\n',
-  '    type const = nonlinear\n',
   '    terms const = flux, source\n',
   '    optimisation const = generic\n',
   '    language const = C\n']
