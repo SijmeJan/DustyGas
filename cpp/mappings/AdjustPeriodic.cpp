@@ -128,13 +128,13 @@ void exahype::mappings::AdjustPeriodic::leaveCell(
       switch ( solver->getType() ) {
         case solvers::Solver::Type::ADERDG:
           //std::cout << "ADJUSTING SOLUTION IN CELL" << std::endl;
-          static_cast<solvers::ADERDGSolver*>(solver)->AdjustPeriodic(solverNumber, cellInfo);
+          static_cast<solvers::ADERDGSolver*>(solver)->AdjustPeriodic(solverNumber, cellInfo, false);
           break;
         case solvers::Solver::Type::LimitingADERDG:
-          static_cast<solvers::LimitingADERDGSolver*>(solver)->AdjustPeriodic(solverNumber, cellInfo);
+          static_cast<solvers::LimitingADERDGSolver*>(solver)->AdjustPeriodic(solverNumber, cellInfo, false);
           break;
         case solvers::Solver::Type::FiniteVolumes:
-          static_cast<solvers::FiniteVolumesSolver*>(solver)->AdjustPeriodic(solverNumber, cellInfo);
+          static_cast<solvers::FiniteVolumesSolver*>(solver)->AdjustPeriodic(solverNumber, cellInfo, false);
           break;
         default:
           assertionMsg(false,"Unrecognised solver type: "<<solvers::Solver::toString(solver->getType()));

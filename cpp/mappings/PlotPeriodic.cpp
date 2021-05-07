@@ -176,13 +176,13 @@ void exahype::mappings::PlotPeriodic::enterCell(
 
       switch ( solver->getType() ) {
         case solvers::Solver::Type::ADERDG:
-          static_cast<solvers::ADERDGSolver*>(solver)->PlotPeriodic(solverNumber, cellInfo);
+          static_cast<solvers::ADERDGSolver*>(solver)->PlotPeriodic(solverNumber, cellInfo, false);
           break;
         case solvers::Solver::Type::LimitingADERDG:
-          static_cast<solvers::LimitingADERDGSolver*>(solver)->PlotPeriodic(solverNumber, cellInfo);
+          static_cast<solvers::LimitingADERDGSolver*>(solver)->PlotPeriodic(solverNumber, cellInfo, false);
           break;
         case solvers::Solver::Type::FiniteVolumes:
-          static_cast<solvers::FiniteVolumesSolver*>(solver)->PlotPeriodic(solverNumber, cellInfo);
+          static_cast<solvers::FiniteVolumesSolver*>(solver)->PlotPeriodic(solverNumber, cellInfo, false);
           break;
         default:
           assertionMsg(false,"Unrecognised solver type: "<<solvers::Solver::toString(solver->getType()));
