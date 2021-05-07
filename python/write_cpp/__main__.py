@@ -168,6 +168,13 @@ if args.periodic:
                                  output_dir,
                                  project.solver_name + '_ADERDG',
                                  n_ghost)
+        write_periodic_functions(project.n_vars,
+                                 2*project.order + 1,
+                                 [project.offset_x, project.offset_y],
+                                 [project.size_x, project.size_y],
+                                 output_dir,
+                                 project.solver_name + '_FV',
+                                 n_ghost)
     else:
         print("Periodic boundary conditions for {} not implemented!".format(solver_type))
         exit(1)
