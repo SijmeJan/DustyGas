@@ -127,8 +127,8 @@ if solver_type == 'Limiting-ADER-DG':
     '    limiter-optimisation const = generic\n',
     '    limiter-language const = C\n',
     '    dmp-observables = {}\n'.format(n_vars),
-    '    dmp-relaxation-parameter = 1e14\n',
-    '    dmp-difference-scaling = 1e13\n']
+    '    dmp-relaxation-parameter = 1e-4\n',
+    '    dmp-difference-scaling = 1e-3\n']
 
 exahype_body[-1:-1] = [\
   '\n',
