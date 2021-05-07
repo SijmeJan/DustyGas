@@ -140,7 +140,7 @@ if args.periodic:
 
     n_ghost = 1
     if project.solver_type == 'Limiting-ADER-DG':
-        n_ghost = 3
+        n_ghost = 2
 
     # Add Plot/Adjust periodic functions to solver class
     if (project.solver_type == 'ADER-DG'):
