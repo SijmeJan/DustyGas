@@ -418,7 +418,7 @@ def allow_periodic(repo_dir):
        '    const int solverElement = cellInfo.indexOfADERDGCellDescription(solverNumber);\n',
        '    if ( solverElement != Solver::NotFound ) {\n',
        '      SolverPatch& solverPatch = cellInfo._ADERDGCellDescriptions[solverElement];\n',
-       '      solverPatch.setRefinementStatus(_solver->_minRefinementStatusForTroubledCell-1);\n',
+       '      solverPatch.setRefinementStatus(_solver->_minRefinementStatusForTroubledCell);\n',
        #'      const int limiterElement = cellInfo.indexOfFiniteVolumesCellDescription(solverNumber);\n',
        #'      if (limiterElement != Solver::NotFound) {\n',
        #'        LimiterPatch& limiterPatch = getLimiterPatch(solverPatch,cellInfo);\n',
