@@ -418,7 +418,7 @@ def allow_periodic(repo_dir):
        '    const int solverElement = cellInfo.indexOfADERDGCellDescription(solverNumber);\n',
        '    if ( solverElement != Solver::NotFound ) {\n',
        '      SolverPatch& solverPatch = cellInfo._ADERDGCellDescriptions[solverElement];\n',
-       '      std::cout << "Adjust Refinement status: " << solverPatch.setRefinementStatus() << std::endl;\n',
+       '      std::cout << "Adjust Refinement status: " << solverPatch.getRefinementStatus() << std::endl;\n',
        '      solverPatch.setRefinementStatus(_solver->_minRefinementStatusForTroubledCell-1);\n',
        #'      const int limiterElement = cellInfo.indexOfFiniteVolumesCellDescription(solverNumber);\n',
        #'      if (limiterElement != Solver::NotFound) {\n',
