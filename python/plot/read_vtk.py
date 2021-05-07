@@ -93,7 +93,7 @@ class Project():
 
         return ax.plot(t, e)
 
-    def slice(self, n, ax, direction=0, comp=4):
+    def slice(self, n, ax, direction=0, comp=4, indx=None):
         if self.file_exists(n):
             s = SnapShot(self.direc + '/' + self.file_name(n))
             s.remove_ghost(self.order*self.n_ghost)
@@ -104,6 +104,9 @@ class Project():
                 f = s.Q[:,comp]
             else:
                 f = s.Q[:,comp]/s.Q[:,comp - comp % 4]
+
+            print(np.shape(s.x))
+
             return ax.plot(s.x[:,direction], f, marker='o',linestyle='None')
         else:
             print('File {} not found!'.format(self.file_name(n)))
